@@ -1,1 +1,82 @@
 
+{
+ 
+    {
+      "id": "jjk0",
+      "title": "Jujutsu Kaisen",
+      "year": "2023",
+      "type": "Series",
+      "image": "image/banners/jjk0.jpg",
+      "url": "details.html?id=jjk0",
+      "episodes": "E-24",
+      "audio": "Multi Audio",
+      "duration": "24m",
+      "password": "CURSELESS_23",
+      "watch_link": "https://neon-play.github.io/jujutsu-kaisen-season-3/",
+      "social": {
+        "telegram": "https://t.me/example",
+        "reddit": "https://reddit.com/r/example"
+      },
+      "tags": ["Action", "Supernatural"],
+      "rating": "PG-13",
+      "views": "1.2M",
+      "overview": "After a tragedy, Yuji joins the occult world and battles curses."
+    },
+
+    {
+      "id": "naruto-shippuden",
+      "title": "Naruto: Shippuden",
+      "year": "2007",
+      "type": "Series",
+      "image": "image/banners/naruto_shippuden.jpg",
+      "url": "details.html?id=naruto-shippuden",
+      "episodes": "E-500",
+      "audio": "Multi Audio",
+      "duration": "23m",
+      "password": "NARUTO_777",
+      "watch_link": "https://example.com/watch/naruto-shippuden",
+      "social": {},
+      "tags": ["Action", "Adventure"],
+      "rating": "PG-13",
+      "views": "23M",
+      "overview": "Naruto returns stronger to face the Akatsuki and protect his friends."
+    },
+{
+      "id": "spirited-away",
+      "title": "Spirited Away",
+      "year": "2001",
+      "type": "Movie",
+      "image": "assets/movies/movie1.jpg",
+      "url": "details.html?id=spirited-away",
+      "episodes": "",
+      "audio": "Japanese",
+      "duration": "125m",
+      "password": "",
+      "watch_link": "https://example.com/watch/spirited-away",
+      "social": {},
+      "tags": ["Fantasy", "Adventure"],
+      "rating": "PG",
+      "views": "12M",
+      "overview": "A young girl enters a world of spirits and must save her parents."
+    },
+    {
+      "id": "your-name",
+      "title": "Your Name",
+      "year": "2016",
+      "type": "Movie",
+      "image": "assets/movies/movie2.jpg",
+      "url": "details.html?id=your-name",
+      "episodes": "",
+      "audio": "Japanese",
+      "duration": "106m",
+      "password": "",
+      "watch_link": "https://example.com/watch/your-name",
+      "social": {},
+      "tags": ["Romance", "Fantasy"],
+      "rating": "PG-13",
+      "views": "9M",
+      "overview": "Two strangers begin swapping bodies and searching for each other."
+    }
+  
+
+}
