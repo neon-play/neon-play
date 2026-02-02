@@ -42,10 +42,7 @@
     </div>
 
     <!-- result panel (styled by CSS). results-inner keeps id used by JS. -->
-    <div class="search-result-panel" id="searchResultPanel" aria-hidden="true">
-      <div class="results-inner" id="liveSearchResults"></div>
-      <div class="no-results" style="display:none;">No results found.</div>
-    </div>
+  
 
   </section>
 
@@ -105,29 +102,7 @@
   <!-- ===== JS ===== -->
   <script src="js/details.js"></script>
 
-  <script>
-    // ensure search panel aria toggles for accessibility when JS shows results
-    (function(){
-      const searchInput = document.querySelector('.search-box input');
-      const searchPanel = document.getElementById('searchResultPanel');
-      const liveResults = document.getElementById('liveSearchResults');
 
-      // when liveResults is shown/hidden in your details.js it uses style.display.
-      // mirror ARIA state for the wrapper (non-invasive, unobtrusive).
-      const obs = new MutationObserver(() => {
-        if (!searchPanel) return;
-        const visible = liveResults && window.getComputedStyle(liveResults).display !== 'none' && liveResults.children.length;
-        if (visible) {
-          searchPanel.classList.add('active');
-          searchPanel.setAttribute('aria-hidden', 'false');
-        } else {
-          searchPanel.classList.remove('active');
-          searchPanel.setAttribute('aria-hidden', 'true');
-        }
-      });
-      if (liveResults) obs.observe(liveResults, { childList: true, attributes: true, attributeFilter: ['style'] });
-    })();
-  </script>
 
 </body>
 </html>
