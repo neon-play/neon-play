@@ -805,3 +805,40 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .filter-bar #sortSelect::-ms-expand {
   display: none;
 }
+
+
+
+
+
+/* Side-menu current-item sky-neon highlight (visible only when menu is open) */
+.side-menu .menu-list a.current {
+  position: relative;
+  z-index: 2;
+  color: var(--text);
+  transition: background 200ms var(--transition), box-shadow 200ms var(--transition), color 120ms var(--transition);
+}
+
+/* Only show the neon belt when the menu is open */
+.side-menu.open .menu-list a.current {
+  background: linear-gradient(90deg, rgba(0,240,234,0.12), rgba(0,160,255,0.06));
+  color: #041218; /* dark text for contrast against the light neon belt */
+  box-shadow: 0 8px 28px rgba(0,240,234,0.10), inset 0 0 14px rgba(0,240,234,0.04);
+  border-left: 4px solid var(--neon-cyan);
+  padding-left: 12px; /* push content inward so border doesn't overlap text */
+  border-radius: 8px;
+}
+
+/* small tweak so emoji/icons and text align nicely when highlighted */
+.side-menu.open .menu-list a.current::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 36px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(0,240,234,0.85), rgba(0,160,255,0.55));
+  border-radius: 2px;
+  opacity: 0.6;
+  pointer-events: none;
+}
