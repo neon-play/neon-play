@@ -805,11 +805,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .filter-bar #sortSelect::-ms-expand {
   display: none;
 }
-
-
-
-
-
 /* Side-menu current-item sky-neon highlight (visible only when menu is open) */
 .side-menu .menu-list a.current {
   position: relative;
