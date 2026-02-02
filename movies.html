@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NeonAnime Hub — Movies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- ===== HEADER / NAVBAR ===== -->
+  <header class="navbar">
+
+    <div class="menu-icon" id="menuBtn" style="margin-left:6px;">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <h1 class="site-title" style="margin:0 auto;">
+      NEON<span>ANIME</span> HUB
+    </h1>
+
+  </header>
+
+  <!-- ===== SEARCH BAR ===== -->
+  <section class="search-section">
+
+    <!-- wrapper centers the bar (uses existing CSS) -->
+    <div class="search-wrapper">
+      <!-- keep .search-box for JS, add .search-bar so CSS applies -->
+      <div class="search-box search-bar">
+        <i class="material-icons">search</i>
+        <input type="text" placeholder="Search for anime..." />
+      </div>
+    </div>
+
+    <!-- result panel (styled by CSS). results-inner keeps id used by JS. -->
+    <div class="search-result-panel" id="searchResultPanel" aria-hidden="true">
+      <div class="results-inner" id="liveSearchResults"></div>
+      <div class="no-results" style="display:none;">No results found.</div>
+    </div>
+
+  </section>
+
+  <!-- ===== FILTER BAR ===== -->
+  <section class="filter-bar">
+
+    <div class="sort-box">
+      <label for="sortSelect">Sort by:</label>
+      <select id="sortSelect">
+        <option value="latest">Latest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="az">A - Z</option>
+        <option value="za">Z - A</option>
+      </select>
+    </div>
+
+  </section>
+
+  <!-- ===== SLIDE MENU ===== -->
+  <aside class="side-menu" id="sideMenu">
+
+    <div class="menu-header">
+      <h2>Menu</h2>
+    </div>
+
+    <ul class="menu-list">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li><a href="movies.html">🎬 Movies</a></li>
+      <li><a href="series.html">📺 Series</a></li>
+      <li><a href="genres.html">🎭 Genres</a></li>
+    </ul>
+
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main>
+
+    <section class="content-section">
+
+      <div class="section-header">
+        <h2>Movies</h2>
+      </div>
+
+      <div class="grid-container" id="movieGrid">
+        <!-- Cards injected via JS -->
+      </div>
+      <button class="load-more-btn" id="loadMoreBtn">Load More Movies</button>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>© 2026 NeonAnime Hub</p>
+  </footer>
+
+  <!-- ===== JS ===== -->
+  <script src="js/details.js"></script>
+
+  <script>
+    // ensure search panel aria toggles for accessibility when JS shows results
+    (function(){
+      const searchInput = document.querySelector('.search-box input');
+      const searchPanel = document.getElementById('searchResultPanel');
+      const liveResults = document.getElementById('liveSearchResults');
+
+      // when liveResults is shown/hidden in your details.js it uses style.display.
+      // mirror ARIA state for the wrapper (non-invasive, unobtrusive).
+      const obs = new MutationObserver(() => {
+        if (!searchPanel) return;
+        const visible = liveResults && window.getComputedStyle(liveResults).display !== 'none' && liveResults.children.length;
+        if (visible) {
+          searchPanel.classList.add('active');
+          searchPanel.setAttribute('aria-hidden', 'false');
+        } else {
+          searchPanel.classList.remove('active');
+          searchPanel.setAttribute('aria-hidden', 'true');
+        }
+      });
+      if (liveResults) obs.observe(liveResults, { childList: true, attributes: true, attributeFilter: ['style'] });
+    })();
+  </script>
+
+</body>
+</html>
