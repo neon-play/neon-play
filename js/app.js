@@ -442,51 +442,36 @@ document.addEventListener('DOMContentLoaded', () => {
   let seriesShown = 0;
 
   function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
+    const card = document.createElement('div');
+    card.className = 'anime-card';
 
-  // Banner image (must use the card-banner class so CSS positions it)
-  const img = document.createElement('img');
-  img.className = 'card-banner';                     // IMPORTANT
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title || 'Anime';
-  card.appendChild(img);
+    const img = document.createElement('img');
+    img.src = item.image || 'assets/placeholder.png';
+    img.alt = item.title || 'Anime';
+    card.appendChild(img);
 
-  // Top-left badge: "MOVIE" when item.type contains "movie"
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'MOVIE';
-    card.appendChild(badge);
+    const info = document.createElement('div');
+    info.className = 'card-info';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = item.title || 'Untitled';
+    info.appendChild(h3);
+
+    const p = document.createElement('p');
+    p.textContent = `${item.year || ''}${item.year ? ' • ' : ''}${item.type || ''}`;
+    info.appendChild(p);
+
+    card.appendChild(info);
+
+    if (item.url) {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        window.location.href = item.url;
+      });
+    }
+
+    return card;
   }
-
-  // Name box (bottom-centered) — contains ONLY Title • Year
-  const nameBox = document.createElement('div');
-  nameBox.className = 'card-name-box';
-  nameBox.setAttribute('aria-hidden', 'true');
-  nameBox.textContent = `${item.title || 'Untitled'}${item.year ? ' • ' + item.year : ''}`;
-  card.appendChild(nameBox);
-
-  // Audio pill (bottom-right) — optional; show audio or nothing
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  audioEl.textContent = item.audio || '';
-  card.appendChild(audioEl);
-
-  // Click navigation (whole card)
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', () => { window.location.href = item.url; });
-  }
-
-  // Keyboard accessibility
-  card.tabIndex = 0;
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && item.url) window.location.href = item.url;
-  });
-
-  return card;
-}
 
   function createAdCard(item) {
     const ad = document.createElement('div');
@@ -649,4 +634,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
