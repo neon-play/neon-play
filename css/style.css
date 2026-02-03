@@ -854,3 +854,94 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* If you only want it visible when menu is open: */
 #sideMenu:not(.open)::after { opacity: 0; transition: opacity 160ms ease; }
 #sideMenu.open::after { opacity: 1; transition: opacity 160ms ease; }
+/* --- Card banner, badges & reduced-title layout --- */
+/* make the card a positioned container so overlays can sit on top */
+.anime-card {
+  position: relative;
+  overflow: hidden;
+  /* keep existing sizing; height/width already controlled by earlier rules */
+  display: block;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+}
+
+/* full-bleed banner image (fills entire card) */
+.anime-card .card-banner {
+  position: absolute;
+  inset: 0;                 /* top:0; right:0; bottom:0; left:0; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* preserves aspect ratio while covering the card */
+  display: block;
+  transition: transform 260ms ease;
+}
+
+/* subtle zoom on hover */
+.anime-card:hover .card-banner {
+  transform: scale(1.03);
+}
+
+/* top-left badge for 'Movie' */
+.anime-card .card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 6;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+/* small title: lower-left overlay, minimal footprint, truncated */
+.anime-card .card-title {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 110px; /* leaves room for the audio label on the right */
+  z-index: 6;
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.35)); /* helps readability */
+  border-radius: 6px;
+}
+
+/* audio label bottom-right (replaces previous 'year' visual spot) */
+.anime-card .card-audio {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 6;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--neon-green);
+  background: rgba(0,0,0,0.55);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* ensure the old .card-info (if still present) doesn't push layout — hide visually */
+.anime-card .card-info {
+  display: none;
+}
+
+/* responsive tweaks: keep title legible on small screens */
+@media (max-width:520px) {
+  .anime-card .card-title { font-size: 12px; right: 92px; bottom: 8px; left: 8px; }
+  .anime-card .card-audio { font-size: 11px; bottom: 8px; right: 8px; padding:5px 7px; }
+}
