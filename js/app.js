@@ -477,6 +477,13 @@ function createAnimeCard(item) {
     }
   });
 
+  const nameBox = document.createElement('div');
+  nameBox.className = 'card-name-box';
+  nameBox.textContent = item.title || '';
+  // keep it non-interactive so it doesn't alter click behaviour on card
+  nameBox.setAttribute('aria-hidden', 'true');
+  card.appendChild(nameBox);
+  // --- end addition ---
   return card;
 }
 
