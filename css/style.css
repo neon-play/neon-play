@@ -1,20 +1,9 @@
-:root{
-  /* title box / banner border color (change this to any hex) */
-  --card-title-color: #EBFF24;     /* background of name-box */
-  --card-title-text: #ffffff;      /* text colour inside name-box */
-  --namebox-offset: 22px;
-  --card-badge-color: #FFD700;     /* yellow (change as needed) */
-  --banner-bottom-space: 65px; 
-  /* how far the banner stops above the card bottom (space for overlays) */
-   /* increase -> more gap; decrease -> image goes lower */
+/* =========================
+   NeonAnime Hub — CLEANED CSS
+   ========================= */
 
-  /* radius for the banner's rounded corners (not too large) */
-  --banner-border-radius: 10px;    /* increase for more rounding */
-  --namebox-font-size: 24px;
-  --namebox-padding-vertical: 10px;
-  --namebox-padding-horizontal: 14px;
-          /* how far the name-box sinks below the card bottom (positive = outside) */
-  --audio-bottom-safety: 14px;     /* audio bottom = banner-bottom-space - this value */
+/* ---- Root variables ---- */
+:root {
   --bg: #070707;
   --card: #0f0f10;
   --muted: #a8a8a8;
@@ -372,7 +361,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .anime-card{
   min-width:180px;
   width:180px;
-  height:250px;
+  height:260px;
   background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
   border-radius:14px;
   overflow:hidden;
@@ -816,110 +805,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .filter-bar #sortSelect::-ms-expand {
   display: none;
 }
-/* Side-menu current-item sky-neon highlight (visible only when menu is open) */
-.side-menu .menu-list a.current {
-  position: relative;
-  z-index: 2;
-  color: var(--text);
-  transition: background 200ms var(--transition), box-shadow 200ms var(--transition), color 120ms var(--transition);
-}
-
-/* Only show the neon belt when the menu is open */
-.side-menu.open .menu-list a.current {
-  background: linear-gradient(90deg, rgba(0,240,234,0.12), rgba(0,160,255,0.06));
-  color: #041218; /* dark text for contrast against the light neon belt */
-  box-shadow: 0 8px 28px rgba(0,240,234,0.10), inset 0 0 14px rgba(0,240,234,0.04);
-  border-left: 4px solid var(--neon-cyan);
-  padding-left: 12px; /* push content inward so border doesn't overlap text */
-  border-radius: 8px;
-}
-
-/* small tweak so emoji/icons and text align nicely when highlighted */
-.side-menu.open .menu-list a.current::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 36px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(0,240,234,0.85), rgba(0,160,255,0.55));
-  border-radius: 2px;
-  opacity: 0.6;
-  pointer-events: none;
-}
-#sideMenu::after {
-  content: "";
-  position: absolute;
-  top: 12px;            /* adjust to match menu vertical padding */
-  bottom: 12px;         /* adjust to match menu vertical padding */
-  right: 0;             /* flush to the right edge of the menu */
-  width: 1px;           /* slim; change to 2px–5px if you prefer */
-  border-radius: 2px;
-  background: linear-gradient(180deg, #fff17a, #ffd300); /* warm yellow */
-  box-shadow: 0 0 12px rgba(255,215,0,0.12);
-  pointer-events: none;
-  z-index: 999;         /* ensure it sits above the menu background */
-}
-
-/* If you only want it visible when menu is open: */
-#sideMenu:not(.open)::after { opacity: 0; transition: opacity 160ms ease; }
-#sideMenu.open::after { opacity: 1; transition: opacity 160ms ease; }
-/* --- Card banner, badges & reduced-title layout --- */
-/* make the card a positioned container so overlays can sit on top */
-/* Banner: stops short of the card bottom to leave room for overlays */
-.anime-card {
-  position: relative;
-  overflow: visible; /* allow name-box to appear outside the card */
-  border-radius: calc(var(--banner-border-radius) + 2px); /* keep card subtly rounded */
-}
-
-/* Banner image: stops `--banner-bottom-space` above the bottom of the card */
-.anime-card .card-banner {
-  position: absolute;
-  inset: 0 0 var(--banner-bottom-space) 0; /* top:0; right:0; bottom:var; left:0 */
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 260ms ease;
-
-  /* rounded top corners and a border that uses the same color as the name-box */
-  border-radius: var(--banner-border-radius) var(--banner-border-radius) 0 0;
-  border: 2px solid var(--card-title-color);
-  box-sizing: border-box;
-}
-
-/* subtle zoom on hover */
-.anime-card:hover .card-banner {
-  transform: scale(1.03);
-}
-
-/* top-left badge for 'Movie' */
-.anime-card .card-badge {
-  position: absolute;
-  top: 8px;
-  left: 10px;
-  z-index: 22;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  color: var(--card-badge-color);           /* text color set to yellow variable */
-  background: rgba(0,0,0,0.35);             /* keep a dark translucent background for contrast */
-  border: 1px solid rgba(255,255,255,0.03);
-}
-
-/* allow the name box to appear outside the card bounds */
-.anime-card {
-  position: relative;
-  overflow: visible;   /* changed from hidden to visible so the name-box can sit below the card */
-  border-radius: 14px;
-  /* keep other existing properties as they are... */
-}
-
-/* big name box attached below the card (centered) */
-/* final single name-box style — dark box with subtle golden outline */
+/* final single name-box style — compact dark box with golden edge */
 .anime-card .card-name-box{
   position: absolute;
   left: 50%;
@@ -927,13 +813,13 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   bottom: calc(-1 * var(--namebox-offset));
   z-index: 20;
 
-  background: rgba(0,0,0,0.78);
+  background: rgba(0,0,0,0.78);        /* dark box inside the gold frame */
   color: #ffffff;
   padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
   font-size: var(--namebox-font-size);
   font-weight: 700;
   border-radius: 10px;
-  border: 2px solid var(--card-title-color);
+  border: 2px solid var(--card-title-color);  /* thin golden edge */
   box-shadow: 0 10px 22px rgba(0,0,0,0.5);
 
   white-space: nowrap;
@@ -942,34 +828,3 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   max-width: calc(100% - 36px);
   pointer-events: none;
 }
-
-/* audio label bottom-right (replaces previous 'year' visual spot) */
-/* Audio pill (bottom-right) — keep visual, but push it above the banner bottom area */
-.anime-card .card-audio {
-  position: absolute;
-  right: 12px;
-  /* ensure audio sits inside the card above the banner bottom gap */
-  bottom: calc(var(--banner-bottom-space) - var(--audio-bottom-safety)); /* e.g. 56px - 14px = 42px from bottom */
-  z-index: 18;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.75);
-  color: #00ff88; /* keep same audio color as before — change if needed */
-  pointer-events: none;
-}
-
-/* ensure the old .card-info (if still present) doesn't push layout — hide visually */
-.anime-card .card-info {
-  display: none;
-}
-
-/* responsive tweaks: keep title legible on small screens */
-@media (max-width:520px) {
-  .anime-card .card-title { font-size: 12px; right: 92px; bottom: 8px; left: 8px; }
-  .anime-card .card-audio { font-size: 11px; bottom: 8px; right: 8px; padding:5px 7px; }
-}
-/* Hide any leftover small overlay title (your previous 'Yo..' pill) */
-.anime-card .card-title {
-  display: none !important;
-  }her
