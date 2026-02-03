@@ -431,14 +431,14 @@ function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
 
-  // Banner image (fills card but CSS controls how far it reaches)
+  // Banner image
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
   img.alt = item.title || 'Anime';
   card.appendChild(img);
 
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
+  // Top-left badge (MOVIE watermark)
   if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
@@ -446,34 +446,27 @@ function createAnimeCard(item) {
     card.appendChild(badge);
   }
 
-  // One name box (big centered title under/over the card depending on CSS)
+  // Name box (bottom centered) — contains ONLY Title • Year
   const nameBox = document.createElement('div');
   nameBox.className = 'card-name-box';
-  nameBox.textContent = item.title || 'Untitled';
   nameBox.setAttribute('aria-hidden', 'true');
+  nameBox.textContent = `${item.title || 'Untitled'}${item.year ? ' • ' + item.year : ''}`;
   card.appendChild(nameBox);
 
-  // Audio/label (bottom-right pill) - optional content like year or language
+  // Audio pill (bottom-right)
   const audioEl = document.createElement('div');
   audioEl.className = 'card-audio';
-  audioEl.textContent = item.audio || item.year || '';
+  audioEl.textContent = item.audio || '';
   card.appendChild(audioEl);
 
-  // If item has a url, make the whole card clickable
+  // Click / keyboard navigation
   if (item.url) {
     card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
+    card.addEventListener('click', () => window.location.href = item.url);
   }
-
-  // Accessibility: Enter key triggers navigation too
   card.tabIndex = 0;
   card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
+    if (e.key === 'Enter' && item.url) window.location.href = item.url;
   });
 
   return card;
