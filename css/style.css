@@ -919,37 +919,28 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 /* big name box attached below the card (centered) */
+/* final single name-box style — dark box with subtle golden outline */
 .anime-card .card-name-box{
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   bottom: calc(-1 * var(--namebox-offset));
   z-index: 20;
-  /* visual */
-  background: rgba(0,0,0,0.78);        /* dark box inside the gold frame */
-  color: #ffffff;                      /* title text */
+
+  background: rgba(0,0,0,0.78);
+  color: #ffffff;
   padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
   font-size: var(--namebox-font-size);
   font-weight: 700;
   border-radius: 10px;
-  border: 2px solid var(--card-title-color);  /* thin golden edge */
+  border: 2px solid var(--card-title-color);
   box-shadow: 0 10px 22px rgba(0,0,0,0.5);
-  /* layout / overflow */
+
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: calc(100% - 36px);
-  pointer-events: none;  /* don't block card clicks */
-}
-
-/* small-screen adjustments */
-@media (max-width:520px) {
-  .anime-card .card-name-box {
-    bottom: -16px;
-    font-size: 15px;
-    padding: 8px 10px;
-    max-width: calc(100% - 18px);
-  }
+  pointer-events: none;
 }
 
 /* audio label bottom-right (replaces previous 'year' visual spot) */
@@ -981,9 +972,4 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* Hide any leftover small overlay title (your previous 'Yo..' pill) */
 .anime-card .card-title {
   display: none !important;
-}
-/* Responsive tweak for small screens */
-@media (max-width: 520px) {
-  :root { --namebox-font-size: 15px; --namebox-offset: 14px; --banner-bottom-space: 48px; }
-  .anime-card .card-name-box { font-size: var(--namebox-font-size); bottom: calc(-1 * var(--namebox-offset)); }
-}
+  }her
