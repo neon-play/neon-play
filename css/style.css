@@ -1,37 +1,44 @@
-root:{
- --bg: #070707;
---card: #0f0f10;
---muted: #a8a8a8;
---neon-green: #00ff9c;
---neon-cyan: #00f0ea;
---neon-magenta: #b24cff;
---text: #e9eef2;
---glass-2: rgba(255,255,255,0.05);
---radius-lg: 16px;
---transition: 180ms cubic-bezier(.2,.9,.2,1);
---footer-height: 72px;
+/* =========================
+   NeonAnime Hub — CLEANED CSS
+   ========================= */
 
+/* ---- Root variables ---- */
+:root {
+  --bg: #070707;
+  --card: #0f0f10;
+  --muted: #a8a8a8;
+  --neon-green: #00ff9c;
+  --neon-cyan: #00f0ea;
+  --neon-magenta: #b24cff;
+  --text: #e9eef2;
+  --glass-2: rgba(255,255,255,0.05);
+  --radius-lg: 16px;
+  --transition: 180ms cubic-bezier(.2,.9,.2,1);
+  --footer-height: 72px;
 }
 
 /* ---- Page reset & base ---- */
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
 html, body { height: 100%; }
-body{
+
+body {
   margin: 0;
-  min-height: 100%;
   background:
     radial-gradient(1200px 400px at 5% 10%, rgba(178,76,255,0.06), transparent 6%),
     radial-gradient(900px 250px at 95% 80%, rgba(0,240,234,0.04), transparent 6%),
     var(--bg);
   color: var(--text);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  padding-bottom: 72px; /* footer room on small screens */
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  padding-bottom: 72px;
 }
 
-/* ================= NAVBAR / HEADER ================= */
-.header, .navbar { /* kept both in case html refers to header.navbar */
+/* ================= NAVBAR ================= */
+.navbar {
   display: flex;
   align-items: center;
   gap: 18px;
@@ -44,67 +51,37 @@ body{
   border-bottom: 1px solid rgba(255,255,255,0.03);
 }
 
-/* ---- hamburger (3-bar) ---- */
-.menu-icon{
-  width:44px;
-  height:36px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-around;
-  cursor:pointer;
-  padding:6px;
-  flex-shrink: 0;
+.menu-icon {
+  width: 44px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  cursor: pointer;
 }
-.menu-icon span{
-  display:block;
-  height:3px;
-  border-radius:4px;
+.menu-icon span {
+  height: 3px;
+  border-radius: 4px;
   background: linear-gradient(90deg,#00ffd0,#a44cff);
-  box-shadow: 0 0 12px rgba(0,255,200,0.15);
 }
 
-/* ---- site title ---- */
-.site-title{
-  margin:0;
-  font-weight:700;
-  letter-spacing:3px;
-  font-size:20px;
-  line-height:1;
-  color:var(--text);
-  display:flex;
-  align-items:center;
-  gap:8px;
+.site-title {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 3px;
 }
-.site-title span{
-  color:var(--neon-magenta);
-  text-shadow: 0 0 8px rgba(178,76,255,0.9), 0 0 28px rgba(178,76,255,0.15);
+.site-title span {
+  color: var(--neon-magenta);
 }
 
-/* ================= SEARCH SECTION ================= */
-/* =====================================================
-   HORIZONTAL NEON SEARCH + SLIDING RESULT PANEL
-   (ADD-ON ONLY — SAFE TO APPEND)
-===================================================== */
-
-/* SEARCH SECTION WRAPPER */
+/* ================= SEARCH ================= */
 .search-section {
   position: relative;
-  width: 100%;
   padding: 22px 14px;
-  z-index: 20;
-}
-
-/* FULL-WIDTH SEARCH BAR */
-.search-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  z-index: 40;
 }
 
 .search-bar {
-  position: relative;
-  width: 100%;
-  max-width: 100%;
   height: 56px;
   background: #050505;
   display: flex;
@@ -112,1033 +89,156 @@ body{
   padding: 0 18px 0 52px;
   border-radius: 14px;
   border: 2px solid transparent;
-
-  /* slim RGB neon border */
   background-image:
-    linear-gradient(#050505, #050505),
-    linear-gradient(90deg, #ff0055, #00ffd0, #7b5cff);
-  background-origin: border-box;
+    linear-gradient(#050505,#050505),
+    linear-gradient(90deg,#ff0055,#00ffd0,#7b5cff);
   background-clip: padding-box, border-box;
-
-  box-shadow:
-    0 0 18px rgba(0, 255, 210, 0.25),
-    inset 0 0 12px rgba(0, 255, 210, 0.15);
 }
 
-/* SEARCH ICON */
-.search-bar .material-icons {
-  position: absolute;
-  left: 18px;
-  font-size: 24px;
-  color: #9affea;
-  text-shadow: 0 0 8px rgba(0, 255, 210, 0.9);
-}
-
-/* INPUT */
 .search-bar input {
   width: 100%;
-  height: 100%;
   background: transparent;
   border: none;
   outline: none;
-  color: #ffffff;
-  font-size: 1rem;
-  letter-spacing: 0.4px;
+  color: #fff;
 }
 
-/* PLACEHOLDER */
-.search-bar input::placeholder {
-  color: rgba(190, 255, 240, 0.6);
-}
-
-/* FOCUS STATE */
-.search-bar:focus-within {
-  box-shadow:
-    0 0 28px rgba(0, 255, 210, 0.55),
-    inset 0 0 18px rgba(0, 255, 210, 0.3);
-}
-
-/* =====================================================
-   RESULT PANEL (HALF-SCREEN, SLIDES DOWN)
-===================================================== */
+/* ================= SEARCH RESULTS ================= */
 .search-result-panel {
   position: absolute;
   top: calc(100% + 12px);
-  left: 0;
   width: 100%;
   height: 50vh;
-  background: rgba(5, 5, 5, 0.96);
+  background: rgba(5,5,5,0.96);
   border-radius: 18px;
-  overflow: visible;
-  transform: translateY(-20px);
   opacity: 0;
   pointer-events: none;
-  transition: transform 0.35s ease, opacity 0.25s ease;
-  box-shadow:
-    0 -8px 40px rgba(0, 255, 210, 0.35),
-    0 8px 40px rgba(178, 76, 255, 0.12),
-    inset 0 0 24px rgba(0, 255, 210, 0.18);
+  transform: translateY(-20px);
+  transition: .3s;
+  z-index: 90;
 }
 
-.search-result-panel::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 3px;
-  background: linear-gradient(90deg, #baff00, #00ff66, #baff00);
-  border-radius: 4px;
-  box-shadow: 0 0 15px #00ff88, 0 0 30px #baff00;
-}
-
-.search-result-panel::after {
-  content: "";
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 72%;
-  height: 4px;
-  background: linear-gradient(90deg, #9b4cff, #e06bff, #9b4cff);
-  border-radius: 6px;
-  box-shadow:
-    0 0 18px rgba(178, 76, 255, 0.9),
-    0 0 34px rgba(178, 76, 255, 0.28);
-}
-
-/* ACTIVE (JS will add this) */
 .search-result-panel.active {
-  transform: translateY(0);
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
-/* INNER SCROLL AREA */
 .results-inner {
   height: 100%;
   padding: 18px;
-  overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
   gap: 16px;
+  overflow-y: auto;
 }
 
-/* RESULT CARD (SIMILAR TO ANIME CARD STYLE) */
 .result-card {
-  background: rgba(0, 0, 0, 0.85);
-  border-radius: 14px;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.85);
+  border: 1px solid rgba(0,255,200,.45);
   cursor: pointer;
-
-  border: 1.5px solid rgba(0, 255, 200, 0.45);
-  box-shadow:
-    0 0 14px rgba(0, 255, 200, 0.35);
-
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.result-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow:
-    0 0 24px rgba(0, 255, 200, 0.65);
-}
-
-/* THUMBNAIL */
 .result-thumb {
   width: 82px;
   height: 110px;
   object-fit: cover;
   border-radius: 10px;
-  flex-shrink: 0;
 }
 
-/* INFO */
-.result-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.result-title {
-  font-size: 1rem;
-  color: #ffffff;
-  margin-bottom: 4px;
-}
-
-.result-meta {
-  font-size: 0.85rem;
-  color: #9aff9a;
-  margin-bottom: 6px;
-}
-
-.result-banner {
-  font-size: 0.75rem;
-  color: rgba(200, 255, 235, 0.75);
-}
-
-/* NO RESULT */
-.no-results {
-  grid-column: 1 / -1;
-  text-align: center;
-  margin-top: 60px;
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-/* SCROLLBAR (SUBTLE NEON) */
-.results-inner::-webkit-scrollbar {
-  width: 6px;
-}
-.results-inner::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 210, 0.6);
-  border-radius: 10px;
-}
-/* === Slim Lime Neon Belt for Result Container === */
-.search-result-panel {
-  position: relative;
-  border-top: 2px solid rgba(0, 255, 100, 0.8);
-  box-shadow: 0 0 10px rgba(0, 255, 100, 0.6), 0 0 25px rgba(0, 255, 120, 0.3);
-}
-
-/* Neon glow accent strip (slim belt effect) */
-.search-result-panel::before {
-  content: "";
-  position: absolute;
+/* ================= SIDE MENU ================= */
+.side-menu {
+  position: fixed;
+  left: -320px;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 3px;
-  background: linear-gradient(90deg, #baff00, #00ff66, #baff00);
-  border-radius: 4px;
-  box-shadow: 0 0 15px #00ff88, 0 0 30px #baff00;
-  z-index: 2;
+  bottom: 0;
+  width: 320px;
+  background: rgba(0,0,0,.95);
+  transition: left .25s;
+  z-index: 80;
+}
+.side-menu.open { left: 0; }
+
+.menu-list a {
+  display: block;
+  padding: 10px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.side-menu.open .menu-list a.current {
+  background: rgba(0,240,234,.12);
+  border-left: 4px solid var(--neon-cyan);
 }
 
-/* Optional: stronger glow when active */
-.search-result-panel.active::before {
-  box-shadow: 0 0 20px #00ff88, 0 0 40px #baff00;
+/* ================= CONTENT ================= */
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 0 18px;
 }
-/* ================= SIDE MENU (slide-out) ================= */
-.side-menu{
-  position:fixed;
-  left:-320px;
-  top:0;
-  bottom:0;
-  width:320px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.9));
-  z-index:80;
-  padding:18px;
-  transition: left 240ms ease;
-  box-shadow: 8px 0 40px rgba(0,0,0,0.6);
-}
-.side-menu.open{ left:0; }
-.side-menu .menu-header h2{ margin:0 0 12px; color:var(--text); }
-.menu-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
-.menu-list a{ color:var(--muted); text-decoration:none; padding:10px; border-radius:8px; display:block; }
-.menu-list a:hover{ background: rgba(255,255,255,0.02); color:var(--text); }
 
-/* ================= MAIN CONTENT (movies / series horizontal lists) ================= */
-main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
-.content-section{ padding:18px; max-width:1120px; margin:10px auto; }
-.section-header h2{ margin:0 0 12px; font-size:18px; color:var(--text); }
-
-/* horizontal scroll cards */
-.horizontal-scroll{
-  display:flex;
-  gap:14px;
-  overflow:auto;
-  padding-bottom:12px;
+.horizontal-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 180px;
+  grid-template-rows: repeat(2,auto);
+  gap: 12px;
+  overflow-x: auto;
 }
-.anime-card{
-  min-width:180px;
-  width:180px;
-  height:250px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.02);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
-  cursor:pointer;
-  transition: transform 220ms ease, box-shadow 220ms ease;
-  display:flex;
-  flex-direction:column;
-}
-.anime-card img{ width:100%; height:68%; object-fit:cover; display:block; }
-.card-info{ padding:10px; color:var(--muted); flex:1; display:flex; flex-direction:column; justify-content:center; gap:6px; }
-.card-info h3{ margin:0; font-size:15px; color:var(--text); }
-.card-info p{ margin:0; font-size:12px; color:var(--neon-green); font-weight:600; }
-.anime-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
 
-/* load more buttons */
-.load-more{
-  margin-top:14px;
-  display:inline-block;
-  background:var(--glass-2);
-  border:1px solid rgba(255,255,255,0.03);
-  color:var(--text);
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
+.anime-card {
+  position: relative;
+  height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card-banner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 8px;
+  background: rgba(0,0,0,.6);
+}
+
+.card-title {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 90px;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-audio {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: var(--neon-green);
 }
 
 /* ================= FOOTER ================= */
 .footer {
-  max-width: 1100px;
-  margin: 24px auto 40px;
-  padding: 12px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  text-align: center;
   color: #aaa;
   font-size: 13px;
-}
-
-/* ================= Accessibility focus ================= */
-:focus { outline: 3px solid rgba(0,255,160,0.12); outline-offset:3px; border-radius:6px; }
-
-/* ================= Responsive tweaks (kept minimal & relevant) ================= */
-@media (max-width:880px){
-  .featured-thumb{ width:124px; height:78px; flex:0 0 124px; }
-  .anime-card{ min-width:150px; width:150px; height:220px; }
-  .site-title{ font-size:18px; }
-  .side-menu{ width:260px; left:-260px; }
-}
-
-@media (max-width:520px){
-  .featured-result{ flex-direction:column; align-items:flex-start; gap:12px; padding:14px; }
-  .featured-thumb{ width:100%; height:148px; flex:0 0 auto; }
-  .featured-content .featured-title{ font-size:18px; }
-  .search-section{ padding:12px; }
-  .search-box{ padding:12px; border-radius:16px; }
-  .search-box input{ font-size:15px; }
-  .horizontal-scroll{ gap:10px; padding-bottom:8px; }
-  .anime-card{ width:140px; min-width:140px; height:210px; }
-  .live-search-results{ top: calc(100% + 10px); width:96%; }
-}
-
-/* ================= End of cleaned stylesheet ================= */
-/* --- Movies: minimum 2 columns on mobile, responsive up from there --- */
-#moviesContainer,
-.movies-grid,
-.grid-container {
-  display: grid;
-  gap: 12px; /* spacing between items */
-  grid-template-columns: repeat(2, 1fr); /* minimum 2 columns on smallest screens */
-  align-items: start;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Slightly larger phones/tablets -> 3 columns */
-@media (min-width: 480px) {
-  #moviesContainer,
-  .movies-grid,
-  .grid-container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Tablets / small desktops -> 4 columns */
-@media (min-width: 768px) {
-  #moviesContainer,
-  .movies-grid,
-  .grid-container {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Large desktops -> 5 or 6 columns depending on width */
-@media (min-width: 1200px) {
-  #moviesContainer,
-  .movies-grid,
-  .grid-container {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-/* Make sure cards and images fill their cells */
-.movie-card,
-.movie-item,
-.movie-tile {
-  width: 100%;
-  display: block;
-  box-sizing: border-box;
-}
-
-.movie-card img,
-.movie-item img,
-.movie-tile img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  display: block;
-  /* loading attribute must be set in HTML/JS when creating nodes; this keeps layout stable */
-}
-/* -------------------------
-   Strip headers (movies = gold, series = lime)
-   ------------------------- */
-.section-header.strip {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-}
-
-/* Gold premium belt for Movies */
-.section-header.strip.gold {
-  background: linear-gradient(90deg, #a67c00, #ffd86b);
-  border: 1px solid rgba(255, 215, 0, 0.12);
-  box-shadow: 0 6px 20px rgba(170,124,0,0.18), inset 0 -4px 12px rgba(255,230,170,0.05);
-}
-.section-header.strip.gold h2 {
-  color: #1b1200;
-  letter-spacing: 1px;
-  font-weight: 700;
-  margin: 0;
-  width: 100%;
-}
-
-/* Lime neon belt for Series */
-.section-header.strip.lime {
-  background: linear-gradient(90deg, #baff00, #00ff66);
-  border: 1px solid rgba(180,255,0,0.08);
-  box-shadow: 0 8px 28px rgba(0,255,100,0.12), inset 0 -4px 10px rgba(0,255,120,0.04);
-}
-.section-header.strip.lime h2 {
-  color: #02240a;
-  letter-spacing: 1px;
-  font-weight: 700;
-  margin: 0;
-  width: 100%;
-}
-
-/* -------------------------
-   Ad strip styles (horizontal, JSON-driven)
-   ------------------------- */
-#adStrip.ad-strip {
-  display: block;
-  width: 100%;
-  padding: 8px 6px;
-  box-sizing: border-box;
-  margin: 4px 0 12px 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  z-index: 10; /* lower than search panel */
-}
-
-/* each ad tile */
-.ad-card {
-  min-width: 280px;
-  height: 120px;
-  margin-right: 12px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: stretch;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.03);
-  background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(255,255,255,0.02));
-}
-
-/* ad image area */
-.ad-card img {
-  width: 180px;
-  height: 100%;
-  object-fit: cover;
-  flex: 0 0 180px;
-}
-
-/* ad meta */
-.ad-card .ad-info {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-  color: var(--text);
-  font-size: 13px;
-}
-
-/* subtle hover */
-.ad-card:hover {
-  transform: translateY(-6px);
-  transition: transform 160ms ease;
-}
-
-/* -------------------------
-   Two stacked cards per column while preserving horizontal scroll
-   (keeps other .horizontal-scroll behavior intact for other regions)
-   ------------------------- */
-#moviesContainer.horizontal-scroll,
-#seriesContainer.horizontal-scroll {
-  display: grid;
-  grid-auto-flow: column;          /* flow columns left→right to enable horizontal scrolling */
-  grid-auto-columns: minmax(160px, 180px); /* column width (card width) */
-  grid-template-rows: repeat(2, auto); /* two stacked rows per column */
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 6px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Make each anime-card occupy a single grid cell (so two per column stack) */
-#moviesContainer.horizontal-scroll .anime-card,
-#seriesContainer.horizontal-scroll .anime-card {
-  width: 100%;
-  min-width: 0; /* let grid control width */
-  height: 200px; /* reasonable height for stacked cards */
-}
-
-/* Responsive: slightly narrower on very small screens */
-@media (max-width: 420px) {
-  #moviesContainer.horizontal-scroll,
-  #seriesContainer.horizontal-scroll {
-    grid-auto-columns: minmax(140px, 160px);
-  }
-}
-
-/* Ensure search panel overlays everything (ads are beneath) */
-.search-section { z-index: 40; }
-.search-result-panel {
-  z-index: 90; /* high enough to overlay ads & content */
-  position: absolute; /* already absolute, ensure stacking context */
-}
-
-/* Keep existing .horizontal-scroll default intact for other uses */
-
-/* ---------- Neon-style select (scoped) ----------
-   Paste at bottom of css/style.css
-   Targets only the element with id="sortSelect" to avoid global side-effects.
---------------------------------------------------*/
-
-#sortSelect {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-
-  /* layered background: dark core + subtle neon gradient + SVG arrow */
-  background-image:
-    linear-gradient(90deg, rgba(18,7,28,0.96), rgba(36,8,46,0.96)),
-    linear-gradient(90deg, rgba(255,198,0,0.06), rgba(50,255,150,0.02)),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='white' fill-opacity='0.92' d='M7 10l5 5 5-5z'/></svg>");
-
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-
-  border: 1px solid rgba(255,198,0,0.14);
-  border-radius: 12px;
-  padding: 10px 42px 10px 14px; /* space for the custom arrow on the right */
-  min-width: 160px;
-  color: #ffffff;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.64),
-    0 0 10px rgba(50,255,150,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.02);
-  text-shadow: 0 1px 0 rgba(0,0,0,0.45);
-
-  transition: box-shadow 180ms ease, transform 80ms ease, border-color 180ms ease;
-  outline: none;
-}
-
-/* Hover / focus states (neon glow) */
-#sortSelect:hover {
-  box-shadow:
-    0 8px 22px rgba(0,0,0,0.66),
-    0 0 12px rgba(50,255,150,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.02);
-}
-
-#sortSelect:focus {
-  border-color: rgba(50,255,150,0.58);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.72),
-    0 0 18px rgba(50,255,150,0.14),
-    0 0 22px rgba(255,198,0,0.10);
-  transform: translateY(-1px);
-}
-
-/* Small-screen adjustment when inside the .filter-bar container */
-.filter-bar #sortSelect {
-  min-width: 140px;
-}
-
-/* Native dropdown options — scoped; keeps dropdown readable */
-#sortSelect option {
-  background: #12041a; /* dark, consistent with the select core */
-  color: #ffffff;
-}
-/* ===== Scoped fixes for movies.html =====
-   Paste at the END of css/style.css
-   Targets ONLY .search-box and #sortSelect (no global effects)
-===============================================================*/
-
-/* 1) Search box: icon positioned, input padded so text never overlaps */
-.search-box {
-  position: relative;
-  display: block;              /* ensure block layout */
-  align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* icon — placed on left edge inside the search box */
-.search-box > .material-icons,
-.search-box > i {
-  position: absolute;
-  left: 14px;                  /* distance from left edge; tweak if needed */
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22px;             /* icon size */
-  line-height: 1;
-  color: rgba(255,255,255,0.86);
-  pointer-events: none;        /* click-through so input receives taps */
-  z-index: 3;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
-}
-
-/* input: large left padding to clear the icon; transparent core so neon glow shows through */
-.search-box input {
-  width: 100%;
-  padding-left: 56px;          /* <-- prevents overlap; adjust +8/-8 if your icon size changes */
-  padding-right: 16px;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;                /* assume main CSS draws outer neon border */
-  color: inherit;
-  font-size: 16px;
-  outline: none;
-}
-
-/* ensure placeholder alignment & color */
-.search-box input::placeholder {
-  color: rgba(255,255,255,0.55);
-  font-weight: 600;
-}
-
-/* small-screen tweak: increase left padding on very narrow screens */
-@media (max-width: 420px) {
-  .search-box > .material-icons,
-  .search-box > i {
-    left: 12px;
-    font-size: 20px;
-  }
-  .search-box input {
-    padding-left: 60px; /* make a bit larger on tiny screens (touch comfort) */
-    font-size: 15px;
-  }
-}
-
-/* 2) Select (Sort) — fully scoped neon-style that prevents native white fill/glitch */
-.filter-bar #sortSelect,
-.sort-box #sortSelect {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-
-  background-image:
-    linear-gradient(90deg, rgba(18,7,28,0.98), rgba(36,8,46,0.98)), /* dark core */
-    linear-gradient(90deg, rgba(255,198,0,0.06), rgba(50,255,150,0.02)), /* subtle neon tint */
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='white' fill-opacity='0.92' d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 16px;
-
-  border: 1px solid rgba(255,198,0,0.12);
-  border-radius: 12px;
-  padding: 10px 44px 10px 14px; /* right padding reserves space for the arrow */
-  min-width: 150px;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.64),
-    0 0 8px rgba(50,255,150,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.02);
-  outline: none;
-  background-color: transparent; /* ensure no white default shows through */
-  -webkit-text-fill-color: #fff;  /* mobile safeguard */
-}
-
-/* Hover / focus: stronger neon glow, no white flash */
-.filter-bar #sortSelect:hover,
-.filter-bar #sortSelect:focus,
-.sort-box #sortSelect:hover,
-.sort-box #sortSelect:focus {
-  border-color: rgba(50,255,150,0.48);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.72),
-    0 0 18px rgba(50,255,150,0.12),
-    0 0 22px rgba(255,198,0,0.06);
-  transform: translateY(-0.5px);
-}
-
-/* make option list readable if the UA exposes it inline (scoped) */
-.filter-bar #sortSelect option,
-.sort-box #sortSelect option {
-  background: #12041a; /* dark dropdown core */
-  color: #ffffff;
-}
-
-/* Android/Chrome extra: hide inner dropdown arrow if any default remains (scoped) */
-.filter-bar #sortSelect::-ms-expand {
-  display: none;
-}
-/* Side-menu current-item sky-neon highlight (visible only when menu is open) */
-.side-menu .menu-list a.current {
-  position: relative;
-  z-index: 2;
-  color: var(--text);
-  transition: background 200ms var(--transition), box-shadow 200ms var(--transition), color 120ms var(--transition);
-}
-
-/* Only show the neon belt when the menu is open */
-.side-menu.open .menu-list a.current {
-  background: linear-gradient(90deg, rgba(0,240,234,0.12), rgba(0,160,255,0.06));
-  color: #041218; /* dark text for contrast against the light neon belt */
-  box-shadow: 0 8px 28px rgba(0,240,234,0.10), inset 0 0 14px rgba(0,240,234,0.04);
-  border-left: 4px solid var(--neon-cyan);
-  padding-left: 12px; /* push content inward so border doesn't overlap text */
-  border-radius: 8px;
-}
-
-/* small tweak so emoji/icons and text align nicely when highlighted */
-.side-menu.open .menu-list a.current::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 36px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(0,240,234,0.85), rgba(0,160,255,0.55));
-  border-radius: 2px;
-  opacity: 0.6;
-  pointer-events: none;
-}
-#sideMenu::after {
-  content: "";
-  position: absolute;
-  top: 12px;            /* adjust to match menu vertical padding */
-  bottom: 12px;         /* adjust to match menu vertical padding */
-  right: 0;             /* flush to the right edge of the menu */
-  width: 1px;           /* slim; change to 2px–5px if you prefer */
-  border-radius: 2px;
-  background: linear-gradient(180deg, #fff17a, #ffd300); /* warm yellow */
-  box-shadow: 0 0 12px rgba(255,215,0,0.12);
-  pointer-events: none;
-  z-index: 999;         /* ensure it sits above the menu background */
-}
-
-/* If you only want it visible when menu is open: */
-#sideMenu:not(.open)::after { opacity: 0; transition: opacity 160ms ease; }
-#sideMenu.open::after { opacity: 1; transition: opacity 160ms ease; }
-/* --- Card banner, badges & reduced-title layout --- */
-/* make the card a positioned container so overlays can sit on top */
-/* Banner: stops short of the card bottom to leave room for overlays */
-.anime-card {
-  position: relative;
-  overflow: visible; /* allow name-box to appear outside the card */
-  border-radius: calc(var(--banner-border-radius) + 2px); /* keep card subtly rounded */
-}
-
-/* Banner image: s` above the bottom of the card */
-.anime-card .card-banner {
-  position: absolute;
-  inset: 0 0 var(--banner-bottom-space) 0; /* top:0; right:0; bottom:var; left:0 */
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 260ms ease;
-
-  /* rounded top corners and a border that uses the same color as the name-box */
-  border-radius: var(--banner-border-radius) var(--banner-border-radius) 0 0;
-  border: 2px solid var(--card-title-color);
-  box-sizing: border-box;
-}
-
-/* subtle zoom on hover */
-.anime-card:hover .card-banner {
-  transform: scale(1.03);
-}
-
-/* top-left badge for 'Movie' */
-.anime-card .card-badge {
-  position: absolute;
-  top: 8px;
-  left: 10px;
-  z-index: 22;
-  font-weight: 700;
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  color: var(--card-badge-color);           /* text color set to yellow variable */
-  background: rgba(0,0,0,0.35);             /* keep a dark translucent background for contrast */
-  border: 1px solid rgba(255,255,255,0.03);
-}
-
-/* allow the name box to appear outside the card bounds */
-.anime-card {
-  position: relative;
-  overflow: visible;   /* changed from hidden to visible so the name-box can sit below the card */
-  border-radius: 14px;
-  /* keep other existing properties as they are... */
-}
-
-/* big name box attached below the card (centered) */
-.anime-card .card-name-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: -20px;              /* sits outside the card by 20px; adjust if you want more/less gap */
-  z-index: 12;
-  padding: 10px 14px;
-  font-size: 18px;           /* larger font as requested */
-  font-weight: 900;
-  color: var(--text);
-  background: rgba(0,0,0,0.72);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 24px);
-  pointer-events: none;      /* doesn't intercept clicks intended for card */
-}
-
-/* small-screen adjustments */
-@media (max-width:520px) {
-  .anime-card .card-name-box {
-    bottom: -16px;
-    font-size: 15px;
-    padding: 8px 10px;
-    max-width: calc(100% - 18px);
-  }
-}
-
-/* audio label bottom-right (replaces previous 'year' visual spot) */
-/* Audio pill (bottom-right) — keep visual, but push it above the banner bottom area */
-.anime-card .card-audio {
-  position: absolute;
-  right: 12px;
-  /* ensure audio sits inside the card above the banner bottom gap */
-  bottom: calc(var(--banner-bottom-space) - var(--audio-bottom-safety)); /* e.g. 56px - 14px = 42px from bottom */
-  z-index: 18;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.75);
-  color: #00ff88; /* keep same audio color as before — change if needed */
-  pointer-events: none;
-}
-
-/* ensure the old .card-info (if still present) doesn't push layout — hide visually */
-.anime-card .card-info {
-  display: none;
-}
-
-/* responsive tweaks: keep title legible on small screens */
-@media (max-width:520px) {
-  .anime-card .card-title { font-size: 12px; right: 92px; bottom: 8px; left: 8px; }
-  .anime-card .card-audio { font-size: 11px; bottom: 8px; right: 8px; padding:5px 7px; }
-}
-/* Hide any leftover small overlay title (your previous 'Yo..' pill) */
-.anime-card .card-title {
-  display: none !important;
-}
-
-/* Big name box attached below the banner */
-.anime-card .card-name-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(-1 * var(--namebox-offset)); /* sits outside the card by default */
-  z-index: 20; /* above banner and audio */
-  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
-  font-size: var(--namebox-font-size);
-  font-weight: 800;
-  color: var(--card-title-text);
-  background: var(--card-title-color);
-  border-radius: 8px;
-  border: 2px solid var(--card-title-color); /* same colour as background to match your request */
-  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 28px);
-  pointer-events: none; /* doesn't block card clicks */
-}
-
-/* Responsive tweak for small screens */
-@media (max-width: 520px) {
-  :root { --namebox-font-size: 15px; --namebox-offset: 14px; --banner-bottom-space: 48px; }
-  .anime-card .card-name-box { font-size: var(--namebox-font-size); bottom: calc(-1 * var(--namebox-offset)); }
-}
-/* ===== Golden-belt card (override) ===== */
-.anime-card {
-  position: relative;
-  width: var(--card-width);
-  height: var(--card-height);
-  border-radius: var(--card-radius);
-  overflow: visible;            /* allow footer/namebox to sit outside */
-  background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(0,0,0,0.03));
-  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
-  cursor: pointer;
-  transition: transform 220ms var(--transition), box-shadow 220ms var(--transition);
-}
-
-/* inner yellow stroke (golden belt) */
-.anime-card::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: 1;
-  pointer-events: none;
-  /* draw inner stroke using inset box-shadow so it follows rounded corners */
-  box-shadow: inset 0 0 0 var(--card-inner-stroke) var(--accent-yellow);
-}
-
-/* optional soft halo between cards (subtle) */
-.anime-card::after{
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -8%);
-  width: calc(100% + 40px);
-  height: calc(100% + 40px);
-  border-radius: calc(var(--card-radius) * 1.05);
-  filter: blur(22px);
-  background: radial-gradient(closest-side, rgba(255,200,0,0.12), transparent 55%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* Banner image - fills top area and stops above footer */
-.anime-card .card-banner {
-  position: absolute;
-  left: 0; right: 0; top: 0;
-  bottom: var(--card-footer-height); /* reserve space for footer */
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  display: block;
-  z-index: 3;
-  border-top-left-radius: calc(var(--card-radius) - var(--card-inner-stroke));
-  border-top-right-radius: calc(var(--card-radius) - var(--card-inner-stroke));
-  transition: transform 260ms ease;
-}
-.anime-card:hover .card-banner { transform: scale(1.03); }
-
-/* Top-left badge stays above banner */
-.anime-card .card-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 8;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.45);
-  color: var(--accent-yellow);
-  font-weight: 700;
-  border: 1px solid rgba(255,255,255,0.03);
-}
-
-/* Footer band (dark panel) — inside card bottom */
-.anime-card .card-footer {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: var(--card-footer-height);
-  padding: calc(var(--card-footer-padding) / 2) var(--card-footer-padding);
-  box-sizing: border-box;
-  background: var(--card-footer-bg);
-  z-index: 6;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-  border-bottom-left-radius: calc(var(--card-radius) - var(--card-inner-stroke));
-  border-bottom-right-radius: calc(var(--card-radius) - var(--card-inner-stroke));
-  pointer-events: none; /* footer itself shouldn't block card click */
-}
-
-/* Title inside footer (left-aligned, large) */
-.anime-card .card-footer .card-name-box {
-  position: static;
-  margin: 0;
-  padding: 0;
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--text);
-  background: transparent;
-  border: none;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 12px);
-  pointer-events: none;
-}
-
-/* Meta / audio below title (left side) */
-.anime-card .card-footer .card-audio {
-  position: static;
-  margin: 0;
-  padding: 0;
-  font-size: 18px;
-  color: var(--audio-color);
-  font-weight: 600;
-  opacity: 0.95;
-  pointer-events: none;
-}
-
-/* Show audio if previously hidden; also provide small left padding */
-.anime-card .card-footer .card-audio::before {
-  content: "";
-  display: inline-block;
-  margin-right: 8px;
-}
-
-/* Keep badge above footer/title */
-.anime-card .card-badge { z-index: 12; }
-
-/* hover lift */
-.anime-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
-
-/* responsive sizes */
-@media (max-width: 880px){
-  :root {
-    --card-width: 260px;
-    --card-height: 420px;
-    --card-footer-height: 84px;
-  }
-}
-@media (max-width: 520px){
-  :root {
-    --card-width: 200px;
-    --card-height: 360px;
-    --card-footer-height: 72px;
-    --card-inner-stroke: 6px;
-  }
-  .anime-card .card-footer .card-name-box { font-size: 16px; }
-  .anime-card .card-footer .card-audio { font-size: 13px; }
+  margin: 40px 0;
 }
