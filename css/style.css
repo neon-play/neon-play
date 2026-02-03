@@ -1,33 +1,40 @@
-/* ----- Card appearance variables (edit these values) ----- */
-:root{
-  /* title box / banner border color (change this to any hex) */
-  --card-title-color: #EBFF24;     /* background of name-box */
-  --card-title-text: #ffffff;      /* text colour inside name-box */
---namebox-max-width: 100%;
-  /* badge (top-left) colour */
-  --card-badge-color: #FFD700;     /* yellow (change as needed) */
-
-  /* how far the banner stops above the card bottom (space for overlays) */
-  --banner-bottom-space: 65px;     /* increase -> more gap; decrease -> image goes lower */
-
-  /* radius for the banner's rounded corners (not too large) */
-  --banner-border-radius: 10px;    /* increase for more rounding */
-  --namebox-font-size: 20px;
-  --namebox-padding-vertical: 10px;
-  --namebox-padding-horizontal: 14px;
-  --namebox-offset: 22px;          /* how far the name-box sinks below the card bottom (positive = outside) */
-  --audio-bottom-safety: 14px;     /* audio bottom = banner-bottom-space - this value */
+root:{
+ /* palette */
   --bg: #070707;
-  --card: #0f0f10;
+  --text: #e9eef2;
   --muted: #a8a8a8;
   --neon-green: #00ff9c;
   --neon-cyan: #00f0ea;
   --neon-magenta: #b24cff;
-  --text: #e9eef2;
+  --accent-yellow: #FFD000;
+
+  /* card geometry */
+  --card-width: 320px;           /* desktop card width */
+  --card-height: 460px;          /* desktop card height */
+  --card-radius: 24px;           /* outer radius of the card */
+  --card-inner-stroke: 8px;      /* thickness of the yellow belt */
+  --banner-bottom-space: 96px;   /* distance from image bottom to card bottom (space for footer) */
+  --banner-border-radius: 18px;  /* rounding applied to banner top corners */
+
+  /* footer (dark band) */
+  --card-footer-height: 88px;
+  --card-footer-padding: 20px;
+  --card-footer-bg: rgba(6,4,10,0.94);
+
+  /* name-box */
+  --namebox-font-size: 20px;
+  --namebox-padding-vertical: 10px;
+  --namebox-padding-horizontal: 14px;
+  --namebox-max-width: 85%;
+  --namebox-offset: 22px;
+
+  /* audio/meta */
+  --audio-color: #dcdcdc;
+  --audio-accent: var(--neon-green);
+
+  /* misc */
   --glass-2: rgba(255,255,255,0.05);
-  --radius-lg: 16px;
   --transition: 180ms cubic-bezier(.2,.9,.2,1);
-  --footer-height: 72px;
 }
 
 /* ---- Page reset & base ---- */
@@ -876,7 +883,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   border-radius: calc(var(--banner-border-radius) + 2px); /* keep card subtly rounded */
 }
 
-/* Banner image: stops `--banner-bottom-space` above the bottom of the card */
+/* Banner image: s` above the bottom of the card */
 .anime-card .card-banner {
   position: absolute;
   inset: 0 0 var(--banner-bottom-space) 0; /* top:0; right:0; bottom:var; left:0 */
@@ -938,7 +945,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: var(--namebox-max-width);
+  max-width: calc(100% - 24px);
   pointer-events: none;      /* doesn't intercept clicks intended for card */
 }
 
@@ -1009,4 +1016,153 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 @media (max-width: 520px) {
   :root { --namebox-font-size: 15px; --namebox-offset: 14px; --banner-bottom-space: 48px; }
   .anime-card .card-name-box { font-size: var(--namebox-font-size); bottom: calc(-1 * var(--namebox-offset)); }
+}
+/* ===== Golden-belt card (override) ===== */
+.anime-card {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: var(--card-radius);
+  overflow: visible;            /* allow footer/namebox to sit outside */
+  background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(0,0,0,0.03));
+  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
+  cursor: pointer;
+  transition: transform 220ms var(--transition), box-shadow 220ms var(--transition);
+}
+
+/* inner yellow stroke (golden belt) */
+.anime-card::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 1;
+  pointer-events: none;
+  /* draw inner stroke using inset box-shadow so it follows rounded corners */
+  box-shadow: inset 0 0 0 var(--card-inner-stroke) var(--accent-yellow);
+}
+
+/* optional soft halo between cards (subtle) */
+.anime-card::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -8%);
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  border-radius: calc(var(--card-radius) * 1.05);
+  filter: blur(22px);
+  background: radial-gradient(closest-side, rgba(255,200,0,0.12), transparent 55%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Banner image - fills top area and stops above footer */
+.anime-card .card-banner {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  bottom: var(--card-footer-height); /* reserve space for footer */
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  z-index: 3;
+  border-top-left-radius: calc(var(--card-radius) - var(--card-inner-stroke));
+  border-top-right-radius: calc(var(--card-radius) - var(--card-inner-stroke));
+  transition: transform 260ms ease;
+}
+.anime-card:hover .card-banner { transform: scale(1.03); }
+
+/* Top-left badge stays above banner */
+.anime-card .card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 8;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.45);
+  color: var(--accent-yellow);
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Footer band (dark panel) — inside card bottom */
+.anime-card .card-footer {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--card-footer-height);
+  padding: calc(var(--card-footer-padding) / 2) var(--card-footer-padding);
+  box-sizing: border-box;
+  background: var(--card-footer-bg);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border-bottom-left-radius: calc(var(--card-radius) - var(--card-inner-stroke));
+  border-bottom-right-radius: calc(var(--card-radius) - var(--card-inner-stroke));
+  pointer-events: none; /* footer itself shouldn't block card click */
+}
+
+/* Title inside footer (left-aligned, large) */
+.anime-card .card-footer .card-name-box {
+  position: static;
+  margin: 0;
+  padding: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: calc(100% - 12px);
+  pointer-events: none;
+}
+
+/* Meta / audio below title (left side) */
+.anime-card .card-footer .card-audio {
+  position: static;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  color: var(--audio-color);
+  font-weight: 600;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* Show audio if previously hidden; also provide small left padding */
+.anime-card .card-footer .card-audio::before {
+  content: "";
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Keep badge above footer/title */
+.anime-card .card-badge { z-index: 12; }
+
+/* hover lift */
+.anime-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+
+/* responsive sizes */
+@media (max-width: 880px){
+  :root {
+    --card-width: 260px;
+    --card-height: 420px;
+    --card-footer-height: 84px;
+  }
+}
+@media (max-width: 520px){
+  :root {
+    --card-width: 200px;
+    --card-height: 360px;
+    --card-footer-height: 72px;
+    --card-inner-stroke: 6px;
+  }
+  .anime-card .card-footer .card-name-box { font-size: 16px; }
+  .anime-card .card-footer .card-audio { font-size: 13px; }
 }
