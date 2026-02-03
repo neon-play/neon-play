@@ -4,6 +4,15 @@
 
 /* ---- Root variables ---- */
 :root {
+     --card-title-color: #EBFF24;
+  --banner-bottom-space: 60px;
+  --namebox-offset: 18px;
+  --namebox-font-size: 18px;
+  --namebox-padding-vertical: 10px;
+  --namebox-padding-horizontal: 18px;
+  --banner-border-radius: 12px;
+  --audio-bottom-safety: 14px;
+   
   --bg: #070707;
   --card: #0f0f10;
   --muted: #a8a8a8;
