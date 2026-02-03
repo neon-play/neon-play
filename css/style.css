@@ -866,15 +866,46 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
 }
 
-/* full-bleed banner image (fills entire card) */
-.anime-card .card-banner {
-  position: absolute;
-  inset: 0;                 /* top:0; right:0; bottom:0; left:0; */
-  width: 100%;
-  height: 100%;
-  object-fit: cover;        /* preserves aspect ratio while covering the card */
+/* allow the name box to poke out below the card */
+.anime-card {
+  position: relative;
+  overflow: visible;             /* changed from hidden -> visible to show the name-box below */
   display: block;
-  transition: transform 260ms ease;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+}
+
+/* name box attached below the card (absolute, centered) */
+.anime-card .card-name-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -28px;                 /* sits below the card (adjust -24 to -32 if you want different gap) */
+  z-index: 12;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(0,0,0,0.68);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: calc(100% - 24px);
+  pointer-events: none;          /* prevents the box from intercepting clicks intended for the card */
+}
+
+/* small-screen tweak */
+@media (max-width:520px) {
+  .anime-card .card-name-box {
+    bottom: -24px;
+    font-size: 12px;
+    padding: 5px 8px;
+    max-width: calc(100% - 18px);
+  }
 }
 
 /* subtle zoom on hover */
