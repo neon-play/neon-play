@@ -3,7 +3,7 @@
   /* title box / banner border color (change this to any hex) */
   --card-title-color: #EBFF24;     /* background of name-box */
   --card-title-text: #ffffff;      /* text colour inside name-box */
-
+--namebox-max-width: 100%;
   /* badge (top-left) colour */
   --card-badge-color: #FFD700;     /* yellow (change as needed) */
 
@@ -938,7 +938,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: calc(100% - 24px);
+  max-width: var(--namebox-max-width);
   pointer-events: none;      /* doesn't intercept clicks intended for card */
 }
 
