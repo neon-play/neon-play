@@ -1,33 +1,137 @@
-/* ----- Card appearance variables (edit these values) ----- */
-:root{
-  /* title box / banner border color (change this to any hex) */
-  --card-title-color: #EBFF24;     /* background of name-box */
-  --card-title-text: #ffffff;      /* text colour inside name-box */
+/* ================= CARD VARIABLES & STYLES ================= */
+:root {
+  /* --- Card Sizing --- */
+  --card-width: 180px;
+  --card-height: 250px;
+  
+  /* --- The Split: Controls Image vs Title Area --- */
+  /* Increase this number to make the Image Shorter and Name Box Taller */
+  /* Decrease this number to make Image Taller and Name Box Shorter */
+  --banner-gap: 50px; 
 
-  /* badge (top-left) colour */
-  --card-badge-color: #FFD700;     /* yellow (change as needed) */
+  /* --- Colors --- */
+  --card-border-gold: #FFD700;    /* The Golden Border/Text */
+  --card-box-bg: #000000;         /* Black background for title box */
+  
+  /* --- Badge --- */
+  --badge-bg: #FFD700;
+  --badge-text: #000000;
 
-  /* how far the banner stops above the card bottom (space for overlays) */
-  --banner-bottom-space: 56px;     /* increase -> more gap; decrease -> image goes lower */
-
-  /* radius for the banner's rounded corners (not too large) */
-  --banner-border-radius: 10px;    /* increase for more rounding */
-  --namebox-font-size: 20px;
-  --namebox-padding-vertical: 10px;
-  --namebox-padding-horizontal: 14px;
-  --namebox-offset: 22px;          /* how far the name-box sinks below the card bottom (positive = outside) */
-  --audio-bottom-safety: 14px;     /* audio bottom = banner-bottom-space - this value */
+  /* --- Global Colors --- */
   --bg: #070707;
-  --card: #0f0f10;
-  --muted: #a8a8a8;
+  --text: #e9eef2;
   --neon-green: #00ff9c;
   --neon-cyan: #00f0ea;
   --neon-magenta: #b24cff;
-  --text: #e9eef2;
-  --glass-2: rgba(255,255,255,0.05);
-  --radius-lg: 16px;
-  --transition: 180ms cubic-bezier(.2,.9,.2,1);
-  --footer-height: 72px;
+}
+
+/* ================= ANIME CARD ================= */
+.anime-card {
+  position: relative;
+  width: var(--card-width);        /* Fixed width */
+  height: var(--card-height);      /* Fixed height */
+  min-width: var(--card-width);
+  background: #0f0f10;
+  border-radius: 12px;
+  overflow: hidden;                /* Keeps everything inside the rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.anime-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.2); /* Golden glow on hover */
+}
+
+/* --- 1. The Image (Banner) --- */
+.anime-card .card-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* This calculation ensures the image stops exactly where the box begins */
+  height: calc(100% - var(--banner-gap) + 12px); 
+  object-fit: cover;
+  display: block;
+  z-index: 1;
+  transition: transform 0.3s ease;
+  /* Mask gradient to blend image into the black box smoothly */
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.anime-card:hover .card-banner {
+  transform: scale(1.05);
+}
+
+/* --- 2. The Name Box (Black with Gold Border) --- */
+.anime-card .card-name-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--banner-gap);       /* Height defined by variable */
+  background: var(--card-box-bg);
+  
+  /* The Golden Strip Border */
+  border-top: 2px solid var(--card-border-gold); 
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+/* Text inside the box */
+.anime-card .card-name-box h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--card-border-gold);  /* Gold Text */
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  /* Limit to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- 3. Badge (Top Left) --- */
+.anime-card .card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* --- 4. Audio/Year (Bottom Right floating above box) --- */
+.anime-card .card-audio {
+  position: absolute;
+  right: 8px;
+  /* Position it just above the golden border */
+  bottom: calc(var(--banner-gap) + 6px); 
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  z-index: 10;
 }
 
 /* ---- Page reset & base ---- */
