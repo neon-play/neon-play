@@ -485,40 +485,61 @@ const nameBox = document.createElement('div');
   // --- end addition ---
   return card;
 }
+  
+// ---------------------- replace the createAnimeCard function with this ----------------------
+function createAnimeCard(item) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
 
-  function createAdCard(item) {
-    const ad = document.createElement('div');
-    ad.className = 'ad-card';
+  // Banner image (fills card but CSS controls how far it reaches)
+  const img = document.createElement('img');
+  img.className = 'card-banner';
+  img.src = item.image || 'assets/placeholder.png';
+  img.alt = item.title || 'Anime';
+  card.appendChild(img);
 
-    const img = document.createElement('img');
-    img.src = item.image || 'assets/placeholder.png';
-    img.alt = item.title || 'Advertisement';
-    ad.appendChild(img);
-
-    const info = document.createElement('div');
-    info.className = 'ad-info';
-
-    const title = document.createElement('div');
-    title.textContent = item.title || 'Sponsored';
-    title.style.fontWeight = '700';
-    info.appendChild(title);
-
-    const subtitle = document.createElement('div');
-    subtitle.textContent = item.subtitle || item.overview || '';
-    subtitle.style.fontSize = '12px';
-    info.appendChild(subtitle);
-
-    ad.appendChild(info);
-
-    if (item.url) {
-      ad.addEventListener('click', () => {
-        window.location.href = item.url;
-      });
-      ad.style.cursor = 'pointer';
-    }
-
-    return ad;
+  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
+  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
+    const badge = document.createElement('div');
+    badge.className = 'card-badge';
+    badge.textContent = 'MOVIE';
+    card.appendChild(badge);
   }
+
+  // One name box (big centered title under/over the card depending on CSS)
+  const nameBox = document.createElement('div');
+  nameBox.className = 'card-name-box';
+  nameBox.textContent = item.title || 'Untitled';
+  nameBox.setAttribute('aria-hidden', 'true');
+  card.appendChild(nameBox);
+
+  // Audio/label (bottom-right pill) - optional content like year or language
+  const audioEl = document.createElement('div');
+  audioEl.className = 'card-audio';
+  audioEl.textContent = item.audio || item.year || '';
+  card.appendChild(audioEl);
+
+  // If item has a url, make the whole card clickable
+  if (item.url) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      window.location.href = item.url;
+    });
+  }
+
+  // Accessibility: Enter key triggers navigation too
+  card.tabIndex = 0;
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (item.url) window.location.href = item.url;
+    }
+  });
+
+  return card;
+}
+// ------------------------------------------------------------------------------------------
+  
 
   function renderList(items, container, startIndex, count) {
     if (!container) return 0;
