@@ -1,40 +1,16 @@
 root:{
- /* palette */
-  --bg: #070707;
-  --text: #e9eef2;
-  --muted: #a8a8a8;
-  --neon-green: #00ff9c;
-  --neon-cyan: #00f0ea;
-  --neon-magenta: #b24cff;
-  --accent-yellow: #FFD000;
+ --bg: #070707;
+--card: #0f0f10;
+--muted: #a8a8a8;
+--neon-green: #00ff9c;
+--neon-cyan: #00f0ea;
+--neon-magenta: #b24cff;
+--text: #e9eef2;
+--glass-2: rgba(255,255,255,0.05);
+--radius-lg: 16px;
+--transition: 180ms cubic-bezier(.2,.9,.2,1);
+--footer-height: 72px;
 
-  /* card geometry */
-  --card-width: 320px;           /* desktop card width */
-  --card-height: 460px;          /* desktop card height */
-  --card-radius: 24px;           /* outer radius of the card */
-  --card-inner-stroke: 8px;      /* thickness of the yellow belt */
-  --banner-bottom-space: 96px;   /* distance from image bottom to card bottom (space for footer) */
-  --banner-border-radius: 18px;  /* rounding applied to banner top corners */
-
-  /* footer (dark band) */
-  --card-footer-height: 88px;
-  --card-footer-padding: 20px;
-  --card-footer-bg: rgba(6,4,10,0.94);
-
-  /* name-box */
-  --namebox-font-size: 20px;
-  --namebox-padding-vertical: 10px;
-  --namebox-padding-horizontal: 14px;
-  --namebox-max-width: 85%;
-  --namebox-offset: 22px;
-
-  /* audio/meta */
-  --audio-color: #dcdcdc;
-  --audio-accent: var(--neon-green);
-
-  /* misc */
-  --glass-2: rgba(255,255,255,0.05);
-  --transition: 180ms cubic-bezier(.2,.9,.2,1);
 }
 
 /* ---- Page reset & base ---- */
