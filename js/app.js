@@ -76,60 +76,46 @@ sideMenu.addEventListener("click", (e) => {
   // -------------------------
   // Fetch movies.json + series.json and normalize
   // -------------------------
-  (function loadData() {
-    function normalizeArrayFromResponse(json, preferredKey) {
-      if (!json) return [];
-      if (Array.isArray(json)) return json;
-      if (typeof json === "object") {
-        if (Array.isArray(json[preferredKey])) return json[preferredKey];
-        if (Array.isArray(json.results)) return json.results;
-        if (Array.isArray(json.items)) return json.items;
-        if (json.id || json.title) return [json];
-      }
-      return [];
+  // -------------------------
+// Fetch data/anime.json and normalize for live search
+// -------------------------
+(function loadData() {
+  function normalizeArrayFromResponse(json) {
+    if (!json) return [];
+    // If it's an array already, assume it's the list
+    if (Array.isArray(json)) return json;
+    // Common envelope keys
+    if (typeof json === "object") {
+      if (Array.isArray(json.items)) return json.items;
+      if (Array.isArray(json.results)) return json.results;
+      if (Array.isArray(json.anime)) return json.anime;
+      // If object looks like a single item, wrap it
+      if (json.id || json.title) return [json];
     }
+    return [];
+  }
 
-    Promise.allSettled([
-      fetch("data/movies.json", { cache: "no-store" }),
-      fetch("data/series.json", { cache: "no-store" })
-    ])
-    .then(async (results) => {
+  fetch("data/anime.json", { cache: "no-store" })
+    .then(async (resp) => {
+      if (!resp.ok) throw new Error("anime.json not ok: " + resp.status);
       try {
-        const moviesResp = results[0];
-        const seriesResp = results[1];
+        const raw = await resp.json();
+        const all = normalizeArrayFromResponse(raw);
 
-        let movies = [];
-        let series = [];
-
-        if (moviesResp && moviesResp.status === "fulfilled" && moviesResp.value && moviesResp.value.ok) {
-          try { movies = normalizeArrayFromResponse(await moviesResp.value.json(), "movies"); }
-          catch (e) { console.warn("Failed parse data/movies.json", e); movies = []; }
-        } else {
-          console.warn("Could not fetch data/movies.json", moviesResp && moviesResp.reason);
-        }
-
-        if (seriesResp && seriesResp.status === "fulfilled" && seriesResp.value && seriesResp.value.ok) {
-          try { series = normalizeArrayFromResponse(await seriesResp.value.json(), "series"); }
-          catch (e) { console.warn("Failed parse data/series.json", e); series = []; }
-        } else {
-          console.warn("Could not fetch data/series.json", seriesResp && seriesResp.reason);
-        }
-
-        // Merge for search — keep movies first (optional)
-        animeData = (movies || []).concat(series || []);
-        if (animeData.length > MAX_RENDER) animeData = animeData.slice(0, MAX_RENDER);
-
-        console.debug("Search: loaded movies:", movies.length, "series:", series.length, "total:", animeData.length);
+        // Ensure safe structure and limit to MAX_RENDER
+        // Keep 'animeData' as a flat array used by the search feature
+        animeData = (all || []).slice(0, MAX_RENDER);
+        console.debug("Search: loaded anime items:", animeData.length);
       } catch (err) {
-        console.warn("Search panel: unexpected error while loading data files", err);
+        console.warn("Search: failed to parse data/anime.json", err);
         animeData = [];
       }
     })
     .catch((err) => {
-      console.warn("Search panel: could not load data files", err);
+      console.warn("Search: could not fetch data/anime.json", err);
       animeData = [];
     });
-  })();
+})();
 
   // -------------------------
   // Helpers
@@ -441,71 +427,112 @@ document.addEventListener('DOMContentLoaded', () => {
   let moviesShown = 0;
   let seriesShown = 0;
 
-  function createAnimeCard(item) {
-    const card = document.createElement('div');
-    card.className = 'anime-card';
+  // Replace the existing createAnimeCard function with this one
+function createAnimeCard(item) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
 
-    const img = document.createElement('img');
-    img.src = item.image || 'assets/placeholder.png';
-    img.alt = item.title || 'Anime';
-    card.appendChild(img);
+  const img = document.createElement('img');
+  img.className = 'card-banner';
+  img.src = item.image || 'assets/placeholder.png';
+  img.alt = item.title || 'Anime';
+  card.appendChild(img);
 
-    const info = document.createElement('div');
-    info.className = 'card-info';
-
-    const h3 = document.createElement('h3');
-    h3.textContent = item.title || 'Untitled';
-    info.appendChild(h3);
-
-    const p = document.createElement('p');
-    p.textContent = `${item.year || ''}${item.year ? ' • ' : ''}${item.type || ''}`;
-    info.appendChild(p);
-
-    card.appendChild(info);
-
-    if (item.url) {
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
-        window.location.href = item.url;
-      });
-    }
-
-    return card;
+  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
+  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
+    const badge = document.createElement('div');
+    badge.className = 'card-badge';
+    badge.textContent = 'MOVIE';
+    card.appendChild(badge);
   }
 
-  function createAdCard(item) {
-    const ad = document.createElement('div');
-    ad.className = 'ad-card';
+  // Title (small, lower-left overlay, truncated)
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'card-title';
+  titleEl.textContent = item.title || 'Untitled';
+  card.appendChild(titleEl);
 
-    const img = document.createElement('img');
-    img.src = item.image || 'assets/placeholder.png';
-    img.alt = item.title || 'Advertisement';
-    ad.appendChild(img);
+  // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
+  const audioEl = document.createElement('div');
+  audioEl.className = 'card-audio';
+  // prefer audio field; fall back to year if audio missing (keeps UX stable)
+  audioEl.textContent = item.audio || item.year || '';
+  card.appendChild(audioEl);
 
-    const info = document.createElement('div');
-    info.className = 'ad-info';
-
-    const title = document.createElement('div');
-    title.textContent = item.title || 'Sponsored';
-    title.style.fontWeight = '700';
-    info.appendChild(title);
-
-    const subtitle = document.createElement('div');
-    subtitle.textContent = item.subtitle || item.overview || '';
-    subtitle.style.fontSize = '12px';
-    info.appendChild(subtitle);
-
-    ad.appendChild(info);
-
-    if (item.url) {
-      ad.addEventListener('click', () => {
-        window.location.href = item.url;
-      });
-      ad.style.cursor = 'pointer';
-    }
-
-    return ad;
+  // (Keep the original url click behaviour)
+  if (item.url) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      window.location.href = item.url;
+    });
   }
+
+  // Accessibility: allow keyboard Enter to navigate
+  card.tabIndex = 0;
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (item.url) window.location.href = item.url;
+    }
+  });
+
+  return card;
+}
+  
+// ---------------------- replace the createAnimeCard function with this ----------------------
+function createAnimeCard(item) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
+
+  // Banner image (fills card but CSS controls how far it reaches)
+  const img = document.createElement('img');
+  img.className = 'card-banner';
+  img.src = item.image || 'assets/placeholder.png';
+  img.alt = item.title || 'Anime';
+  card.appendChild(img);
+
+  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
+  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
+    const badge = document.createElement('div');
+    badge.className = 'card-badge';
+    badge.textContent = 'MOVIE';
+    card.appendChild(badge);
+  }
+
+  // One name box (big centered title under/over the card depending on CSS)
+  const nameBox = document.createElement('div');
+  nameBox.className = 'card-name-box';
+  nameBox.textContent = item.title || 'Untitled';
+  nameBox.setAttribute('aria-hidden', 'true');
+  card.appendChild(nameBox);
+
+  // Audio/label (bottom-right pill) - optional content like year or language
+  const audioEl = document.createElement('div');
+  audioEl.className = 'card-audio';
+  audioEl.textContent = item.audio || item.year || '';
+  card.appendChild(audioEl);
+
+  // If item has a url, make the whole card clickable
+  if (item.url) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      window.location.href = item.url;
+    });
+  }
+
+  // Accessibility: Enter key triggers navigation too
+  card.tabIndex = 0;
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (item.url) window.location.href = item.url;
+    }
+  });
+
+  return card;
+}
+// ------------------------------------------------------------------------------------------
+  
 
   function renderList(items, container, startIndex, count) {
     if (!container) return 0;
@@ -544,54 +571,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return [];
   }
-
-  (async function loadBoth() {
+  
+(async function loadBoth() {
     try {
-      const [moviesResp, seriesResp, adsResp] = await Promise.allSettled([
-        fetch('data/movies.json', { cache: 'no-cache' }),
-        fetch('data/series.json',  { cache: 'no-cache' }),
-        fetch('data/ads.json',     { cache: 'no-cache' }) // optional file
+      // Fetch single unified file for content
+      const [animeResp, adsResp] = await Promise.allSettled([
+        fetch('data/anime.json', { cache: 'no-cache' }),
+        fetch('data/ads.json',   { cache: 'no-cache' }) // optional
       ]);
 
-      // movies
-      if (moviesResp && moviesResp.status === 'fulfilled' && moviesResp.value && moviesResp.value.ok) {
-        try {
-          const json = await moviesResp.value.json();
-          movies = normalizeArrayFromResponse(json, 'movies');
-        } catch (err) {
-          console.warn('Failed to parse data/movies.json', err);
-          movies = [];
+      // Generic normalizer (handles arrays or common envelope shapes)
+      function normalizeArrayFromResponse(json) {
+        if (!json) return [];
+        if (Array.isArray(json)) return json;
+        if (typeof json === 'object') {
+          if (Array.isArray(json.items)) return json.items;
+          if (Array.isArray(json.results)) return json.results;
+          if (Array.isArray(json.anime)) return json.anime;
+          if (json.id || json.title) return [json];
         }
-      } else {
-        console.warn('Failed to fetch data/movies.json', moviesResp && moviesResp.reason);
-        movies = [];
+        return [];
       }
 
-      // series
-      if (seriesResp && seriesResp.status === 'fulfilled' && seriesResp.value && seriesResp.value.ok) {
+      // Load anime items
+      let allAnime = [];
+      if (animeResp && animeResp.status === 'fulfilled' && animeResp.value && animeResp.value.ok) {
         try {
-          const json = await seriesResp.value.json();
-          series = normalizeArrayFromResponse(json, 'series');
+          const json = await animeResp.value.json();
+          allAnime = normalizeArrayFromResponse(json);
         } catch (err) {
-          console.warn('Failed to parse data/series.json', err);
-          series = [];
+          console.warn('Failed to parse data/anime.json', err);
+          allAnime = [];
         }
       } else {
-        console.warn('Failed to fetch data/series.json', seriesResp && seriesResp.reason);
-        series = [];
+        console.warn('Failed to fetch data/anime.json', animeResp && animeResp.reason);
+        allAnime = [];
       }
 
-      // ads (optional)
+      // Split into movies & series (case-insensitive)
+      movies = (allAnime || []).filter(it => {
+        const t = (it && it.type) ? String(it.type).toLowerCase() : "";
+        return t === "movie" || t === "movies";
+      });
+
+      series = (allAnime || []).filter(it => {
+        const t = (it && it.type) ? String(it.type).toLowerCase() : "";
+        return t === "series" || t === "tv" || t === "show";
+      });
+
+      // If some items lack type but should be shown, optionally assign them based on heuristics:
+      // Example: if episodes field present -> Series; if duration > 90m -> Movie (commented out, keep optional)
+      // allAnime.forEach(it => {
+      //   if (!it.type) {
+      //     if (it.episodes) series.push(it);
+      //     else movies.push(it);
+      //   }
+      // });
+
+      // Load ads if present (optional)
+      ads = [];
       if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {
         try {
           const json = await adsResp.value.json();
-          ads = normalizeArrayFromResponse(json, 'ads');
+          ads = normalizeArrayFromResponse(json);
         } catch (err) {
           console.warn('Failed to parse data/ads.json', err);
           ads = [];
         }
       } else {
-        // no ads file is not an error — leave ads empty
+        // Not required — keep ads empty if fetch fails
         ads = [];
       }
 
@@ -599,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
       moviesShown += renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);
       seriesShown += renderList(series, seriesContainer, seriesShown, PAGE_SIZE);
 
-      // render ads (render all available; they control how many appear via the JSON)
+      // render ads
       if (ads.length && adStrip) renderAds(ads, adStrip);
 
       updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);
@@ -612,11 +660,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const errMsg = document.createElement('div');
       errMsg.style.color = '#fff';
       errMsg.style.padding = '12px';
-      errMsg.textContent = 'Unable to load content (check data/movies.json & data/series.json).';
+      errMsg.textContent = 'Unable to load content (check data/anime.json).';
       if (moviesContainer) moviesContainer.appendChild(errMsg.cloneNode(true));
       if (seriesContainer) seriesContainer.appendChild(errMsg);
     }
   })();
+  
 
   if (loadMoreMoviesBtn) {
     loadMoreMoviesBtn.addEventListener('click', () => {
@@ -634,3 +683,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
