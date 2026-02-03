@@ -426,72 +426,20 @@ document.addEventListener('DOMContentLoaded', () => {
   let ads = [];
   let moviesShown = 0;
   let seriesShown = 0;
-
-  // Replace the existing createAnimeCard function with this one
-function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title || 'Anime';
-  card.appendChild(img);
-
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'MOVIE';
-    card.appendChild(badge);
-  }
-
-  // Title (small, lower-left overlay, truncated)
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || 'Untitled';
-  card.appendChild(titleEl);
-
-  // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  // prefer audio field; fall back to year if audio missing (keeps UX stable)
-  audioEl.textContent = item.audio || item.year || '';
-  card.appendChild(audioEl);
-
-  // (Keep the original url click behaviour)
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
-  }
-
-  // Accessibility: allow keyboard Enter to navigate
-  card.tabIndex = 0;
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
-  });
-
-  return card;
-}
   
-// ---------------------- replace the createAnimeCard function with this ----------------------
+  // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------
 function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
 
-  // Banner image (fills card but CSS controls how far it reaches)
+  // 1. Banner Image
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
   img.alt = item.title || 'Anime';
   card.appendChild(img);
 
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
+  // 2. Top-left Badge (Shows "MOVIE" if type includes movie)
   if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
@@ -499,20 +447,27 @@ function createAnimeCard(item) {
     card.appendChild(badge);
   }
 
-  // One name box (big centered title under/over the card depending on CSS)
+  // 3. Name Box (The Black Box with Gold Border)
   const nameBox = document.createElement('div');
   nameBox.className = 'card-name-box';
-  nameBox.textContent = item.title || 'Untitled';
-  nameBox.setAttribute('aria-hidden', 'true');
+  
+  // We put the title inside an H3 for better styling control
+  const titleH3 = document.createElement('h3');
+  titleH3.textContent = item.title || 'Untitled';
+  
+  nameBox.appendChild(titleH3);
   card.appendChild(nameBox);
 
-  // Audio/label (bottom-right pill) - optional content like year or language
+  // 4. Audio/Info Label (Small pill above the strip)
   const audioEl = document.createElement('div');
   audioEl.className = 'card-audio';
-  audioEl.textContent = item.audio || item.year || '';
-  card.appendChild(audioEl);
+  audioEl.textContent = item.audio || item.year || ''; 
+  // Only append if there is actual text
+  if(audioEl.textContent) {
+      card.appendChild(audioEl);
+  }
 
-  // If item has a url, make the whole card clickable
+  // Click Event
   if (item.url) {
     card.style.cursor = 'pointer';
     card.addEventListener('click', () => {
@@ -520,7 +475,7 @@ function createAnimeCard(item) {
     });
   }
 
-  // Accessibility: Enter key triggers navigation too
+  // Keyboard Accessibility
   card.tabIndex = 0;
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -531,7 +486,7 @@ function createAnimeCard(item) {
 
   return card;
 }
-// ------------------------------------------------------------------------------------------
+
   
 
   function renderList(items, container, startIndex, count) {
