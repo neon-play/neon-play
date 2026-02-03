@@ -919,22 +919,27 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 /* big name box attached below the card (centered) */
-.anime-card .card-name-box {
-  background: rgba(0,0,0,0.78);   /* dark box for title + year */
-  color: #ffffff;
-  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
-  font-size: var(--namebox-font-size);
-  border-radius: 8px;
-  border: 2px solid var(--card-title-color); /* subtle golden edge */
-  bottom: calc(-1 * var(--namebox-offset));
+.anime-card .card-name-box{
+  position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  position: absolute;
+  bottom: calc(-1 * var(--namebox-offset));
   z-index: 20;
+  /* visual */
+  background: rgba(0,0,0,0.78);        /* dark box inside the gold frame */
+  color: #ffffff;                      /* title text */
+  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
+  font-size: var(--namebox-font-size);
+  font-weight: 700;
+  border-radius: 10px;
+  border: 2px solid var(--card-title-color);  /* thin golden edge */
+  box-shadow: 0 10px 22px rgba(0,0,0,0.5);
+  /* layout / overflow */
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  pointer-events: none;
+  max-width: calc(100% - 36px);
+  pointer-events: none;  /* don't block card clicks */
 }
 
 /* small-screen adjustments */
@@ -977,29 +982,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .anime-card .card-title {
   display: none !important;
 }
-
-/* Big name box attached below the banner */
-.anime-card .card-name-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(-1 * var(--namebox-offset)); /* sits outside the card by default */
-  z-index: 20; /* above banner and audio */
-  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
-  font-size: var(--namebox-font-size);
-  font-weight: 800;
-  color: var(--card-title-text);
-  background: var(--card-title-color);
-  border-radius: 8px;
-  border: 2px solid var(--card-title-color); /* same colour as background to match your request */
-  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 28px);
-  pointer-events: none; /* doesn't block card clicks */
-}
-
 /* Responsive tweak for small screens */
 @media (max-width: 520px) {
   :root { --namebox-font-size: 15px; --namebox-offset: 14px; --banner-bottom-space: 48px; }
