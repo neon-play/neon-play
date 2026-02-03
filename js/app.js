@@ -447,19 +447,18 @@ function createAnimeCard(item) {
     card.appendChild(badge);
   }
 
-  // Title (small, lower-left overlay, truncated)
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || 'Untitled';
-  card.appendChild(titleEl);
+const nameBox = document.createElement('div');
+  nameBox.className = 'card-name-box';
+  nameBox.textContent = item.title || 'Untitled';
+  // non-interactive so it won't block card click
+  nameBox.setAttribute('aria-hidden', 'true');
+  card.appendChild(nameBox);
 
   // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
   const audioEl = document.createElement('div');
   audioEl.className = 'card-audio';
-  // prefer audio field; fall back to year if audio missing (keeps UX stable)
   audioEl.textContent = item.audio || item.year || '';
   card.appendChild(audioEl);
-
   // (Keep the original url click behaviour)
   if (item.url) {
     card.style.cursor = 'pointer';
