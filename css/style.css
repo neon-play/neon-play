@@ -4,15 +4,6 @@
 
 /* ---- Root variables ---- */
 :root {
-     --card-title-color: #EBFF24;
-  --banner-bottom-space: 60px;
-  --namebox-offset: 18px;
-  --namebox-font-size: 18px;
-  --namebox-padding-vertical: 10px;
-  --namebox-padding-horizontal: 18px;
-  --banner-border-radius: 12px;
-  --audio-bottom-safety: 14px;
-   
   --bg: #070707;
   --card: #0f0f10;
   --muted: #a8a8a8;
@@ -813,27 +804,4 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* Android/Chrome extra: hide inner dropdown arrow if any default remains (scoped) */
 .filter-bar #sortSelect::-ms-expand {
   display: none;
-}
-/* final single name-box style — compact dark box with golden edge */
-.anime-card .card-name-box{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(-1 * var(--namebox-offset));
-  z-index: 20;
-
-  background: rgba(0,0,0,0.78);        /* dark box inside the gold frame */
-  color: #ffffff;
-  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
-  font-size: var(--namebox-font-size);
-  font-weight: 700;
-  border-radius: 10px;
-  border: 2px solid var(--card-title-color);  /* thin golden edge */
-  box-shadow: 0 10px 22px rgba(0,0,0,0.5);
-
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 36px);
-  pointer-events: none;
 }
