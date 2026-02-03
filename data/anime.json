@@ -61,7 +61,7 @@
     "title": "Your Name",
     "year": "2016",
     "type": "Movie",
-    "image": "assets/movies/movie2.jpg",
+    "image": "image/banners/your-name.jpg",
     "url": "details.html?id=your-name",
     "episodes": "",
     "audio": "Japanese",
