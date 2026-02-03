@@ -427,106 +427,59 @@ document.addEventListener('DOMContentLoaded', () => {
   let moviesShown = 0;
   let seriesShown = 0;
 
-  // Replace the existing createAnimeCard function with this one
-function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title || 'Anime';
-  card.appendChild(img);
-
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'MOVIE';
-    card.appendChild(badge);
-  }
-
-  // Title (small, lower-left overlay, truncated)
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || 'Untitled';
-  card.appendChild(titleEl);
-
-  // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  // prefer audio field; fall back to year if audio missing (keeps UX stable)
-  audioEl.textContent = item.audio || item.year || '';
-  card.appendChild(audioEl);
-
-  // (Keep the original url click behaviour)
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
-  }
-
-  // Accessibility: allow keyboard Enter to navigate
-  card.tabIndex = 0;
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
-  });
-
-  return card;
-}
   
 // ---------------------- replace the createAnimeCard function with this ----------------------
 function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
+  card.setAttribute('role', 'article');
 
-  // Banner image (fills card but CSS controls how far it reaches)
+  // banner image
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
   img.alt = item.title || 'Anime';
   card.appendChild(img);
 
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
+  // top-left badge (optional)
+  if (item && item.type && /movie/i.test(item.type)) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
     badge.textContent = 'MOVIE';
     card.appendChild(badge);
   }
 
-  // One name box (big centered title under/over the card depending on CSS)
+  // footer container (title + meta/audio)
+  const footer = document.createElement('div');
+  footer.className = 'card-footer';
+
   const nameBox = document.createElement('div');
   nameBox.className = 'card-name-box';
   nameBox.textContent = item.title || 'Untitled';
-  nameBox.setAttribute('aria-hidden', 'true');
-  card.appendChild(nameBox);
+  footer.appendChild(nameBox);
 
-  // Audio/label (bottom-right pill) - optional content like year or language
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  audioEl.textContent = item.audio || item.year || '';
-  card.appendChild(audioEl);
+  const audio = document.createElement('div');
+  audio.className = 'card-audio';
+  // prefer audio field, fallback to "year • type" as in your screenshot
+  if (item.audio && item.audio.trim()) {
+    audio.textContent = item.audio;
+  } else {
+    const y = item.year ? item.year : '';
+    const t = item.type ? item.type : '';
+    audio.textContent = [y, t].filter(Boolean).join(' • ');
+  }
+  footer.appendChild(audio);
 
-  // If item has a url, make the whole card clickable
+  card.appendChild(footer);
+
+  // make card clickable (preserve existing behavior)
   if (item.url) {
     card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
+    card.addEventListener('click', () => window.location.href = item.url);
   }
-
-  // Accessibility: Enter key triggers navigation too
   card.tabIndex = 0;
   card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
+    if (e.key === 'Enter' && item.url) window.location.href = item.url;
   });
 
   return card;
