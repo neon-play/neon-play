@@ -4,13 +4,13 @@
   --card-title-text: #ffffff;      /* text colour inside name-box */
   --namebox-offset: 22px;
   --card-badge-color: #FFD700;     /* yellow (change as needed) */
-  --banner-bottom-space: 56px; 
+  --banner-bottom-space: 65px; 
   /* how far the banner stops above the card bottom (space for overlays) */
    /* increase -> more gap; decrease -> image goes lower */
 
   /* radius for the banner's rounded corners (not too large) */
   --banner-border-radius: 10px;    /* increase for more rounding */
-  --namebox-font-size: 20px;
+  --namebox-font-size: 24px;
   --namebox-padding-vertical: 10px;
   --namebox-padding-horizontal: 14px;
           /* how far the name-box sinks below the card bottom (positive = outside) */
@@ -920,24 +920,21 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* big name box attached below the card (centered) */
 .anime-card .card-name-box {
-  position: absolute;
+  background: rgba(0,0,0,0.78);   /* dark box for title + year */
+  color: #ffffff;
+  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
+  font-size: var(--namebox-font-size);
+  border-radius: 8px;
+  border: 2px solid var(--card-title-color); /* subtle golden edge */
+  bottom: calc(-1 * var(--namebox-offset));
   left: 50%;
   transform: translateX(-50%);
-  bottom: -20px;              /* sits outside the card by 20px; adjust if you want more/less gap */
-  z-index: 12;
-  padding: 10px 14px;
-  font-size: 18px;           /* larger font as requested */
-  font-weight: 900;
-  color: var(--text);
-  background: rgba(0,0,0,0.72);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+  position: absolute;
+  z-index: 20;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  max-width: calc(100% - 24px);
-  pointer-events: none;      /* doesn't intercept clicks intended for card */
+  pointer-events: none;
 }
 
 /* small-screen adjustments */
