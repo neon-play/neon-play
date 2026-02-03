@@ -432,7 +432,6 @@ function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
 
-  // Banner image (fills entire card)
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
@@ -447,18 +446,19 @@ function createAnimeCard(item) {
     card.appendChild(badge);
   }
 
-const nameBox = document.createElement('div');
-  nameBox.className = 'card-name-box';
-  nameBox.textContent = item.title || 'Untitled';
-  // non-interactive so it won't block card click
-  nameBox.setAttribute('aria-hidden', 'true');
-  card.appendChild(nameBox);
+  // Title (small, lower-left overlay, truncated)
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'card-title';
+  titleEl.textContent = item.title || 'Untitled';
+  card.appendChild(titleEl);
 
   // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
   const audioEl = document.createElement('div');
   audioEl.className = 'card-audio';
+  // prefer audio field; fall back to year if audio missing (keeps UX stable)
   audioEl.textContent = item.audio || item.year || '';
   card.appendChild(audioEl);
+
   // (Keep the original url click behaviour)
   if (item.url) {
     card.style.cursor = 'pointer';
@@ -476,13 +476,6 @@ const nameBox = document.createElement('div');
     }
   });
 
-  const nameBox = document.createElement('div');
-  nameBox.className = 'card-name-box';
-  nameBox.textContent = item.title || '';
-  // keep it non-interactive so it doesn't alter click behaviour on card
-  nameBox.setAttribute('aria-hidden', 'true');
-  card.appendChild(nameBox);
-  // --- end addition ---
   return card;
 }
   
