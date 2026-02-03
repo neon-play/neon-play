@@ -8,7 +8,7 @@
   --card-badge-color: #FFD700;     /* yellow (change as needed) */
 
   /* how far the banner stops above the card bottom (space for overlays) */
-  --banner-bottom-space: 56px;     /* increase -> more gap; decrease -> image goes lower */
+  --banner-bottom-space: 65px;     /* increase -> more gap; decrease -> image goes lower */
 
   /* radius for the banner's rounded corners (not too large) */
   --banner-border-radius: 10px;    /* increase for more rounding */
