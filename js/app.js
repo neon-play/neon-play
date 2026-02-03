@@ -425,60 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let series = [];
   let ads = [];
   let moviesShown = 0;
-  let seriesShown = 0;
-
-  // Replace the existing createAnimeCard function with this one
-function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title || 'Anime';
-  card.appendChild(img);
-
-  // Top-left badge: show "MOVIE" for movie-type items (case-insensitive)
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'MOVIE';
-    card.appendChild(badge);
-  }
-
-  // Title (small, lower-left overlay, truncated)
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || 'Untitled';
-  card.appendChild(titleEl);
-
-  // Audio label (bottom-right). NOTE: this **replaces** the visible "year" on the card.
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  // prefer audio field; fall back to year if audio missing (keeps UX stable)
-  audioEl.textContent = item.audio || item.year || '';
-  card.appendChild(audioEl);
-
-  // (Keep the original url click behaviour)
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
-  }
-
-  // Accessibility: allow keyboard Enter to navigate
-  card.tabIndex = 0;
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
-  });
-
-  return card;
-}
-  
+  let seriesShown = 0;  
 // ---------------------- replace the createAnimeCard function with this ----------------------
 function createAnimeCard(item) {
   const card = document.createElement('div');
