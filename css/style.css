@@ -837,3 +837,20 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   opacity: 0.6;
   pointer-events: none;
 }
+#sideMenu::after {
+  content: "";
+  position: absolute;
+  top: 12px;            /* adjust to match menu vertical padding */
+  bottom: 12px;         /* adjust to match menu vertical padding */
+  right: 0;             /* flush to the right edge of the menu */
+  width: 1px;           /* slim; change to 2px–5px if you prefer */
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fff17a, #ffd300); /* warm yellow */
+  box-shadow: 0 0 12px rgba(255,215,0,0.12);
+  pointer-events: none;
+  z-index: 999;         /* ensure it sits above the menu background */
+}
+
+/* If you only want it visible when menu is open: */
+#sideMenu:not(.open)::after { opacity: 0; transition: opacity 160ms ease; }
+#sideMenu.open::after { opacity: 1; transition: opacity 160ms ease; }
