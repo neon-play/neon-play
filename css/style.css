@@ -1,6 +1,11 @@
 /* ----- Card appearance variables (edit these values) ----- */
 :root{
   
+   --namebox-font-size: 15px;
+  --namebox-offset: 14px; 
+  --banner-bottom-space: 48px; 
+  
+  
   --bg: #070707;
   --card: #0f0f10;
   --muted: #a8a8a8;
@@ -355,25 +360,10 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   overflow:auto;
   padding-bottom:12px;
 }
-.anime-card{
-  min-width:180px;
-  width:180px;
-  height:250px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.02);
-  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
-  cursor:pointer;
-  transition: transform 220ms ease, box-shadow 220ms ease;
-  display:flex;
-  flex-direction:column;
-}
-.anime-card img{ width:100%; height:68%; object-fit:cover; display:block; }
+
 .card-info{ padding:10px; color:var(--muted); flex:1; display:flex; flex-direction:column; justify-content:center; gap:6px; }
 .card-info h3{ margin:0; font-size:15px; color:var(--text); }
 .card-info p{ margin:0; font-size:12px; color:var(--neon-green); font-weight:600; }
-.anime-card:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
 
 /* load more buttons */
 .load-more{
@@ -405,7 +395,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* ================= Responsive tweaks (kept minimal & relevant) ================= */
 @media (max-width:880px){
   .featured-thumb{ width:124px; height:78px; flex:0 0 124px; }
-  .anime-card{ min-width:150px; width:150px; height:220px; }
   .site-title{ font-size:18px; }
   .side-menu{ width:260px; left:-260px; }
 }
@@ -418,8 +407,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   .search-box{ padding:12px; border-radius:16px; }
   .search-box input{ font-size:15px; }
   .horizontal-scroll{ gap:10px; padding-bottom:8px; }
-  .anime-card{ width:140px; min-width:140px; height:210px; }
-  .live-search-results{ top: calc(100% + 10px); width:96%; }
+   .live-search-results{ top: calc(100% + 10px); width:96%; }
 }
 
 /* ================= End of cleaned stylesheet ================= */
@@ -597,11 +585,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* Make each anime-card occupy a single grid cell (so two per column stack) */
 #moviesContainer.horizontal-scroll .anime-card,
-#seriesContainer.horizontal-scroll .anime-card {
-  width: 100%;
-  min-width: 0; /* let grid control width */
-  height: 200px; /* reasonable height for stacked cards */
-}
+#seriesContainer.horizontal-scroll . anime-card,
 
 /* Responsive: slightly narrower on very small screens */
 @media (max-width: 420px) {
@@ -851,146 +835,137 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* If you only want it visible when menu is open: */
 #sideMenu:not(.open)::after { opacity: 0; transition: opacity 160ms ease; }
 #sideMenu.open::after { opacity: 1; transition: opacity 160ms ease; }
-/* --- Card banner, badges & reduced-title layout --- */
-/* make the card a positioned container so overlays can sit on top */
-/* Banner: stops short of the card bottom to leave room for overlays */
+
+/* Consolidated anime-card styles (75% banner / 25% footer, gold border, watermarks) */
 .anime-card {
   position: relative;
-  overflow: visible; /* allow name-box to appear outside the card */
-  border-radius: calc(var(--banner-border-radius) + 2px); /* keep card subtly rounded */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 180px;
+  min-width: 180px;
+  height: 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  border: 2px solid rgba(212,175,55,0.95);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,0.6),
+    0 0 12px rgba(212,175,55,0.06);
+  -webkit-print-color-adjust: exact;
 }
 
-/* Banner image: stops `--banner-bottom-space` above the bottom of the card */
+.anime-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 48px rgba(0,0,0,0.72), 0 0 18px rgba(212,175,55,0.06);
+}
+
+/* Banner (75%) */
 .anime-card .card-banner {
-  position: absolute;
-  inset: 0 0 var(--banner-bottom-space) 0; /* top:0; right:0; bottom:var; left:0 */
   width: 100%;
-  height: 100%;
+  height: 75%;
   object-fit: cover;
   display: block;
-  transition: transform 260ms ease;
+  flex: 0 0 75%;
+  border: 0;
+}
 
-  /* rounded top corners and a border that uses the same color as the name-box */
-  border-radius: var(--banner-border-radius) var(--banner-border-radius) 0 0;
-  border: 2px solid var(--card-title-color);
+/* Footer (25%) */
+.anime-card .card-footer,
+.anime-card .card-name-box { /* alias for older code that may still use .card-name-box */
+  height: 25%;
+  flex: 0 0 25%;
+  padding: 8px 10px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
 }
 
-/* subtle zoom on hover */
-.anime-card:hover .card-banner {
-  transform: scale(1.03);
+.anime-card .card-title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.05;
+  color: var(--text);
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* top-left badge for 'Movie' */
+.anime-card .card-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--neon-green);
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+/* compact top-left badge */
 .anime-card .card-badge {
   position: absolute;
   top: 8px;
   left: 10px;
-  z-index: 22;
+  z-index: 20;
   font-weight: 700;
-  font-size: 12px;
-  padding: 6px 8px;
+  font-size: 11px;
+  padding: 4px 8px;
   border-radius: 6px;
-  color: var(--card-badge-color);           /* text color set to yellow variable */
-  background: rgba(0,0,0,0.35);             /* keep a dark translucent background for contrast */
+  color: #fff;
+  background: rgba(0,0,0,0.36);
   border: 1px solid rgba(255,255,255,0.03);
-}
-
-/* allow the name box to appear outside the card bounds */
-.anime-card {
-  position: relative;
-  overflow: visible;   /* changed from hidden to visible so the name-box can sit below the card */
-  border-radius: 14px;
-  /* keep other existing properties as they are... */
-}
-
-/* big name box attached below the card (centered) */
-.anime-card .card-name-box {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: -20px;              /* sits outside the card by 20px; adjust if you want more/less gap */
-  z-index: 12;
-  padding: 10px 14px;
-  font-size: 18px;           /* larger font as requested */
-  font-weight: 900;
-  color: var(--text);
-  background: rgba(0,0,0,0.72);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 24px);
-  pointer-events: none;      /* doesn't intercept clicks intended for card */
-}
-
-/* small-screen adjustments */
-@media (max-width:520px) {
-  .anime-card .card-name-box {
-    bottom: -16px;
-    font-size: 15px;
-    padding: 8px 10px;
-    max-width: calc(100% - 18px);
-  }
-}
-
-/* audio label bottom-right (replaces previous 'year' visual spot) */
-/* Audio pill (bottom-right) — keep visual, but push it above the banner bottom area */
-.anime-card .card-audio {
-  position: absolute;
-  right: 12px;
-  /* ensure audio sits inside the card above the banner bottom gap */
-  bottom: calc(var(--banner-bottom-space) - var(--audio-bottom-safety)); /* e.g. 56px - 14px = 42px from bottom */
-  z-index: 18;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.75);
-  color: #00ff88; /* keep same audio color as before — change if needed */
   pointer-events: none;
 }
 
-/* ensure the old .card-info (if still present) doesn't push layout — hide visually */
-.anime-card .card-info {
-  display: none;
-}
-
-/* responsive tweaks: keep title legible on small screens */
-@media (max-width:520px) {
-  .anime-card .card-title { font-size: 12px; right: 92px; bottom: 8px; left: 8px; }
-  .anime-card .card-audio { font-size: 11px; bottom: 8px; right: 8px; padding:5px 7px; }
-}
-/* Hide any leftover small overlay title (your previous 'Yo..' pill) */
-.anime-card .card-title {
-  display: none !important;
-}
-
-/* Big name box attached below the banner */
-.anime-card .card-name-box {
+/* Large subtle type watermark */
+.anime-card .card-type-watermark {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(-1 * var(--namebox-offset)); /* sits outside the card by default */
-  z-index: 20; /* above banner and audio */
-  padding: var(--namebox-padding-vertical) var(--namebox-padding-horizontal);
-  font-size: var(--namebox-font-size);
-  font-weight: 800;
-  color: var(--card-title-text);
-  background: var(--card-title-color);
-  border-radius: 8px;
-  border: 2px solid var(--card-title-color); /* same colour as background to match your request */
-  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: calc(100% - 28px);
-  pointer-events: none; /* doesn't block card clicks */
+  top: 6px;
+  left: 8px;
+  z-index: 5;
+  font-weight: 900;
+  font-size: 48px;
+  line-height: 1;
+  transform: rotate(-12deg);
+  color: rgba(255,215,0,0.06);
+  pointer-events: none;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* Responsive tweak for small screens */
-@media (max-width: 520px) {
-  :root { --namebox-font-size: 15px; --namebox-offset: 14px; --banner-bottom-space: 48px; }
-  .anime-card .card-name-box { font-size: var(--namebox-font-size); bottom: calc(-1 * var(--namebox-offset)); }
+/* audio watermark bottom-right (lime neon) */
+.anime-card .card-audio {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 22;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.68);
+  color: var(--neon-green);
+  box-shadow: 0 8px 20px rgba(0,255,150,0.06);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ensure any old small overlay title is hidden */
+.anime-card .card-title-small,
+.anime-card .card-info { display: none; }
+
+/* responsive sizes */
+@media (max-width:880px) {
+  .anime-card { width:150px; min-width:150px; height:220px; }
+  .anime-card .card-type-watermark { font-size: 42px; }
+}
+@media (max-width:520px) {
+  .anime-card { width:140px; min-width:140px; height:210px; }
+  .anime-card .card-type-watermark { font-size: 36px; top: 4px; left: 6px; }
+  .anime-card .card-audio { font-size: 10px; padding:5px 7px; }
 }
