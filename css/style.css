@@ -1,7 +1,7 @@
 /* ================= CARD VARIABLES & STYLES ================= */
 :root {
---card-width: 320px;           /* adjust width per layout */
-  --card-height: 440px;          /* adjust height per layout */
+--card-width: 180px;           /* adjust width per layout */
+  --card-height: 260px;          /* adjust height per layout */
   --card-radius: 28px;
   --card-border-size: 8px;       /* yellow border thickness */
   --namebox-height: 112px;       /* bottom title strip height */
