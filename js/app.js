@@ -638,4 +638,54 @@ function createAnimeCard(item) {
     });
   }
 });
+function createAnimeCard(item) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
+  card.setAttribute('role','article');
+  card.tabIndex = 0;
 
+  // 1) banner image
+  const img = document.createElement('img');
+  img.className = 'card-banner';
+  img.src = item.image || 'assets/placeholder.png';
+  img.alt = item.title ? `${item.title} poster` : 'Anime poster';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  card.appendChild(img);
+
+  // 2) badge (top-left)
+  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
+    const badge = document.createElement('div');
+    badge.className = 'card-badge';
+    badge.textContent = 'Movie';
+    card.appendChild(badge);
+  }
+
+  // 3) bottom title strip
+  const nameBox = document.createElement('div');
+  nameBox.className = 'card-name-box';
+
+  const title = document.createElement('h3');
+  title.textContent = item.title || 'Untitled';
+  nameBox.appendChild(title);
+
+  const meta = document.createElement('p');
+  meta.className = 'card-meta';
+  // show "YEAR • TYPE" — prioritize item.year, fallback to item.audio if you wanted
+  const year = item.year ? String(item.year) : (item.audio ? String(item.audio) : '');
+  const type = item.type ? String(item.type) : '';
+  meta.textContent = [year, type].filter(Boolean).join(' • ');
+  nameBox.appendChild(meta);
+
+  card.appendChild(nameBox);
+
+  // click / keyboard behavior
+  if (item.url) {
+    card.style.cursor = 'pointer';
+    const go = () => { window.location.href = item.url; };
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  }
+
+  return card;
+}
