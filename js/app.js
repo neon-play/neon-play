@@ -1,54 +1,46 @@
-// ===== SIDE MENU LOGIC =====
-
-// Elements
+// ===== SIDE MENU LOGIC (safe) =====
 const menuBtn = document.getElementById("menuBtn");
 const sideMenu = document.getElementById("sideMenu");
-const menuLinks = sideMenu.querySelectorAll(".menu-list li a");
+const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];
 
-// Open / Close menu
 function openMenu() {
+  if (!sideMenu) return;
   sideMenu.classList.add("open");
   sideMenu.setAttribute("aria-hidden", "false");
 }
-
 function closeMenu() {
+  if (!sideMenu) return;
   sideMenu.classList.remove("open");
   sideMenu.setAttribute("aria-hidden", "true");
 }
 
-// Toggle on 3-bar click
-menuBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  sideMenu.classList.contains("open") ? closeMenu() : openMenu();
-});
-
-// Keyboard accessibility (Enter / Space)
-menuBtn.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    sideMenu.classList.contains("open") ? closeMenu() : openMenu();
-  }
-});
-
-// Handle menu navigation
-menuLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    closeMenu();
-    // navigation handled naturally by href
+if (menuBtn) {
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());
   });
-});
+  menuBtn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());
+    }
+  });
+} else {
+  console.warn('#menuBtn not found');
+}
 
-// Click outside menu to close
+if (menuLinks.length) {
+  menuLinks.forEach(link => {
+    link.addEventListener("click", () => { closeMenu(); });
+  });
+}
+
 document.addEventListener("click", (e) => {
-  if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-    closeMenu();
-  }
+  if (!sideMenu || !menuBtn) return;
+  if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
 });
 
-// Prevent menu click from closing itself
-sideMenu.addEventListener("click", (e) => {
-  e.stopPropagation();
-});
+if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
 
 /* ======================================================= */
   /* ===== LIVE SEARCH: REPLACE EXISTING LIVE-SEARCH IIFE WITH THIS BLOCK =====
@@ -428,67 +420,57 @@ document.addEventListener('DOMContentLoaded', () => {
   let seriesShown = 0;
   
   // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------
-function createAnimeCard(item) {
+  function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
+  card.setAttribute('role','article');
+  card.tabIndex = 0;
 
-  // 1. Banner Image
+  // banner image
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title || 'Anime';
+  img.alt = item.title ? `${item.title} poster` : 'Anime poster';
+  img.loading = 'lazy';
+  img.decoding = 'async';
   card.appendChild(img);
 
-  // 2. Top-left Badge (Shows "MOVIE" if type includes movie)
+  // top-left badge (movie)
   if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
-    badge.textContent = 'MOVIE';
+    badge.textContent = 'Movie';
     card.appendChild(badge);
   }
 
-  // 3. Name Box (The Black Box with Gold Border)
+  // bottom title strip
   const nameBox = document.createElement('div');
   nameBox.className = 'card-name-box';
-  
-  // We put the title inside an H3 for better styling control
-  const titleH3 = document.createElement('h3');
-  titleH3.textContent = item.title || 'Untitled';
-  
-  nameBox.appendChild(titleH3);
+
+  const title = document.createElement('h3');
+  title.textContent = item.title || 'Untitled';
+  nameBox.appendChild(title);
+
+  const meta = document.createElement('p');
+  meta.className = 'card-meta';
+  const year = item.year ? String(item.year) : (item.audio ? String(item.audio) : '');
+  const type = item.type ? String(item.type) : '';
+  meta.textContent = [year, type].filter(Boolean).join(' • ');
+  nameBox.appendChild(meta);
+
   card.appendChild(nameBox);
 
-  // 4. Audio/Info Label (Small pill above the strip)
-  const audioEl = document.createElement('div');
-  audioEl.className = 'card-audio';
-  audioEl.textContent = item.audio || item.year || ''; 
-  // Only append if there is actual text
-  if(audioEl.textContent) {
-      card.appendChild(audioEl);
-  }
-
-  // Click Event
+  // click / keyboard behaviour
   if (item.url) {
     card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.location.href = item.url;
-    });
+    const go = () => { window.location.href = item.url; };
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
   }
-
-  // Keyboard Accessibility
-  card.tabIndex = 0;
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (item.url) window.location.href = item.url;
-    }
-  });
 
   return card;
 }
-
   
-
   function renderList(items, container, startIndex, count) {
     if (!container) return 0;
     const slice = items.slice(startIndex, startIndex + count);
@@ -638,54 +620,3 @@ function createAnimeCard(item) {
     });
   }
 });
-function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-  card.setAttribute('role','article');
-  card.tabIndex = 0;
-
-  // 1) banner image
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title ? `${item.title} poster` : 'Anime poster';
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  card.appendChild(img);
-
-  // 2) badge (top-left)
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'Movie';
-    card.appendChild(badge);
-  }
-
-  // 3) bottom title strip
-  const nameBox = document.createElement('div');
-  nameBox.className = 'card-name-box';
-
-  const title = document.createElement('h3');
-  title.textContent = item.title || 'Untitled';
-  nameBox.appendChild(title);
-
-  const meta = document.createElement('p');
-  meta.className = 'card-meta';
-  // show "YEAR • TYPE" — prioritize item.year, fallback to item.audio if you wanted
-  const year = item.year ? String(item.year) : (item.audio ? String(item.audio) : '');
-  const type = item.type ? String(item.type) : '';
-  meta.textContent = [year, type].filter(Boolean).join(' • ');
-  nameBox.appendChild(meta);
-
-  card.appendChild(nameBox);
-
-  // click / keyboard behavior
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    const go = () => { window.location.href = item.url; };
-    card.addEventListener('click', go);
-    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-  }
-
-  return card;
-}
