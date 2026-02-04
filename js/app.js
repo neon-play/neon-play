@@ -1,4 +1,4 @@
-// ===== SIDE MENU LOGIC (safe) =====
+// ===== SIDE MENU LOGIC =====
 const menuBtn = document.getElementById("menuBtn");
 const sideMenu = document.getElementById("sideMenu");
 const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];
@@ -7,11 +7,13 @@ function openMenu() {
   if (!sideMenu) return;
   sideMenu.classList.add("open");
   sideMenu.setAttribute("aria-hidden", "false");
+  document.body.classList.add('side-open'); // NEW: tell CSS the menu is open
 }
 function closeMenu() {
   if (!sideMenu) return;
   sideMenu.classList.remove("open");
   sideMenu.setAttribute("aria-hidden", "true");
+  document.body.classList.remove('side-open'); 
 }
 
 if (menuBtn) {
@@ -423,19 +425,33 @@ document.addEventListener('DOMContentLoaded', () => {
   function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
-  card.setAttribute('role','article');
+  card.setAttribute('role', 'article');
   card.tabIndex = 0;
+  card.setAttribute('aria-label', item.title || 'Anime card');
 
-  // banner image
+  // --- Banner wrapper (positioned) ---
+  const bannerWrap = document.createElement('div');
+  bannerWrap.className = 'card-banner-wrap';
+
   const img = document.createElement('img');
   img.className = 'card-banner';
   img.src = item.image || 'assets/placeholder.png';
   img.alt = item.title ? `${item.title} poster` : 'Anime poster';
   img.loading = 'lazy';
   img.decoding = 'async';
-  card.appendChild(img);
+  bannerWrap.appendChild(img);
 
-  // top-left badge (movie)
+  // audio pill: place INSIDE the banner wrapper (bottom-right of banner)
+  if (item && item.audio) {
+    const audio = document.createElement('div');
+    audio.className = 'card-audio';
+    audio.textContent = String(item.audio);
+    bannerWrap.appendChild(audio);
+  }
+
+  card.appendChild(bannerWrap);
+
+  // --- top-left compact badge (Movie) ---
   if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
@@ -443,24 +459,35 @@ document.addEventListener('DOMContentLoaded', () => {
     card.appendChild(badge);
   }
 
-  // bottom title strip
-  const nameBox = document.createElement('div');
-  nameBox.className = 'card-name-box';
+  // --- subtle LARGE watermark for type (optional decorative) ---
+  if (item && item.type) {
+    const stamp = document.createElement('div');
+    stamp.className = 'card-type-watermark';
+    stamp.textContent = String(item.type).toUpperCase();
+    card.appendChild(stamp);
+  }
 
-  const title = document.createElement('h3');
-  title.textContent = item.title || 'Untitled';
-  nameBox.appendChild(title);
+  // --- Footer: title (one line) + year (below) ---
+  const footer = document.createElement('div');
+  footer.className = 'card-footer';
 
-  const meta = document.createElement('p');
-  meta.className = 'card-meta';
-  const year = item.year ? String(item.year) : (item.audio ? String(item.audio) : '');
-  const type = item.type ? String(item.type) : '';
-  meta.textContent = [year, type].filter(Boolean).join(' • ');
-  nameBox.appendChild(meta);
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'card-title';
+  titleEl.textContent = item.title || 'Untitled';
+  footer.appendChild(titleEl);
 
-  card.appendChild(nameBox);
+  // show only YEAR here (do not include type)
+  if (item && (item.year || item.release)) {
+    const y = item.year ? String(item.year) : String(item.release);
+    const yearEl = document.createElement('p');
+    yearEl.className = 'card-year';
+    yearEl.textContent = y;
+    footer.appendChild(yearEl);
+  }
 
-  // click / keyboard behaviour
+  card.appendChild(footer);
+
+  // click / keyboard behaviour (keeps previous behavior)
   if (item.url) {
     card.style.cursor = 'pointer';
     const go = () => { window.location.href = item.url; };
@@ -555,15 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = (it && it.type) ? String(it.type).toLowerCase() : "";
         return t === "series" || t === "tv" || t === "show";
       });
-
-      // If some items lack type but should be shown, optionally assign them based on heuristics:
-      // Example: if episodes field present -> Series; if duration > 90m -> Movie (commented out, keep optional)
-      // allAnime.forEach(it => {
-      //   if (!it.type) {
-      //     if (it.episodes) series.push(it);
-      //     else movies.push(it);
-      //   }
-      // });
 
       // Load ads if present (optional)
       ads = [];
