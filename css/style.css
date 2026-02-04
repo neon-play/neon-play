@@ -894,18 +894,34 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   overflow: hidden;
   display: block;
 }
+.anime-card .card-banner-wrap .card-year {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 31;                           /* just above the banner */
+  padding: 6px 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.66);
+  color: var(--neon-green);
+  box-shadow: 0 8px 20px rgba(0,255,150,0.06);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* Footer (25%) */
 .anime-card .card-footer {
-   height: 20%;
-  flex: 0 0 20%;
-   min-height: 42px;
-  padding: 6px 10px;
+   height: auto;
+  flex: 0 0 auto;
+   min-height: 0;
+  padding: 8px 8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01));
+  background: transparent;
    overflow: hidden;
 }
 .anime-card .card-name-box { /* alias for older code that may still use .card-name-box */
@@ -924,7 +940,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 .anime-card .card-title {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--namebox-font-size, 15px);
   line-height: 1.05;
   color: var(--text);
   font-weight: 800;
@@ -934,6 +950,8 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 .anime-card .card-year {
   margin: 0;
+   padding: 0;
+   display: inline-block; 
   font-size: 11.5px;
   font-weight: 700;
   color: rgba(255,255,255,0.78);
@@ -1018,4 +1036,18 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   .anime-card .card-title  { font-size: 13px; }
   .anime-card .card-year   { font-size: 11px; }
   .anime-card .card-banner-wrap .card-audio { font-size: 10px; padding:5px 7px; }
+}
+@media (max-width: 360px) {
+  .anime-card .card-banner-wrap .card-year {
+    left: 6px;
+    bottom: 6px;
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+  .anime-card .card-banner-wrap .card-audio {
+    right: 6px;
+    bottom: 6px;
+    font-size: 10px;
+    padding: 5px 6px;
+  }
 }
