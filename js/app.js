@@ -422,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let seriesShown = 0;
   
   // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------
+  
   function createAnimeCard(item) {
   const card = document.createElement('div');
   card.className = 'anime-card';
@@ -429,7 +430,11 @@ document.addEventListener('DOMContentLoaded', () => {
   card.tabIndex = 0;
   card.setAttribute('aria-label', item.title || 'Anime card');
 
-  // --- Banner wrapper (positioned) ---
+  // --- Frame: contains banner + overlays (gold rounded box) ---
+  const frame = document.createElement('div');
+  frame.className = 'card-frame';
+
+  // --- Banner wrapper (positioned) inside frame ---
   const bannerWrap = document.createElement('div');
   bannerWrap.className = 'card-banner-wrap';
 
@@ -449,25 +454,38 @@ document.addEventListener('DOMContentLoaded', () => {
     bannerWrap.appendChild(audio);
   }
 
-  card.appendChild(bannerWrap);
+  // YEAR overlay (bottom-left) also inside bannerWrap
+  if (item && (item.year || item.release)) {
+    const y = item.year ? String(item.year) : String(item.release);
+    const yearOverlay = document.createElement('div');
+    yearOverlay.className = 'card-year';
+    yearOverlay.textContent = y;
+    bannerWrap.appendChild(yearOverlay);
+  }
 
-  // --- top-left compact badge (Movie) ---
+  // append bannerWrap to frame
+  frame.appendChild(bannerWrap);
+
+  // --- top-left compact badge (Movie) appended to frame so it sits on the gold box ---
   if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
     const badge = document.createElement('div');
     badge.className = 'card-badge';
     badge.textContent = 'Movie';
-    card.appendChild(badge);
+    frame.appendChild(badge);
   }
 
-  // --- subtle LARGE watermark for type (optional decorative) ---
+  // subtle LARGE watermark for type (attach to frame)
   if (item && item.type) {
     const stamp = document.createElement('div');
     stamp.className = 'card-type-watermark';
     stamp.textContent = String(item.type).toUpperCase();
-    card.appendChild(stamp);
+    frame.appendChild(stamp);
   }
 
-  // --- Footer: title (one line) + year (below) ---
+  // append frame to card (frame holds the gold border + banner)
+  card.appendChild(frame);
+
+  // --- Footer: title (one line) only; sits outside the gold frame ---
   const footer = document.createElement('div');
   footer.className = 'card-footer';
 
@@ -475,17 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
   titleEl.className = 'card-title';
   titleEl.textContent = item.title || 'Untitled';
   footer.appendChild(titleEl);
-    
-if (item && (item.year || item.release)) {
-  const y = item.year ? String(item.year) : String(item.release);
-  const yearOverlay = document.createElement('div');
-  yearOverlay.className = 'card-year';
-  yearOverlay.textContent = y;
-  if (bannerWrap) bannerWrap.appendChild(yearOverlay);
-}
+
   card.appendChild(footer);
 
-  // click / keyboard behaviour (keeps previous behavior)
+  // click / keyboard behaviour
   if (item.url) {
     card.style.cursor = 'pointer';
     const go = () => { window.location.href = item.url; };
