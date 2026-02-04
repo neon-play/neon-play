@@ -865,25 +865,61 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* Banner (75%) */
 .anime-card .card-banner {
   width: 100%;
-  height: 80%;
+  height: 100%;
   object-fit: cover;
   display: block;
   flex: 0 0 80%;
   border: 0;
 }
-
+.anime-card .card-banner-wrap .card-audio {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 30;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.68);
+  color: var(--neon-green);
+  box-shadow: 0 8px 20px rgba(0,255,150,0.06);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.anime-card .card-banner-warp {
+   position: relative;
+  width: 100%;
+  height: 80%;           /* banner ratio (change to 75/25 or 80/20 as needed) */
+  flex: 0 0 80%;
+  overflow: hidden;
+  display: block;
+}
 /* Footer (25%) */
-.anime-card .card-footer,
-.anime-card .card-name-box { /* alias for older code that may still use .card-name-box */
-  height: 20%;
+.anime-card .card-footer {
+   height: 20%;
   flex: 0 0 20%;
-  padding: 8px 10px;
+   min-height: 42px;
+  padding: 6px 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+  gap: 2px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01));
+   overflow: hidden;
+}
+.anime-card .card-name-box { /* alias for older code that may still use .card-name-box */
+  height: 20%;
+  flex: 0 0 20%;
+   min-height: 42px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  display: none !important;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.01));
+   overflow: hidden;
 }
 
 .anime-card .card-title {
@@ -896,13 +932,23 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+.anime-card .card-year {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  opacity: 0.95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .anime-card .card-meta {
   margin: 0;
   font-size: 12px;
   color: var(--neon-green);
   font-weight: 700;
   opacity: 0.95;
+   display: none !important;
 }
 
 /* compact top-left badge */
@@ -910,7 +956,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   position: absolute;
   top: 8px;
   left: 10px;
-  z-index: 20;
+  z-index: 32;
   font-weight: 700;
   font-size: 11px;
   padding: 4px 8px;
@@ -926,7 +972,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   position: absolute;
   top: 6px;
   left: 8px;
-  z-index: 5;
+  z-index: 6;
   font-weight: 900;
   font-size: 48px;
   line-height: 1;
@@ -968,4 +1014,8 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   .anime-card { width:140px; min-width:140px; height:210px; }
   .anime-card .card-type-watermark { font-size: 36px; top: 4px; left: 6px; }
   .anime-card .card-audio { font-size: 10px; padding:5px 7px; }
+   .anime-card .card-footer { min-height: 36px; padding: 6px 8px; }
+  .anime-card .card-title  { font-size: 13px; }
+  .anime-card .card-year   { font-size: 11px; }
+  .anime-card .card-banner-wrap .card-audio { font-size: 10px; padding:5px 7px; }
 }
