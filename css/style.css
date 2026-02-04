@@ -2,7 +2,7 @@
 :root {
   /* --- Card Sizing --- */
   --card-width: 180px;
-  --card-height: 250px;
+  --card-height: 240px;
   
   /* --- The Split: Controls Image vs Title Area --- */
   /* Increase this number to make the Image Shorter and Name Box Taller */
