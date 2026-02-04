@@ -936,13 +936,13 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .anime-card img.card-banner { display:block; }
 
 /* responsive adjustments */
-@media (max-width: 880px){
-  :root{ --card-width: 260px; --card-height: 360px; --namebox-height: 96px; --card-radius: 22px; --card-border-size: 7px; }
+@media (max-width: 180px){
+  :root{ --card-width: 180px; --card-height: 260px; --namebox-height: 96px; --card-radius: 22px; --card-border-size: 7px; }
   .anime-card .card-name-box h3 { font-size: 20px; }
   .anime-card .card-meta { font-size: 15px; }
 }
-@media (max-width: 420px){
-  :root{ --card-width: 200px; --card-height: 320px; --namebox-height: 84px; --card-radius: 18px; --card-border-size: 6px; }
+@media (max-width: 260px){
+  :root{ --card-width: 180px; --card-height: 260px; --namebox-height: 84px; --card-radius: 18px; --card-border-size: 6px; }
   .anime-card .card-name-box h3 { font-size: 16px; }
   .anime-card .card-meta { font-size: 13px; }
 }
