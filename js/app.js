@@ -475,16 +475,14 @@ document.addEventListener('DOMContentLoaded', () => {
   titleEl.className = 'card-title';
   titleEl.textContent = item.title || 'Untitled';
   footer.appendChild(titleEl);
-
-  // show only YEAR here (do not include type)
-  if (item && (item.year || item.release)) {
-    const y = item.year ? String(item.year) : String(item.release);
-    const yearEl = document.createElement('p');
-    yearEl.className = 'card-year';
-    yearEl.textContent = y;
-    footer.appendChild(yearEl);
-  }
-
+    
+if (item && (item.year || item.release)) {
+  const y = item.year ? String(item.year) : String(item.release);
+  const yearOverlay = document.createElement('div');
+  yearOverlay.className = 'card-year';
+  yearOverlay.textContent = y;
+  if (bannerWrap) bannerWrap.appendChild(yearOverlay);
+}
   card.appendChild(footer);
 
   // click / keyboard behaviour (keeps previous behavior)
@@ -582,6 +580,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = (it && it.type) ? String(it.type).toLowerCase() : "";
         return t === "series" || t === "tv" || t === "show";
       });
+
+      // If some items lack type but should be shown, optionally assign them based on heuristics:
+      // Example: if episodes field present -> Series; if duration > 90m -> Movie (commented out, keep optional)
+      // allAnime.forEach(it => {
+      //   if (!it.type) {
+      //     if (it.episodes) series.push(it);
+      //     else movies.push(it);
+      //   }
+      // });
 
       // Load ads if present (optional)
       ads = [];
