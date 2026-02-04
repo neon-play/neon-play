@@ -125,37 +125,50 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createCard(item) {
-    const card = document.createElement("div");
-    card.className = "anime-card";
+  const card = document.createElement("div");
+  card.className = "anime-card";
 
-    const title = item.title || item.name || "Untitled";
-    const imgSrc = item.image || item.poster || item.thumbnail || item.cover || "assets/placeholder.png";
-    const year = item.year || item.release || "";
-    const type = (item.type || item.category || (item.isSeries ? "Series" : item.isMovie ? "Movie" : "") ) || "Movie";
+  const title = escapeHtml(item.title || item.name || "Untitled");
+  const imgSrc = item.image || item.poster || item.thumbnail || item.cover || "assets/placeholder.png";
+  const year = escapeHtml(item.year || item.release || "");
+  const typeLabel = (item.type || item.category || (item.isSeries ? "Series" : item.isMovie ? "Movie" : "Movie")) || "Movie";
+  const audioLabel = escapeHtml(item.lang || item.language || item.audio || item.audio_lang || item.country || item.locale || item.language || "");
 
-    card.innerHTML = `
-      <img src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy">
-      <div class="card-info">
-        <h3>${escapeHtml(title)}</h3>
-        <p>${escapeHtml(year)} ${year ? "• " + escapeHtml(type) : "• " + escapeHtml(type)}</p>
+  // build inner HTML to match CSS structure
+  card.innerHTML = `
+    <div class="card-frame">
+      <div class="card-banner-wrap">
+        <img class="card-banner" src="${imgSrc}" alt="${title}" loading="lazy">
+        ${typeLabel ? `<div class="card-badge">${escapeHtml(typeLabel)}</div>` : ""}
+        ${year ? `<div class="card-year">${year}</div>` : ""}
+        ${audioLabel ? `<div class="card-audio">${audioLabel}</div>` : ""}
+        <div class="card-type-watermark">${escapeHtml(typeLabel)}</div>
       </div>
-    `;
+    </div>
 
-    const img = card.querySelector("img");
-    if (img) {
-      img.addEventListener("error", () => {
-        img.src = "assets/placeholder.png";
-      }, { once: true });
-    }
+    <div class="card-footer">
+      <div class="card-name-box">
+        <h3 class="card-title">${title}</h3>
+      </div>
+    </div>
+  `;
 
-    card.addEventListener("click", () => {
-      const id = item.id || item.slug || item.title || item.name;
-      window.location.href = `details.html?id=${encodeURIComponent(id)}`;
-    }, { passive: true });
-
-    return card;
+  // image fallback
+  const img = card.querySelector(".card-banner");
+  if (img) {
+    img.addEventListener("error", () => {
+      img.src = "assets/placeholder.png";
+    }, { once: true });
   }
 
+  // clickable
+  card.addEventListener("click", () => {
+    const id = item.id || item.slug || item.title || item.name;
+    window.location.href = `details.html?id=${encodeURIComponent(id)}`;
+  }, { passive: true });
+
+  return card;
+}
   function renderChunk() {
     if (!grid) return;
     grid.innerHTML = "";
