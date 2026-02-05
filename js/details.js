@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="card-year">${escapeHtml(year)}</span>
         <span class="card-audio">HD</span>
         <span class="card-type-watermark">${escapeHtml(type)}</span>
+        <p class="card-year">${escapeHtml(year)}</p>
       </div>
     </div>
 
