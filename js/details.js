@@ -125,47 +125,75 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createCard(item) {
-  const card = document.createElement("div");
-  card.className = "anime-card";
+  function createCard(item) {
+  const card = document.createElement('div');
+  card.className = 'anime-card';
+  card.tabIndex = 0;
 
-  const title = escapeHtml(item.title || item.name || "Untitled");
-  const imgSrc = item.image || item.poster || item.thumbnail || item.cover || "assets/placeholder.png";
-  const year = escapeHtml(item.year || item.release || "");
-  const typeLabel = (item.type || item.category || (item.isSeries ? "Series" : item.isMovie ? "Movie" : "Movie")) || "Movie";
-  const audioLabel = escapeHtml(item.lang || item.language || item.audio || item.audio_lang || item.country || item.locale || item.language || "");
+  const frame = document.createElement('div');
+  frame.className = 'card-frame';
 
-  // build inner HTML to match CSS structure
-  card.innerHTML = `
-    <div class="card-frame">
-      <div class="card-banner-wrap">
-        <img class="card-banner" src="${imgSrc}" alt="${title}" loading="lazy">
-        ${typeLabel ? `<div class="card-badge">${escapeHtml(typeLabel)}</div>` : ""}
-        ${year ? `<div class="card-year">${year}</div>` : ""}
-        ${audioLabel ? `<div class="card-audio">${audioLabel}</div>` : ""}
-        <div class="card-type-watermark">${escapeHtml(typeLabel)}</div>
-      </div>
-    </div>
+  const bannerWrap = document.createElement('div');
+  bannerWrap.className = 'card-banner-wrap';
 
-    <div class="card-footer">
-      <div class="card-name-box">
-        <h3 class="card-title">${title}</h3>
-      </div>
-    </div>
-  `;
+  const img = document.createElement('img');
+  img.className = 'card-banner';
+  img.src =
+    item.image ||
+    item.poster ||
+    item.thumbnail ||
+    item.cover ||
+    'assets/placeholder.png';
+  img.alt = item.title || item.name || 'Anime poster';
+  img.loading = 'lazy';
 
-  // image fallback
-  const img = card.querySelector(".card-banner");
-  if (img) {
-    img.addEventListener("error", () => {
-      img.src = "assets/placeholder.png";
-    }, { once: true });
+  bannerWrap.appendChild(img);
+
+  // YEAR overlay
+  if (item.year || item.release) {
+    const year = document.createElement('div');
+    year.className = 'card-year';
+    year.textContent = item.year || item.release;
+    bannerWrap.appendChild(year);
   }
 
-  // clickable
-  card.addEventListener("click", () => {
+  frame.appendChild(bannerWrap);
+
+  // Movie badge
+  const type = (item.type || item.category || '').toLowerCase();
+  if (type.includes('movie')) {
+    const badge = document.createElement('div');
+    badge.className = 'card-badge';
+    badge.textContent = 'Movie';
+    frame.appendChild(badge);
+  }
+
+  // Watermark
+  if (item.type) {
+    const wm = document.createElement('div');
+    wm.className = 'card-type-watermark';
+    wm.textContent = item.type.toUpperCase();
+    frame.appendChild(wm);
+  }
+
+  card.appendChild(frame);
+
+  // Footer
+  const footer = document.createElement('div');
+  footer.className = 'card-footer';
+
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'card-title';
+  titleEl.textContent = item.title || item.name || 'Untitled';
+
+  footer.appendChild(titleEl);
+  card.appendChild(footer);
+
+  // Navigation
+  card.addEventListener('click', () => {
     const id = item.id || item.slug || item.title || item.name;
     window.location.href = `details.html?id=${encodeURIComponent(id)}`;
-  }, { passive: true });
+  });
 
   return card;
 }
