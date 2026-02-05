@@ -45,366 +45,169 @@ document.addEventListener("click", (e) => {
 if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
 
 /* ======================================================= */
-  /* ===== LIVE SEARCH: REPLACE EXISTING LIVE-SEARCH IIFE WITH THIS BLOCK =====
-   (This loads data/movies.json + data/series.json for search, and preserves
-    the template node by removing only result nodes when re-rendering.)
-*/
+  /* =======================================================
+   ===== ADVANCED LIVE SEARCH ENGINE (DROP-IN) =====
+   Replaces old search IIFE completely
+   Uses data/anime.json
+======================================================= */
 (() => {
-  const INPUT_ID = "searchInput";
-  const PANEL_ID = "searchResultPanel";
-  const TEMPLATE_ID = "resultCardTemplate";
+  const input = document.querySelector(".search-box input");
+  const panel = document.getElementById("searchResultPanel");
+  const resultsInner = panel?.querySelector(".results-inner");
+  const noResults = panel?.querySelector(".no-results");
 
-  const searchInput = document.getElementById(INPUT_ID);
-  const searchPanel = document.getElementById(PANEL_ID);
-  const template = document.getElementById(TEMPLATE_ID);
-  const resultsInner = document.querySelector(".results-inner");
-  const noResultsNode = document.querySelector(".no-results");
-
-  let animeData = [];
-  let lastQuery = "";
-  const CARD_ESTIMATE_PX = 132;
-  const PANEL_PADDING_PX = 36;
-  const VISIBLE_COUNT = 4;
-  const MAX_RENDER = 300;
-
-  // -------------------------
-  // Fetch movies.json + series.json and normalize
-  // -------------------------
-  // -------------------------
-// Fetch data/anime.json and normalize for live search
-// -------------------------
-(function loadData() {
-  function normalizeArrayFromResponse(json) {
-    if (!json) return [];
-    // If it's an array already, assume it's the list
-    if (Array.isArray(json)) return json;
-    // Common envelope keys
-    if (typeof json === "object") {
-      if (Array.isArray(json.items)) return json.items;
-      if (Array.isArray(json.results)) return json.results;
-      if (Array.isArray(json.anime)) return json.anime;
-      // If object looks like a single item, wrap it
-      if (json.id || json.title) return [json];
-    }
-    return [];
+  if (!input || !panel || !resultsInner) {
+    console.warn("Live search: required DOM nodes missing");
+    return;
   }
 
+  let data = [];
+  let activeIndex = -1;
+  let debounceTimer = null;
+  const MAX_RESULTS = 8;
+
+  /* -------------------- LOAD DATA -------------------- */
   fetch("data/anime.json", { cache: "no-store" })
-    .then(async (resp) => {
-      if (!resp.ok) throw new Error("anime.json not ok: " + resp.status);
-      try {
-        const raw = await resp.json();
-        const all = normalizeArrayFromResponse(raw);
-
-        // Ensure safe structure and limit to MAX_RENDER
-        // Keep 'animeData' as a flat array used by the search feature
-        animeData = (all || []).slice(0, MAX_RENDER);
-        console.debug("Search: loaded anime items:", animeData.length);
-      } catch (err) {
-        console.warn("Search: failed to parse data/anime.json", err);
-        animeData = [];
-      }
+    .then(r => r.json())
+    .then(json => {
+      if (Array.isArray(json)) data = json;
+      else if (json?.anime) data = json.anime;
+      else if (json?.items) data = json.items;
+      else data = [];
     })
-    .catch((err) => {
-      console.warn("Search: could not fetch data/anime.json", err);
-      animeData = [];
-    });
-})();
+    .catch(() => (data = []));
 
-  // -------------------------
-  // Helpers
-  // -------------------------
-  const safe = (v) => (v === undefined || v === null ? "" : String(v));
-  const lc = (s) => safe(s).toLowerCase();
+  /* -------------------- UTILS -------------------- */
+  const norm = v =>
+    String(v || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .trim();
 
-  function openPanel() {
-    if (!searchPanel || !searchInput) return;
-    searchPanel.classList.add("active");
-    searchPanel.setAttribute("aria-hidden", "false");
-    searchInput.setAttribute("aria-expanded", "true");
+  function fuzzyMatch(text, query) {
+    let ti = 0;
+    for (let qi = 0; qi < query.length; qi++) {
+      ti = text.indexOf(query[qi], ti);
+      if (ti === -1) return false;
+      ti++;
+    }
+    return true;
   }
 
-  function closePanel() {
-    if (!searchPanel || !searchInput) return;
-    searchPanel.classList.remove("active");
-    searchPanel.setAttribute("aria-hidden", "true");
-    searchInput.setAttribute("aria-expanded", "false");
+  function score(item, q) {
+    let s = 0;
+    const title = norm(item.title || item.name);
+    const type = norm(item.type);
+    const year = norm(item.year || item.release);
+    const audio = norm(item.audio);
+
+    if (title.startsWith(q)) s += 50;
+    if (title.includes(q)) s += 30;
+    if (fuzzyMatch(title, q)) s += 10;
+    if (type.includes(q)) s += 6;
+    if (audio.includes(q)) s += 5;
+    if (year.includes(q)) s += 4;
+
+    return s;
   }
 
-  function adjustPanelHeight(resultCount) {
-    if (!searchPanel) return;
-    if (resultCount === 0) {
-      searchPanel.style.height = Math.max(140, CARD_ESTIMATE_PX) + "px";
+  /* -------------------- RENDER -------------------- */
+  function render(list) {
+    resultsInner.innerHTML = "";
+    activeIndex = -1;
+
+    if (!list.length) {
+      noResults.style.display = "block";
+      open();
       return;
     }
-    if (resultCount >= VISIBLE_COUNT) {
-      searchPanel.style.height = ""; // allow CSS 50vh
-      return;
-    }
-    const computed = resultCount * CARD_ESTIMATE_PX + PANEL_PADDING_PX;
-    searchPanel.style.height = computed + "px";
-  }
 
-  function resolveThumb(item) {
-    if (!item) return "";
-    return safe(item.thumbnail || item.image || item.thumb || item.poster || "");
-  }
+    noResults.style.display = "none";
 
-  // -------------------------
-  // DOM card creation (uses template if present)
-  // -------------------------
-  function createCard(item) {
-    if (!template || !template.content) {
-      const el = document.createElement("article");
-      el.className = "result-card";
-      el.tabIndex = 0;
-      el.innerHTML = `
-        <img class="result-thumb" src="${resolveThumb(item) || "assets/placeholder.png"}" alt="${safe(item.title)} thumbnail" />
+    list.forEach((item, i) => {
+      const div = document.createElement("div");
+      div.className = "result-card";
+      div.tabIndex = 0;
+
+      div.innerHTML = `
+        <img class="result-thumb" src="${item.image || "assets/placeholder.png"}">
         <div class="result-info">
-          <h3 class="result-title">${safe(item.title) || "Untitled"}</h3>
-          <p class="result-meta">${safe(item.year) ? safe(item.year) + " • " : ""}${safe(item.type) || ""}</p>
-          <p class="result-banner">${(safe(item.banner) || safe(item.studio) || "").slice(0, 120)}</p>
+          <strong>${item.title || "Untitled"}</strong>
+          <small>${[item.year, item.type, item.audio].filter(Boolean).join(" • ")}</small>
         </div>
       `;
-      attachCardBehavior(el, item);
-      return el;
-    }
 
-    const templateRoot = template.content.firstElementChild;
-    const node = templateRoot ? templateRoot.cloneNode(true) : template.content.cloneNode(true);
+      const go = () => {
+        const q = encodeURIComponent(item.title || "");
+        if (String(item.type).toLowerCase().includes("series"))
+          window.location.href = `series.html?q=${q}`;
+        else
+          window.location.href = `movies.html?q=${q}`;
+      };
 
-    let rootEl = node.nodeType === Node.ELEMENT_NODE ? node : node.querySelector(".result-card");
-    if (!rootEl) {
-      rootEl = node.firstElementChild || document.createElement("article");
-      if (!rootEl.classList.contains("result-card")) rootEl.classList.add("result-card");
-    }
+      div.addEventListener("click", go);
+      div.addEventListener("keydown", e => e.key === "Enter" && go());
 
-    const thumbEl = rootEl.querySelector(".result-thumb");
-    const titleEl = rootEl.querySelector(".result-title");
-    const metaEl = rootEl.querySelector(".result-meta");
-    const bannerEl = rootEl.querySelector(".result-banner");
-
-    const thumbUrl = resolveThumb(item);
-    if (thumbEl) {
-      if (thumbUrl) {
-        thumbEl.src = thumbUrl;
-        thumbEl.alt = `${safe(item.title)} thumbnail`;
-      } else {
-        thumbEl.remove();
-      }
-    }
-    if (titleEl) titleEl.textContent = safe(item.title) || "Untitled";
-    if (metaEl) {
-      const year = safe(item.year);
-      const type = safe(item.type);
-      metaEl.textContent = [year, type].filter(Boolean).join(" • ");
-    }
-    if (bannerEl) bannerEl.textContent = (safe(item.banner) || safe(item.studio) || "").slice(0, 120);
-
-    attachCardBehavior(rootEl, item);
-    return rootEl;
-  }
-
-  function attachCardBehavior(node, item) {
-    if (!node) return;
-    node.tabIndex = node.tabIndex >= 0 ? node.tabIndex : 0;
-
-    node.addEventListener("click", () => {
-      const target = getItemUrl(item);
-      if (target) window.location.href = target;
+      resultsInner.appendChild(div);
     });
 
-    node.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const target = getItemUrl(item);
-        if (target) window.location.href = target;
-      }
-    });
+    open();
   }
 
-  function getItemUrl(item) {
-    if (!item) return "";
-    if (safe(item.url)) return safe(item.url);
-    const t = lc(item.type);
-    const q = encodeURIComponent(safe(item.title));
-    if (t.includes("movie")) return `movies.html?q=${q}`;
-    if (t.includes("series")) return `series.html?q=${q}`;
-    return `?q=${q}`;
+  function open() {
+    panel.classList.add("active");
+    panel.setAttribute("aria-hidden", "false");
   }
 
-  // -------------------------
-  // Filter & render
-  // -------------------------
-  // Replace the existing findMatches(...) with this implementation
-function findMatches(query) {
-  if (!query || !query.trim()) return [];
-  const termRaw = query.trim();
-  const term = termRaw.toLowerCase();
-  const tlen = term.length;
-
-  // helpers
-  const safeField = (v) => (v === undefined || v === null ? "" : String(v));
-  const normalizeField = (v) => safeField(v).toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
-  const initials = (str) => {
-    if (!str) return "";
-    const m = (str.match(/\b\w/g) || []);
-    return m.join("").toLowerCase();
-  };
-
-  function fieldMatches(fieldValue) {
-    if (!fieldValue) return false;
-    const norm = normalizeField(fieldValue);
-    if (!norm) return false;
-
-    if (tlen < 3) {
-      // short queries -> require stronger matches
-      // 1) any word starts with the term
-      const words = norm.split(/\s+/).filter(Boolean);
-      for (let w of words) {
-        if (w.startsWith(term)) return true;
-      }
-      // 2) initials / acronym starts with term (e.g. 'SN' -> 'Spirited Night')
-      const ac = initials(fieldValue);
-      if (ac && ac.startsWith(term)) return true;
-
-      // otherwise don't match for short queries
-      return false;
-    } else {
-      // longer queries: allow substring match (preserve existing behavior)
-      return norm.includes(term);
-    }
+  function close() {
+    panel.classList.remove("active");
+    panel.setAttribute("aria-hidden", "true");
   }
 
-  const matches = [];
-  for (let i = 0; i < animeData.length; i++) {
-    const it = animeData[i];
-    if (!it) continue;
+  /* -------------------- INPUT -------------------- */
+  input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const q = norm(input.value);
+      if (!q) return close();
 
-    // fields to check (avoid matching sensitive fields like passwords)
-    const title = safeField(it.title);
-    const alt = safeField(it.alt || it.title_jp || "");
-    const tags = Array.isArray(it.tags) ? it.tags.join(" ") : safeField(it.tags || "");
-    const year = safeField(it.year);
-    const type = safeField(it.type || "");
-    const studio = safeField(it.studio || it.banner || "");
-    const id = safeField(it.id || it.slug || "");
+      const results = data
+        .map(item => ({ item, s: score(item, q) }))
+        .filter(r => r.s > 0)
+        .sort((a, b) => b.s - a.s)
+        .slice(0, MAX_RESULTS)
+        .map(r => r.item);
 
-    if (
-      fieldMatches(title) ||
-      fieldMatches(alt) ||
-      fieldMatches(tags) ||
-      fieldMatches(year) ||
-      fieldMatches(type) ||
-      fieldMatches(studio) ||
-      fieldMatches(id)
-    ) {
-      matches.push(it);
-      if (matches.length >= MAX_RENDER) break;
-    }
-  }
+      render(results);
+    }, 160);
+  });
 
-  return matches;
-}
+  /* -------------------- KEYBOARD -------------------- */
+  input.addEventListener("keydown", e => {
+    const cards = resultsInner.children;
+    if (!cards.length) return;
 
-  function renderResults(results, query) {
-    if (!resultsInner) return;
-
-    // Clear only result nodes — preserve <template> and other helper nodes
-    const existingCards = resultsInner.querySelectorAll('.result-card, .visible-no-results');
-    existingCards.forEach(n => n.remove());
-
-    if (!results || results.length === 0) {
-      if (noResultsNode) {
-        const nr = noResultsNode.cloneNode(true);
-        nr.hidden = false;
-        nr.classList.add("visible-no-results");
-        resultsInner.appendChild(nr);
-      }
-      adjustPanelHeight(0);
-      openPanel();
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % cards.length;
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + cards.length) % cards.length;
+    } else if (e.key === "Escape") {
+      close();
       return;
     }
 
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < results.length; i++) {
-      const card = createCard(results[i]);
-      fragment.appendChild(card);
-    }
-
-    resultsInner.appendChild(fragment);
-    adjustPanelHeight(results.length);
-    openPanel();
-    resultsInner.scrollTop = 0;
-  }
-
-  // -------------------------
-  // Debounce + input handlers
-  // -------------------------
-  let shortTimer = null;
-  const SHORT_DEBOUNCE = 40;
-
-  function handleInputEvent(e) {
-    const q = searchInput.value;
-    lastQuery = q;
-
-    clearTimeout(shortTimer);
-    shortTimer = setTimeout(() => {
-      if (!q || !q.trim()) {
-        closePanel();
-        return;
-      }
-      const results = findMatches(q);
-      renderResults(results, q);
-    }, SHORT_DEBOUNCE);
-  }
-
-  // close when clicking outside
-  document.addEventListener("click", (ev) => {
-    const target = ev.target;
-    const isInsidePanel = searchPanel && searchPanel.contains(target);
-    const isInsideSearch = searchInput && searchInput.closest(".search-bar")
-      ? searchInput.closest(".search-bar").contains(target)
-      : false;
-    if (!isInsidePanel && !isInsideSearch) {
-      closePanel();
-    }
+    [...cards].forEach(c => c.classList.remove("active"));
+    cards[activeIndex]?.classList.add("active");
+    cards[activeIndex]?.focus();
   });
 
-  if (searchInput) {
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closePanel();
-        searchInput.blur();
-      } else if (e.key === "ArrowDown") {
-        const first = resultsInner ? resultsInner.querySelector(".result-card") : null;
-        if (first) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    });
-
-    searchInput.addEventListener("input", handleInputEvent);
-    searchInput.addEventListener("focus", () => {
-      if (searchInput.value && searchInput.value.trim()) {
-        const results = findMatches(searchInput.value);
-        renderResults(results, searchInput.value);
-      }
-    });
-  } else {
-    console.warn("Live search: search input not found (#searchInput).");
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closePanel();
+  /* -------------------- CLICK OUTSIDE -------------------- */
+  document.addEventListener("click", e => {
+    if (!panel.contains(e.target) && !input.contains(e.target)) close();
   });
-
-  if (searchPanel) {
-    searchPanel.addEventListener("click", (e) => e.stopPropagation());
-  }
 })();
- 
 /*======================================LOAD FROM JSON============================================*/
 document.addEventListener('DOMContentLoaded', () => {
   const moviesContainer = document.getElementById('moviesContainer');
@@ -592,16 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return t === "series" || t === "tv" || t === "show";
       });
 
-      // If some items lack type but should be shown, optionally assign them based on heuristics:
-      // Example: if episodes field present -> Series; if duration > 90m -> Movie (commented out, keep optional)
-      // allAnime.forEach(it => {
-      //   if (!it.type) {
-      //     if (it.episodes) series.push(it);
-      //     else movies.push(it);
-      //   }
-      // });
-
-      // Load ads if present (optional)
+      
       ads = [];
       if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {
         try {
