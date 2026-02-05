@@ -5,7 +5,6 @@
 */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const pageTarget = document.body.dataset.target || "movies";
   const menuBtn = document.getElementById("menuBtn");
   const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
