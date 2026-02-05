@@ -150,7 +150,7 @@ if (pageTarget === "series") {
 
     ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
 
-    ${type ? `<span class="card-type-watermark">${escapeHtml(type)}</span>` : ""}
+    
   </div>
 </div>
   `;
