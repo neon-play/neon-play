@@ -145,8 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <div class="card-footer">
-      <h3 class="card-title">${escapeHtml(title)}</h3>
-      <p class="card-year">${escapeHtml(year)}</p>
+      <h3 class="card-title">${escapeHtml(title)}</h3>     
     </div>
   `;
 
