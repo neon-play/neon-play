@@ -173,15 +173,7 @@
                   collected = maybe.filter(isSeriesItem).map(normalize).filter(Boolean);
                 }
               }
-            }
-
-            // convert series items to look like "movies" for details.js filtering:
-            // details.js looks for items whose type/category/format/media include "movie".
-            // We set type = "Movie" for each series item so details.js will include them.
-            const transformed = collected.map(it => {
-              if (it && typeof it === 'object') {
-                it.type = 'Movie';
-              }
+            }      
               return it;
             });
 
