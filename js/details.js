@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+if (!document.getElementById("detailsHero")) return;
   const menuBtn = document.getElementById("menuBtn");
   const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
@@ -153,8 +153,9 @@ if (pageTarget === "series") {
   img.onerror = () => img.src = "assets/placeholder.png";
 
   card.addEventListener("click", () => {
-  if (!item.id) return;
-  window.location.href = `details.html?id=${encodeURIComponent(item.id)}`;
+  const id = item.id || item.slug || item.title || item.name;
+  if (!id) return;
+  window.location.href = `details.html?id=${encodeURIComponent(id)}`;
 });
   return card;
 }
