@@ -395,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return t === "series" || t === "tv" || t === "show";
       });
 
-      
       ads = [];
       if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {
         try {
