@@ -147,7 +147,6 @@ if (pageTarget === "series") {
 
         <span class="card-badge">${escapeHtml(type)}</span>
         <span class="card-year">${escapeHtml(year)}</span>
-${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
     ${type ? `<span class="card-badge">${escapeHtml(type)}</span>` : ""}
 ${type ? `<span class="card-type-watermark">${escapeHtml(type)}</span>` : ""}
       </div>
