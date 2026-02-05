@@ -67,24 +67,24 @@ document.addEventListener("DOMContentLoaded", () => {
         if (maybe.length) items = maybe;
       }
 
-      const hasTypeMarker = items.some(it =>
-        it && (it.type || it.category || it.format || it.media || it.section || it.isMovie !== undefined)
-      );
+   // Detect which page we are on
+const pageTarget = document.body?.getAttribute("data-target");
 
-      if (hasTypeMarker) {
-        allMovies = items.filter(item =>
-          !!item && (
-            (typeof item.type === "string" && item.type.toLowerCase().includes("movie")) ||
-            (typeof item.category === "string" && item.category.toLowerCase().includes("movie")) ||
-            (typeof item.format === "string" && item.format.toLowerCase().includes("movie")) ||
-            (typeof item.media === "string" && item.media.toLowerCase().includes("movie")) ||
-            (item.isMovie === true) ||
-            (item.section && String(item.section).toLowerCase().includes("movie"))
-          )
-        );
-      } else {
-        allMovies = items.slice();
-      }
+// STRICT filtering based ONLY on JSON type
+if (pageTarget === "series") {
+  allMovies = items.filter(item =>
+    item &&
+    typeof item.type === "string" &&
+    item.type.trim().toLowerCase() === "series"
+  );
+} else {
+  // default = movies page
+  allMovies = items.filter(item =>
+    item &&
+    typeof item.type === "string" &&
+    item.type.trim().toLowerCase() === "movie"
+  );
+}
 
       if (!allMovies.length) {
         const nestedArrays = Object.values(data).filter(v => Array.isArray(v));
@@ -131,8 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const title = item.title || item.name || "Untitled";
   const imgSrc = item.image || item.poster || item.cover || "assets/placeholder.png";
   const year = item.year || item.release || "—";
-  const type = (item.type || item.category || "Movie").toUpperCase();
-
+  const type = item.type ? String(item.type).toUpperCase() : "";
   // STRICT audio from JSON only
   const audio = typeof item.audio === "string" ? item.audio.trim() : "";
 
@@ -149,9 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="card-badge">${escapeHtml(type)}</span>
         <span class="card-year">${escapeHtml(year)}</span>
 
-        ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
-
-        <span class="card-type-watermark">${escapeHtml(type)}</span>
+    ${type ? `<span class="card-badge">${escapeHtml(type)}</span>` : ""}
+${type ? `<span class="card-type-watermark">${escapeHtml(type)}</span>` : ""}
       </div>
     </div>
 
