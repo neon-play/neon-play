@@ -101,7 +101,49 @@
   <footer class="footer">
     <p>© 2026 𝐍𝒆𝒐𝒏 𝑨𝐧𝐢𝐦𝐞 𝑨𝐬𝐢𝑨. 𝒕𝒉𝒆 𝒐𝒇𝒇𝒊𝒄𝒊𝒂𝒍 𝑨𝒔𝒊𝒂𝒏 𝑨𝒏𝒊𝒎𝒆 𝑺𝒕𝒓𝒆𝒂𝒎𝒊𝒏𝒈 𝑺𝒊𝒕𝒆.</p>
   </footer>
+<script>
+(function () {
+  // Only run on series page
+  if (document.body.dataset.target !== "series") return;
 
+  const originalFetch = window.fetch.bind(window);
+
+  window.fetch = function (resource, options) {
+    const url =
+      typeof resource === "string"
+        ? resource
+        : resource && resource.url
+        ? resource.url
+        : "";
+
+    // Intercept only anime.json
+    if (url.includes("data/anime.json")) {
+      return originalFetch(resource, options)
+        .then(res => res.json())
+        .then(data => {
+          // Ensure array
+          const list = Array.isArray(data) ? data : [];
+
+          // FILTER: only type === "Series"
+          const seriesOnly = list.filter(item =>
+            item &&
+            typeof item.type === "string" &&
+            item.type.toLowerCase() === "series"
+          );
+
+          // Return filtered response
+          return new Response(JSON.stringify(seriesOnly), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          });
+        });
+    }
+
+    // Pass through all other fetch calls
+    return originalFetch(resource, options);
+  };
+})();
+</script>
   <!-- ===== JS (unchanged) ===== -->
   <script src="js/details.js"></script>
 <script src="js/bardesign.js"></script>
