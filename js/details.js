@@ -125,78 +125,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createCard(item) {
-  function createCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-  card.tabIndex = 0;
+  const card = document.createElement("div");
+  card.className = "anime-card";
 
-  const frame = document.createElement('div');
-  frame.className = 'card-frame';
+  const title = item.title || item.name || "Untitled";
+  const imgSrc = item.image || item.poster || item.cover || "assets/placeholder.png";
+  const year = item.year || item.release || "—";
+  const type = (item.type || item.category || "Movie").toUpperCase();
 
-  const bannerWrap = document.createElement('div');
-  bannerWrap.className = 'card-banner-wrap';
+  card.innerHTML = `
+    <div class="card-frame">
+      <div class="card-banner-wrap">
+        <img class="card-banner" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy">
 
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src =
-    item.image ||
-    item.poster ||
-    item.thumbnail ||
-    item.cover ||
-    'assets/placeholder.png';
-  img.alt = item.title || item.name || 'Anime poster';
-  img.loading = 'lazy';
+        <span class="card-year">${escapeHtml(year)}</span>
+        <span class="card-audio">HD</span>
+        <span class="card-type-watermark">${escapeHtml(type)}</span>
+      </div>
+    </div>
 
-  bannerWrap.appendChild(img);
+    <div class="card-footer">
+      <h3 class="card-title">${escapeHtml(title)}</h3>
+      <p class="card-year">${escapeHtml(year)}</p>
+    </div>
+  `;
 
-  // YEAR overlay
-  if (item.year || item.release) {
-    const year = document.createElement('div');
-    year.className = 'card-year';
-    year.textContent = item.year || item.release;
-    bannerWrap.appendChild(year);
-  }
+  const img = card.querySelector("img");
+  img.onerror = () => {
+    img.src = "assets/placeholder.png";
+  };
 
-  frame.appendChild(bannerWrap);
-
-  // Movie badge
-  const type = (item.type || item.category || '').toLowerCase();
-  if (type.includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'Movie';
-    frame.appendChild(badge);
-  }
-
-  // Watermark
-  if (item.type) {
-    const wm = document.createElement('div');
-    wm.className = 'card-type-watermark';
-    wm.textContent = item.type.toUpperCase();
-    frame.appendChild(wm);
-  }
-
-  card.appendChild(frame);
-
-  // Footer
-  const footer = document.createElement('div');
-  footer.className = 'card-footer';
-
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || item.name || 'Untitled';
-
-  footer.appendChild(titleEl);
-  card.appendChild(footer);
-
-  // Navigation
-  card.addEventListener('click', () => {
-    const id = item.id || item.slug || item.title || item.name;
+  card.addEventListener("click", () => {
+    const id = item.id || item.slug || title;
     window.location.href = `details.html?id=${encodeURIComponent(id)}`;
   });
 
   return card;
 }
+
   function renderChunk() {
     if (!grid) return;
     grid.innerHTML = "";
