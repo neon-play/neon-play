@@ -24,7 +24,7 @@
     </div>
 
     <h1 class="site-title" style="margin:0 auto;">
-      𝐍𝒆𝒐𝒏<span>𝑨𝐧𝐢𝐦𝐞</span> 𝑨𝐬𝐢𝑨
+      NEON<span>ANIME</span> HUB
     </h1>
 
   </header>
@@ -67,7 +67,7 @@
   <aside class="side-menu" id="sideMenu">
 
     <div class="menu-header">
-      <h2>--《𝗠𝗘𝗡𝗨》--</h2>
+      <h2>Menu</h2>
     </div>
 
     <ul class="menu-list">
@@ -85,7 +85,7 @@
     <section class="content-section">
 
       <div class="section-header">
-        <h2>𝑨𝐧𝐢𝐦𝐞 𝐒𝐞𝐫𝐢𝐞𝐬</h2>
+        <h2>Series</h2>
       </div>
 
       <!-- IMPORTANT: keep the same grid id ("movieGrid") so details.js can target it unchanged -->
@@ -99,51 +99,107 @@
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
-    <p>© 2026 𝐍𝒆𝒐𝒏 𝑨𝐧𝐢𝐦𝐞 𝑨𝐬𝐢𝑨. 𝒕𝒉𝒆 𝒐𝒇𝒇𝒊𝒄𝒊𝒂𝒍 𝑨𝒔𝒊𝒂𝒏 𝑨𝒏𝒊𝒎𝒆 𝑺𝒕𝒓𝒆𝒂𝒎𝒊𝒏𝒈 𝑺𝒊𝒕𝒆.</p>
+    <p>© 2026 NeonAnime Hub</p>
   </footer>
-<script>
-(function () {
-  // Only run on series page
-  if (document.body.dataset.target !== "series") return;
 
-  const originalFetch = window.fetch.bind(window);
+  <!-- ===== Fetch shim: intercept data/anime.json and return only SERIES =====
+       This runs BEFORE details.js so the existing details.js can be used unchanged.
+       It:
+         - captures the original fetch
+         - when the request is for data/anime.json, extracts only items that look like series
+         - converts those series items to have type "Movie" so details.js (which filters for movie-like items)
+           will include them; other movie items are excluded
+  -->
+  <script>
+  (function(){
+    // Only enable on the series page
+    if (!document.body || document.body.getAttribute('data-target') !== 'series') return;
 
-  window.fetch = function (resource, options) {
-    const url =
-      typeof resource === "string"
-        ? resource
-        : resource && resource.url
-        ? resource.url
-        : "";
+    const origFetch = window.fetch.bind(window);
+    window.fetch = function(resource, init){
+      // detect string URL (also handle Request object)
+      const url = (typeof resource === 'string') ? resource : (resource && resource.url) ? resource.url : '';
+      if (url && url.includes('data/anime.json')) {
+        // fetch original and transform JSON payload
+        return origFetch(resource, init).then(res => {
+          // clone and parse JSON (safe since we don't forward original Response)
+          return res.clone().json().then(rawData => {
 
-    // Intercept only anime.json
-    if (url.includes("data/anime.json")) {
-      return originalFetch(resource, options)
-        .then(res => res.json())
-        .then(data => {
-          // Ensure array
-          const list = Array.isArray(data) ? data : [];
+            // helper: identify series-like item
+            function isSeriesItem(it){
+              if (!it || typeof it !== 'object') return false;
+              const check = prop => !!prop && /series/i.test(String(prop));
+              return check(it.type) || check(it.category) || check(it.format) || check(it.media) || check(it.section) ||
+                     // sometimes 'Series' is implied by 'episodes' or 'seasons'
+                     (it.episodes !== undefined) || (it.seasons !== undefined);
+            }
 
-          // FILTER: only type === "Series"
-          const seriesOnly = list.filter(item =>
-            item &&
-            typeof item.type === "string" &&
-            item.type.toLowerCase() === "series"
-          );
+            // helper: normalize an item (ensure it has an image/title)
+            function normalize(it){
+              if (!it) return null;
+              // prefer title / name
+              if (!it.title && it.name) it.title = it.name;
+              // minimal fallbacks for details.js
+              if (!it.image && (it.poster || it.cover || it.thumbnail)) it.image = it.poster || it.cover || it.thumbnail;
+              return it;
+            }
 
-          // Return filtered response
-          return new Response(JSON.stringify(seriesOnly), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
+            // collect series items from different shapes of JSON
+            let collected = [];
+
+            if (Array.isArray(rawData)) {
+              collected = rawData.filter(isSeriesItem).map(normalize).filter(Boolean);
+            } else if (rawData && typeof rawData === 'object') {
+              // common arrays inside object
+              const arraysToCheck = [];
+              if (Array.isArray(rawData.series)) arraysToCheck.push(...rawData.series);
+              if (Array.isArray(rawData.anime)) arraysToCheck.push(...rawData.anime);
+              if (Array.isArray(rawData.items)) arraysToCheck.push(...rawData.items);
+              if (Array.isArray(rawData.results)) arraysToCheck.push(...rawData.results);
+              if (Array.isArray(rawData.movies)) arraysToCheck.push(...rawData.movies);
+
+              if (arraysToCheck.length) {
+                collected = arraysToCheck.filter(isSeriesItem).map(normalize).filter(Boolean);
+              } else {
+                // fallback: check nested arrays anywhere
+                for (const v of Object.values(rawData)) {
+                  if (Array.isArray(v)) {
+                    collected.push(...v.filter(isSeriesItem).map(normalize).filter(Boolean));
+                  }
+                }
+                // final fallback: check top-level object values that look like items
+                if (!collected.length) {
+                  const maybe = Object.values(rawData).filter(v => v && typeof v === 'object' && (v.title || v.name) && (v.image || v.poster || v.cover));
+                  collected = maybe.filter(isSeriesItem).map(normalize).filter(Boolean);
+                }
+              }
+            }
+
+            // convert series items to look like "movies" for details.js filtering:
+            // details.js looks for items whose type/category/format/media include "movie".
+            // We set type = "Movie" for each series item so details.js will include them.
+            const transformed = collected.map(it => {
+              if (it && typeof it === 'object') {
+                it.type = 'Movie';
+              }
+              return it;
+            });
+
+            // Return an array of transformed items as the JSON response (details.js accepts arrays)
+            return new Response(JSON.stringify(transformed), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
           });
         });
-    }
+      }
 
-    // Pass through all other fetch calls
-    return originalFetch(resource, options);
-  };
-})();
-</script>
+      // other fetches pass through unchanged
+      return origFetch(resource, init);
+    };
+  })();
+  </script>
+
   <!-- ===== JS (unchanged) ===== -->
   <script src="js/details.js"></script>
 <script src="js/bardesign.js"></script>
