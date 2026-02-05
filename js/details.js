@@ -136,17 +136,27 @@ document.addEventListener("DOMContentLoaded", () => {
   card.innerHTML = `
     <div class="card-frame">
       <div class="card-banner-wrap">
-        <img class="card-banner" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy">
+        <img class="card-banner"
+             src="${imgSrc}"
+             alt="${escapeHtml(title)}"
+             loading="lazy">
 
+        <!-- TOP LEFT TYPE -->
+        <span class="card-badge">${escapeHtml(type)}</span>
+
+        <!-- BOTTOM LEFT YEAR -->
         <span class="card-year">${escapeHtml(year)}</span>
-        <span class="card-audio">audio</span>
+
+        <!-- BOTTOM RIGHT AUDIO / HD -->
+        <span class="card-audio">Audio</span>
+
+        <!-- LARGE FAINT WATERMARK -->
         <span class="card-type-watermark">${escapeHtml(type)}</span>
-        <p class="card-year">${escapeHtml(year)}</p>
       </div>
     </div>
 
     <div class="card-footer">
-      <h3 class="card-title">${escapeHtml(title)}</h3>     
+      <h3 class="card-title">${escapeHtml(title)}</h3>
     </div>
   `;
 
