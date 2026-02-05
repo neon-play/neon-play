@@ -5,6 +5,7 @@
 */
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const menuBtn = document.getElementById("menuBtn");
   const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
@@ -71,26 +72,17 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (hasTypeMarker) {
-  allMovies = items.filter(item => {
-    const isMovie =
-      item.type?.toLowerCase().includes("movie") ||
-      item.category?.toLowerCase().includes("movie") ||
-      item.format?.toLowerCase().includes("movie") ||
-      item.media?.toLowerCase().includes("movie") ||
-      item.isMovie === true;
-
-    const isSeries =
-      item.type?.toLowerCase().includes("series") ||
-      item.category?.toLowerCase().includes("series") ||
-      item.format?.toLowerCase().includes("series") ||
-      item.media?.toLowerCase().includes("series") ||
-      item.episodes !== undefined ||
-      item.seasons !== undefined;
-
-    return pageTarget === "series" ? isSeries : isMovie;
-  });
-}
-      else {
+        allMovies = items.filter(item =>
+          !!item && (
+            (typeof item.type === "string" && item.type.toLowerCase().includes("movie")) ||
+            (typeof item.category === "string" && item.category.toLowerCase().includes("movie")) ||
+            (typeof item.format === "string" && item.format.toLowerCase().includes("movie")) ||
+            (typeof item.media === "string" && item.media.toLowerCase().includes("movie")) ||
+            (item.isMovie === true) ||
+            (item.section && String(item.section).toLowerCase().includes("movie"))
+          )
+        );
+      } else {
         allMovies = items.slice();
       }
 
@@ -141,35 +133,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const year = item.year || item.release || "—";
   const type = (item.type || item.category || "Movie").toUpperCase();
 
-  // STRICT audio from JSON only
-  const audio = typeof item.audio === "string" ? item.audio.trim() : "";
-
-  console.log("AUDIO FIELD:", item.title, "=>", audio);
-
   card.innerHTML = `
     <div class="card-frame">
       <div class="card-banner-wrap">
-        <img class="card-banner"
-             src="${imgSrc}"
-             alt="${escapeHtml(title)}"
-             loading="lazy">
+        <img class="card-banner" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy">
 
-        <span class="card-badge">${escapeHtml(type)}</span>
         <span class="card-year">${escapeHtml(year)}</span>
-
-        ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
-
+        <span class="card-audio">audio</span>
         <span class="card-type-watermark">${escapeHtml(type)}</span>
+        <p class="card-year">${escapeHtml(year)}</p>
       </div>
     </div>
 
     <div class="card-footer">
-      <h3 class="card-title">${escapeHtml(title)}</h3>
+      <h3 class="card-title">${escapeHtml(title)}</h3>     
     </div>
   `;
 
   const img = card.querySelector("img");
-  img.onerror = () => img.src = "assets/placeholder.png";
+  img.onerror = () => {
+    img.src = "assets/placeholder.png";
+  };
 
   card.addEventListener("click", () => {
     const id = item.id || item.slug || title;
