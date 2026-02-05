@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <img class="card-banner" src="${imgSrc}" alt="${escapeHtml(title)}" loading="lazy">
 
         <span class="card-year">${escapeHtml(year)}</span>
-        <span class="card-audio">HD</span>
+        <span class="card-audio">audio</span>
         <span class="card-type-watermark">${escapeHtml(type)}</span>
         <p class="card-year">${escapeHtml(year)}</p>
       </div>
