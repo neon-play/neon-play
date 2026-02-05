@@ -133,6 +133,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const year = item.year || item.release || "—";
   const type = (item.type || item.category || "Movie").toUpperCase();
 
+  // STRICT audio from JSON only
+  const audio = typeof item.audio === "string" ? item.audio.trim() : "";
+
+  console.log("AUDIO FIELD:", item.title, "=>", audio);
+
   card.innerHTML = `
     <div class="card-frame">
       <div class="card-banner-wrap">
@@ -141,16 +146,11 @@ document.addEventListener("DOMContentLoaded", () => {
              alt="${escapeHtml(title)}"
              loading="lazy">
 
-        <!-- TOP LEFT TYPE -->
         <span class="card-badge">${escapeHtml(type)}</span>
-
-        <!-- BOTTOM LEFT YEAR -->
         <span class="card-year">${escapeHtml(year)}</span>
 
-        <!-- BOTTOM RIGHT AUDIO / HD -->
-        <span class="card-audio">Audio</span>
+        ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
 
-        <!-- LARGE FAINT WATERMARK -->
         <span class="card-type-watermark">${escapeHtml(type)}</span>
       </div>
     </div>
@@ -161,9 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
 
   const img = card.querySelector("img");
-  img.onerror = () => {
-    img.src = "assets/placeholder.png";
-  };
+  img.onerror = () => img.src = "assets/placeholder.png";
 
   card.addEventListener("click", () => {
     const id = item.id || item.slug || title;
