@@ -138,23 +138,21 @@ if (pageTarget === "series") {
   console.log("AUDIO FIELD:", item.title, "=>", audio);
 
   card.innerHTML = `
-    <div class="card-frame">
-      <div class="card-banner-wrap">
-        <img class="card-banner"
-             src="${imgSrc}"
-             alt="${escapeHtml(title)}"
-             loading="lazy">
+  <div class="card-frame">
+  <div class="card-banner-wrap">
+    <img class="card-banner"
+         src="${imgSrc}"
+         alt="${escapeHtml(title)}"
+         loading="lazy">
 
-        <span class="card-badge">${escapeHtml(type)}</span>
-        <span class="card-year">${escapeHtml(year)}</span>
     ${type ? `<span class="card-badge">${escapeHtml(type)}</span>` : ""}
-${type ? `<span class="card-type-watermark">${escapeHtml(type)}</span>` : ""}
-      </div>
-    </div>
+    <span class="card-year">${escapeHtml(year)}</span>
 
-    <div class="card-footer">
-      <h3 class="card-title">${escapeHtml(title)}</h3>
-    </div>
+    ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
+
+    ${type ? `<span class="card-type-watermark">${escapeHtml(type)}</span>` : ""}
+  </div>
+</div>
   `;
 
   const img = card.querySelector("img");
