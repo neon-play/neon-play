@@ -1,7 +1,7 @@
 /* ----- Card appearance variables (edit these values) ----- */
 :root{
     --card-banner-percent: 85%; 
-   --card-footer-gap: 10px;
+   --card-footer-gap: 5px;
    
    
    --namebox-font-size: 15px;
