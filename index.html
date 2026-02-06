@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Streaming Aisa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+<body>
+  <!-- ===== HEADER / NAVBAR ===== -->
+  <header class="navbar">
+    <div class="menu-icon" id="menuBtn" aria-label="Open menu" role="button" tabindex="0">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <h1 class="site-title">
+      𝐍𝒆𝒐𝒏<span>𝑨𝐧𝐢𝐦𝐞</span> 𝑨𝐬𝐢𝑨
+    </h1>
+  </header>
+
+  <!-- ===== SEARCH BAR ===== -->
+  
+<section class="search-section">
+  <div class="search-wrapper">
+    <!-- Horizontal full-width search bar -->
+    <div class="search-bar" role="search" aria-expanded="false">
+      <i class="material-icons" aria-hidden="true">search</i>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="𝑆𝑒𝑎𝑟𝑐ℎ 𝑌𝑜𝑢𝑟 𝐹𝑖𝑙𝑚/𝑆𝑒𝑟𝑖𝑒𝑠 𝐻𝑒𝑟𝑒..."
+        autocomplete="off"
+        aria-label="Search anime (movies & series)"
+        aria-controls="searchResultPanel"
+      />
+    </div>
+  </div>
+
+  <!-- Result panel (hidden by default; JS will add .active to show / slide it) -->
+  <div id="searchResultPanel" class="search-result-panel" aria-hidden="true">
+    <div class="results-inner" role="list" aria-live="polite">
+      <!-- Template for JS to clone for each result (kept in HTML for clarity) -->
+      <template id="resultCardTemplate">
+        <article class="result-card" role="option" tabindex="0">
+          <img class="result-thumb" src="assets/placeholder.png" alt="thumbnail" />
+          <div class="result-info">
+            <h3 class="result-title">Example Title</h3>
+            <p class="result-meta">2024 • Movie</p>
+            <p class="result-banner">Studio / Short excerpt</p>
+          </div>
+        </article>
+      </template>
+
+      <!-- Fallback node shown when no results (JS will toggle display) -->
+      <div class="no-results" role="status" aria-live="polite" hidden>
+        No results found
+      </div>
+    </div>
+  </div>
+</section>
+  <!-- ===== SLIDE MENU ===== -->
+  <aside class="side-menu" id="sideMenu" aria-hidden="true">
+    <div class="menu-header">
+      <h2>--《𝗠𝗘𝗡𝗨》--</h2>
+    </div>
+
+    <ul class="menu-list">
+      <li data-category="home"><a href="index.html">🏠 Home</a></li>
+      <li data-category="movies"><a href="movies.html">🎬 Movies</a></li>
+      <li data-category="series"><a href="series.html">📺 Series</a></li>
+      <li data-category="genres"><a href="genres.html">🗃️ Genres</a></li>
+    </ul>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+<!-- Put this AFTER the <main> open tag and BEFORE the movies section -->
+<main>
+  <!-- Ad strip: JSON driven (js will inject ad cards here) -->
+  <div id="adStrip" class="ad-strip horizontal-scroll" aria-label="Site advertisements" role="region">
+    <!-- JS will populate ad cards from data/ads.json -->
+  </div>
+
+  <!-- ===== MOVIES SECTION ===== -->
+  <section class="content-section">
+    <!-- add "strip gold" to mark golden strip header -->
+    <div class="section-header strip gold">
+      <h2>𝑨𝐧𝐢𝐦𝐞 𝐌𝐨𝐯𝐢𝐞𝐬...</h2>
+    </div>
+
+    <div class="horizontal-scroll" id="moviesContainer">
+      <!-- JS will inject .anime-card elements here from data/movies.json -->
+    </div>
+
+    <button class="load-more" id="loadMoreMovies" data-target="movies">Load More Movies</button>
+  </section>
+
+  <!-- ===== SERIES SECTION ===== -->
+  <section class="content-section">
+    <!-- add "strip lime" to mark lime strip header -->
+    <div class="section-header strip lime">
+      <h2>𝑨𝐧𝐢𝐦𝐞 𝐒𝐞𝐫𝐢𝐞𝐬...</h2>
+    </div>
+
+    <div class="horizontal-scroll" id="seriesContainer">
+      <!-- JS will inject .anime-card elements here from data/series.json -->
+    </div>
+
+    <button class="load-more" id="loadMoreSeries" data-target="series">Load More Series</button>
+  </section>
+</main>
+  
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>© 2026 𝐍𝒆𝒐𝒏 𝑨𝐧𝐢𝐦𝐞 𝑨𝐬𝐢𝑨. 𝒕𝒉𝒆 𝒐𝒇𝒇𝒊𝒄𝒊𝒂𝒍 𝑨𝒔𝒊𝒂𝒏 𝑨𝒏𝒊𝒎𝒆 𝑺𝒕𝒓𝒆𝒂𝒎𝒊𝒏𝒈 𝑺𝒊𝒕𝒆.</p>
+  </footer>
+
+  <!-- ===== JS ===== -->
+  <script src="js/app.js"></script>
+  <script src="js/bardesign.js"></script>
+</body>
+</html>
