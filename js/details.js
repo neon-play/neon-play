@@ -405,10 +405,7 @@ if (pageTarget === "series") {
   else if (/^\d{1,3}m$/.test(value)) {
     d.classList.add('duration');
   }
-  // ===== VIEWS (K / M / B) =====
-  else if (/^\d+(\.\d+)?[kmb]$/i.test(raw)) {
-    d.classList.add('views');
-  }
+  
   d.textContent = text;
   return d;
 }
