@@ -1200,3 +1200,33 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .load-more-btn:active {
   transform: translateY(0);
 }
+/* ================= SIMILAR GENRE SECTION ================= */
+
+.similar-section {
+  max-width: 1120px;
+  margin: 32px auto;
+}
+
+.similar-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* horizontal scroll */
+.similar-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+/* hide scrollbar (optional) */
+.similar-row::-webkit-scrollbar {
+  height: 6px;
+}
+.similar-row::-webkit-scrollbar-thumb {
+  background: rgba(255,215,0,0.4);
+  border-radius: 10px;
+}
