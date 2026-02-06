@@ -1165,3 +1165,38 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* Episodes */.badge.episodes {  color: #8ac926;    }
 /* Duration */.badge.duration {  color: #f77f00;}
 /* Views */.badge.views {  color: #9b5de5;}
+
+/* ================= LOAD MORE MOVIES BUTTON ================= */
+
+.load-more-btn {
+  display: block;
+  margin: 28px auto 10px;     /* centers & pushes below cards */
+  padding: 12px 26px;
+
+  background: transparent;   /* no fill */
+  color: #ffd86b;
+
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1px;
+
+  border-radius: 999px;
+  border: 2px solid #ffd86b;
+
+  cursor: pointer;
+  transition: 
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.load-more-btn:hover {
+  color: #fff;
+  border-color: #fff;
+  transform: translateY(-2px);
+}
+
+.load-more-btn:active {
+  transform: translateY(0);
+}
