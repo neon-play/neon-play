@@ -185,7 +185,7 @@ if (pageTarget === "series") {
     const fragment = document.createDocumentFragment();
     for (const m of slice) fragment.appendChild(createCard(m));
     grid.appendChild(fragment);
-    grid.appendChild(fragment);
+
     loadMoreBtn.style.display = visibleCount >= filteredMovies.length ? "none" : "block";
   }
 
