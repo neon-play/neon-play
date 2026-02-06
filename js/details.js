@@ -379,12 +379,28 @@ if (pageTarget === "series") {
   }
 
   function createBadge(text) {
-    const d = document.createElement('div');
-    d.className = 'badge';
-    d.textContent = text;
-    return d;
+  const d = document.createElement('div');
+  d.classList.add('badge');
+
+  const value = String(text).toLowerCase();
+
+  if (value.includes('pg') || value.includes('rated')) {
+    d.classList.add('rating');
+  } else if (value.includes('japanese') || value.includes('english') || value.includes('dub')) {
+    d.classList.add('audio');
+  } else if (value === 'movie' || value === 'series') {
+    d.classList.add('type');
+  } else if (value.includes('m') || value.includes('min')) {
+    d.classList.add('duration');
+  } else if (value.includes('ep')) {
+    d.classList.add('episodes');
+  } else if (value.includes('k') || value.includes('m')) {
+    d.classList.add('views');
   }
 
+  d.textContent = text;
+  return d;
+}
   function showNotFound() {
     notFound.style.display = 'block';
     document.getElementById('detailsHero').style.display = 'none';
