@@ -382,22 +382,33 @@ if (pageTarget === "series") {
   const d = document.createElement('div');
   d.classList.add('badge');
 
-  const value = String(text).toLowerCase();
+  const raw = String(text).trim();
+  const value = raw.toLowerCase();
 
-  if (value.includes('pg') || value.includes('rated')) {
+  // ===== RATING =====
+  if (/^pg|rated|r$|nc-17/.test(value)) {
     d.classList.add('rating');
-  } else if (value.includes('japanese') || value.includes('english') || value.includes('dub')) {
+  }
+  // ===== AUDIO =====
+  else if (value.includes('audio') || value.includes('japanese') || value.includes('english') || value.includes('dub')) {
     d.classList.add('audio');
-  } else if (value === 'movie' || value === 'series') {
+  }
+  // ===== TYPE =====
+  else if (value === 'movie' || value === 'series') {
     d.classList.add('type');
-  } else if (value.includes('m') || value.includes('min')) {
-    d.classList.add('duration');
-  } else if (value.includes('ep')) {
+  }
+  // ===== EPISODES =====
+  else if (value.startsWith('e-') || value.includes('ep')) {
     d.classList.add('episodes');
-  } else if (value.includes('k') || value.includes('m')) {
+  }
+  // ===== DURATION (minutes only) =====
+  else if (/^\d{1,3}m$/.test(value)) {
+    d.classList.add('duration');
+  }
+  // ===== VIEWS (K / M / B) =====
+  else if (/^\d+(\.\d+)?[kmb]$/i.test(raw)) {
     d.classList.add('views');
   }
-
   d.textContent = text;
   return d;
 }
@@ -406,7 +417,6 @@ if (pageTarget === "series") {
     document.getElementById('detailsHero').style.display = 'none';
     overviewSection.style.display = 'none';
   }
-
   // attempt to find item in many possible JSON shapes (array, object with arrays, nested)
   function findItemsFromJson(data) {
     let items = [];
