@@ -583,23 +583,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Split into movies & series (case-insensitive)
       movies = (allAnime || []).filter(it => {
-        const t = (it && it.type) ? String(it.type).toLowerCase() : "";
-        return t === "movie" || t === "movies";
-      });
+  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";
+  return t === "movie" || t === "movies";
+});
 
       series = (allAnime || []).filter(it => {
-        const t = (it && it.type) ? String(it.type).toLowerCase() : "";
-        return t === "series" || t === "tv" || t === "show";
-      });
-
-      // If some items lack type but should be shown, optionally assign them based on heuristics:
-      // Example: if episodes field present -> Series; if duration > 90m -> Movie (commented out, keep optional)
-      // allAnime.forEach(it => {
-      //   if (!it.type) {
-      //     if (it.episodes) series.push(it);
-      //     else movies.push(it);
-      //   }
-      // });
+  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";
+  return t === "series" || t === "tv" || t === "show";
+});
 
       // Load ads if present (optional)
       ads = [];
