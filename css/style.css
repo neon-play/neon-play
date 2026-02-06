@@ -850,7 +850,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   height: 260px;
    border: none !important; 
   border-radius: 14px;
-  overflow: visible;
+  overflow: hidden;
   cursor: pointer;
   transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
   background: transparent !important;
