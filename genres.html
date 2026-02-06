@@ -1,50 +1,52 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Browse by Genre</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Browse Genres</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Existing CSS -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- Existing global styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Genre page specific styles -->
+  <link rel="stylesheet" href="css/genres.css" />
 
   <!-- Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
+<!-- ===== HEADER ===== -->
 <header class="navbar">
-    <div class="menu-icon" id="menuBtn" aria-label="Open menu" role="button" tabindex="0">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <h1 class="site-title">
-      𝐍𝒆𝒐𝒏<span>𝑨𝐧𝐢𝐦𝐞</span> 𝑨𝐬𝐢𝑨
+  <div class="menu-icon" id="menuBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+    
     </h1>
+  </div>
+  <h1 class="site-title">
+      𝐍𝒆𝒐𝒏<span>𝑨𝐧𝐢𝐦𝐞</span> 𝑨𝐬𝐢𝑨 </h1>
 </header>
 
+<!-- ===== SIDE MENU (same as index) ===== -->
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+     <div class="menu-header">
+      <h2>--《𝗠𝗘𝗡𝗨》--</h2>
+  <ul class="menu-list">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="movies.html">🎬 Movies</a></li>
+    <li><a href="series.html">📺 Series</a></li>
+    <li><a href="genres.html" class="current">🗂 Genres</a></li>
+  </ul>
+</aside>
+
+<!-- ===== MAIN ===== -->
 <main class="genre-page">
-
-  <!-- ===== GENRE GRID ===== -->
   <section class="genre-grid" id="genreGrid">
-    <!-- JS will inject genre tiles -->
+    <!-- JS injects genre cards -->
   </section>
-
-  <!-- ===== FILTERED RESULTS ===== -->
-  <section class="content-section" id="genreResults" hidden>
-    <div class="section-header strip gold">
-      <h2 id="genreTitle">Genre</h2>
-    </div>
-
-    <div class="horizontal-scroll" id="genreContainer"></div>
-  </section>
-
 </main>
 
+<!-- ===== JS ===== -->
+<script src="js/app.js"></script> <!-- menu logic -->
 <script src="js/genres.js"></script>
-  <script src="js/app.js"></script>
 </body>
 </html>
