@@ -1,1 +1,44 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browse by Genre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Existing CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="menu-icon" id="menuBtn">
+    <span></span><span></span><span></span>
+  </div>
+  <h1 class="site-title">𝑮𝒆𝒏𝒓𝒆𝒔</h1>
+</header>
+
+<main class="genre-page">
+
+  <!-- ===== GENRE GRID ===== -->
+  <section class="genre-grid" id="genreGrid">
+    <!-- JS will inject genre tiles -->
+  </section>
+
+  <!-- ===== FILTERED RESULTS ===== -->
+  <section class="content-section" id="genreResults" hidden>
+    <div class="section-header strip gold">
+      <h2 id="genreTitle">Genre</h2>
+    </div>
+
+    <div class="horizontal-scroll" id="genreContainer"></div>
+  </section>
+
+</main>
+
+<script src="js/genres.js"></script>
+</body>
+</html>
