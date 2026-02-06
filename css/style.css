@@ -1186,10 +1186,14 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 /* Episodes / Duration */
-.badge.duration,
-.badge.episodes {
+.badge.duration {
   background: linear-gradient(135deg, #00ff66, #00b84a);
   color: #02240a;
+  box-shadow: 0 0 16px rgba(0,255,102,0.55);
+}
+.badge.episodes {
+  background: linear-gradient(135deg, #00ff66, #00b84a);
+  color: #31FFB8;
   box-shadow: 0 0 16px rgba(0,255,102,0.55);
 }
 
