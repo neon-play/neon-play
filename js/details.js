@@ -140,11 +140,20 @@ if (pageTarget === "series") {
   card.innerHTML = `
   <div class="card-frame">
     <div class="card-banner-wrap">
-      <img class="card-banner" src="${imgSrc}">
-      <span class="card-badge">${type}</span>
-      <span class="card-year">${year}</span>
-      <span class="card-audio">${audio}</span>
+      <img class="card-banner"
+           src="${imgSrc}"
+           alt="${escapeHtml(title)}"
+           loading="lazy">
+
+      ${type ? `<span class="card-badge">${escapeHtml(type)}</span>` : ""}
+      <span class="card-year">${escapeHtml(year)}</span>
+      ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
     </div>
+  </div>
+
+  <!-- TITLE FOOTER (THIS WAS MISSING) -->
+  <div class="card-footer">
+    <h3 class="card-title">${escapeHtml(title)}</h3>
   </div>
 `;
 
