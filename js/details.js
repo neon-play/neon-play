@@ -1,9 +1,3 @@
-/* updated details.js
-   - renders search results directly into the main grid (movieGrid)
-   - removed separate search-result-panel usage
-   - preserves pagination, sorting, load-more, image fallback
-*/
-
 document.addEventListener("DOMContentLoaded", () => {
 
   const menuBtn = document.getElementById("menuBtn");
@@ -17,16 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let allMovies = [];
   let filteredMovies = [];
   let visibleCount = PAGE_SIZE;
-
-  // Ensure loadMoreBtn exists
-  if (!loadMoreBtn) {
-    loadMoreBtn = document.createElement("button");
-    loadMoreBtn.className = "load-more-btn";
-    loadMoreBtn.id = "loadMoreBtn";
-    loadMoreBtn.textContent = "Load More Movies";
-    if (grid && grid.parentNode) grid.parentNode.appendChild(loadMoreBtn);
-    else document.querySelector("main")?.appendChild(loadMoreBtn);
-  }
 
   /* MENU toggle */
   if (menuBtn && sideMenu) {
