@@ -842,7 +842,8 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 /* Consolidated anime-card styles (75% banner / 25% footer, gold border, watermarks) */
 .anime-card {
   position: relative;
-  display: flex;
+    outline: none;
+  display: block;
   flex-direction: column;
   justify-content: flex-start;
   width: 180px;
