@@ -139,21 +139,14 @@ if (pageTarget === "series") {
 
   card.innerHTML = `
   <div class="card-frame">
-  <div class="card-banner-wrap">
-    <img class="card-banner"
-         src="${imgSrc}"
-         alt="${escapeHtml(title)}"
-         loading="lazy">
-
-    ${type ? `<span class="card-badge">${escapeHtml(type)}</span>` : ""}
-    <span class="card-year">${escapeHtml(year)}</span>
-
-    ${audio ? `<span class="card-audio">${escapeHtml(audio)}</span>` : ""}
-
-    
+    <div class="card-banner-wrap">
+      <img class="card-banner" src="${imgSrc}">
+      <span class="card-badge">${type}</span>
+      <span class="card-year">${year}</span>
+      <span class="card-audio">${audio}</span>
+    </div>
   </div>
-</div>
-  `;
+`;
 
   const img = card.querySelector("img");
   img.onerror = () => img.src = "assets/placeholder.png";
