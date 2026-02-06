@@ -1,16 +1,32 @@
+/* updated details.js
+   - renders search results directly into the main grid (movieGrid)
+   - removed separate search-result-panel usage
+   - preserves pagination, sorting, load-more, image fallback
+*/
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const menuBtn = document.getElementById("menuBtn");
   const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
   const sortSelect = document.getElementById("sortSelect");
-  const grid =document.getElementById("moviesContainer") ||document.getElementById("seriesContainer");
+  const grid = document.getElementById("movieGrid");
   let loadMoreBtn = document.getElementById("loadMoreBtn");
 
   const PAGE_SIZE = 10;
   let allMovies = [];
   let filteredMovies = [];
   let visibleCount = PAGE_SIZE;
+
+  // Ensure loadMoreBtn exists
+  if (!loadMoreBtn) {
+    loadMoreBtn = document.createElement("button");
+    loadMoreBtn.className = "load-more-btn";
+    loadMoreBtn.id = "loadMoreBtn";
+    loadMoreBtn.textContent = "Load More Movies";
+    if (grid && grid.parentNode) grid.parentNode.appendChild(loadMoreBtn);
+    else document.querySelector("main")?.appendChild(loadMoreBtn);
+  }
 
   /* MENU toggle */
   if (menuBtn && sideMenu) {
@@ -52,11 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
    // Detect which page we are on
-const page = location.pathname.toLowerCase();
-const pageTarget =
-  page.includes("series") ? "series" :
-  page.includes("movies") ? "movies" :
-  "movies";
+const pageTarget = document.body?.getAttribute("data-target");
+
 // STRICT filtering based ONLY on JSON type
 if (pageTarget === "series") {
   allMovies = items.filter(item =>
@@ -171,6 +184,7 @@ if (pageTarget === "series") {
 
     const fragment = document.createDocumentFragment();
     for (const m of slice) fragment.appendChild(createCard(m));
+    grid.appendChild(fragment);
     grid.appendChild(fragment);
     loadMoreBtn.style.display = visibleCount >= filteredMovies.length ? "none" : "block";
   }
@@ -513,65 +527,9 @@ if (pageTarget === "series") {
     // show content
     document.getElementById('detailsHero').style.display = '';
     notFound.style.display = 'none';
-     // ===== SIMILAR GENRE =====
-if (!item.genre || !similarRow) return;
-
-fetch('data/anime.json')
-  .then(r => r.json())
-  .then(data => {
-    const all = findItemsFromJson(data);
-
-    similarAll = all.filter(it =>
-      it !== item &&
-      it.genre &&
-      it.genre === item.genre
-    );
-
-    renderSimilar();
-  });
-  }
-function renderSimilar() {
-  similarRow.innerHTML = "";
-
-  const slice = similarAll.slice(0, similarVisible);
-  for (const it of slice) {
-    const card = document.createElement("div");
-    card.className = "anime-card";
-
-    const img = it.image || it.poster || it.cover || placeholder;
-    const title = it.title || it.name || "Untitled";
-
-    card.innerHTML = `
-      <div class="card-frame">
-        <div class="card-banner-wrap">
-          <img class="card-banner" src="${img}" alt="${escapeHtml(title)}">
-        </div>
-      </div>
-    `;
-
-    card.onclick = () => {
-      const id = it.id || it.slug || title;
-      window.location.href = `details.html?id=${encodeURIComponent(id)}`;
-    };
-
-    similarRow.appendChild(card);
   }
 
-  similarLoadMore.style.display =
-    similarVisible >= similarAll.length ? "none" : "block";
-}
-   if (similarLoadMore) {
-  similarLoadMore.addEventListener("click", () => {
-    similarVisible += 24;
-    renderSimilar();
-  });
-}
   // load JSON and render by id param
-  const similarRow = document.getElementById("similarRow");
-const similarLoadMore = document.getElementById("similarLoadMore");
-
-let similarAll = [];
-let similarVisible = 24;
   (function loadData() {
     const id = PARAM('id') || PARAM('slug') || PARAM('q');
     if (!id) { showNotFound(); return; }
