@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
   const sortSelect = document.getElementById("sortSelect");
-  const grid = document.getElementById("movieGrid");
+  const grid =document.getElementById("moviesContainer") ||document.getElementById("seriesContainer");
   let loadMoreBtn = document.getElementById("loadMoreBtn");
 
   const PAGE_SIZE = 10;
@@ -52,8 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
    // Detect which page we are on
-const pageTarget = document.body?.getAttribute("data-target");
-
+const page = location.pathname.toLowerCase();
+const pageTarget =
+  page.includes("series") ? "series" :
+  page.includes("movies") ? "movies" :
+  "movies";
 // STRICT filtering based ONLY on JSON type
 if (pageTarget === "series") {
   allMovies = items.filter(item =>
@@ -168,7 +171,6 @@ if (pageTarget === "series") {
 
     const fragment = document.createDocumentFragment();
     for (const m of slice) fragment.appendChild(createCard(m));
-    grid.appendChild(fragment);
     grid.appendChild(fragment);
     loadMoreBtn.style.display = visibleCount >= filteredMovies.length ? "none" : "block";
   }
@@ -565,11 +567,12 @@ function renderSimilar() {
   });
 }
   // load JSON and render by id param
-  (function loadData() {const similarRow = document.getElementById("similarRow");
+  const similarRow = document.getElementById("similarRow");
 const similarLoadMore = document.getElementById("similarLoadMore");
 
 let similarAll = [];
 let similarVisible = 24;
+  (function loadData() {
     const id = PARAM('id') || PARAM('slug') || PARAM('q');
     if (!id) { showNotFound(); return; }
 
