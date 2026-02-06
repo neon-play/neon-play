@@ -393,7 +393,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 /* ================= Accessibility focus ================= */
-:focus { outline: 3px solid rgba(0,255,160,0.12); outline-offset:3px; border-radius:6px; }
+:focus { outline: none !important; outline-offset:3px; border-radius:6px; }
 
 /* ================= Responsive tweaks (kept minimal & relevant) ================= */
 @media (max-width:880px){
