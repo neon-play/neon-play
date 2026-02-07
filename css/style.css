@@ -863,14 +863,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   box-shadow: none !important; 
   -webkit-print-color-adjust: exact;
 }
-.anime-info {
-  position: relative;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.85),
-    rgba(0,0,0,0)
-  );
-}
 .anime-card .card-frame {
   width: 100%;
   height: var(--card-banner-percent) !important; /* banner ratio */
@@ -1017,10 +1009,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.anime-card img {
-  display: block;
-  filter: none;
 }
 .anime-card .card-year {
   margin: 0;
