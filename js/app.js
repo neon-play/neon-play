@@ -43,7 +43,95 @@ document.addEventListener("click", (e) => {
 });
 
 if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
+(() => {
+  if (!sideMenu) return;
 
+  const EDGE_ZONE = 28;
+  let startX = 0;
+  let currentX = 0;
+  let isDragging = false;
+  let isOpenAtStart = false;
+  let menuWidth = sideMenu.getBoundingClientRect().width;
+
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+  function syncWidth() {
+    menuWidth = sideMenu.getBoundingClientRect().width;
+  }
+  window.addEventListener("resize", syncWidth);
+
+  function start(e) {
+  if (e.touches && e.touches.length > 1) return; // ignore pinch
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const isOpen = sideMenu.classList.contains("open");
+
+    // OPEN gesture → only from edge
+    if (!isOpen && x > EDGE_ZONE) return;
+
+    startX = x;
+    currentX = x;
+    isOpenAtStart = isOpen;
+    isDragging = true; // ⬅️ only drag when menu is open
+
+    if (isOpen) {
+      sideMenu.classList.add("dragging");
+    }
+  }
+
+function move(e) {
+  if (!isDragging) return;
+
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  currentX = x; // ⬅️ ALWAYS update
+
+  if (!isOpenAtStart) return; // ⬅️ no visual drag when closed
+
+  const delta = currentX - startX;
+
+  if (delta >= 0) return;
+
+  const translateX = clamp(delta, -menuWidth, 0);
+  sideMenu.style.transform = `translateX(${translateX}px)`;
+}
+
+function end() {
+  const delta = currentX - startX;
+
+  // CLOSED → swipe RIGHT from left edge → SNAP OPEN
+  if (!isOpenAtStart && startX <= EDGE_ZONE && delta > 60) {
+    openMenu(); // uses existing CSS animation
+    reset();
+    return;
+  }
+
+  // OPEN → swipe LEFT → DRAG CLOSE
+  if (isOpenAtStart) {
+    sideMenu.classList.remove("dragging");
+
+    if (delta < -menuWidth * 0.25) {
+      closeMenu();
+    } else {
+      openMenu(); // snap back
+    }
+    sideMenu.style.transform = "";
+  }
+
+  reset();
+}
+
+  function reset() {
+    isDragging = false;
+    isOpenAtStart = false;
+  }
+
+  document.addEventListener("touchstart", start, { passive: true });
+  document.addEventListener("touchmove", move, { passive: true });
+  document.addEventListener("touchend", end);
+
+  document.addEventListener("mousedown", start);
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", end);
+})();
 /* ======================================================= */
   /* ===== LIVE SEARCH: REPLACE EXISTING LIVE-SEARCH IIFE WITH THIS BLOCK =====
    (This loads data/movies.json + data/series.json for search, and preserves
@@ -66,13 +154,6 @@ if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
   const PANEL_PADDING_PX = 36;
   const VISIBLE_COUNT = 4;
   const MAX_RENDER = 300;
-
-  // -------------------------
-  // Fetch movies.json + series.json and normalize
-  // -------------------------
-  // -------------------------
-// Fetch data/anime.json and normalize for live search
-// -------------------------
 (function loadData() {
   function normalizeArrayFromResponse(json) {
     if (!json) return [];
@@ -110,10 +191,6 @@ if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
       animeData = [];
     });
 })();
-
-  // -------------------------
-  // Helpers
-  // -------------------------
   const safe = (v) => (v === undefined || v === null ? "" : String(v));
   const lc = (s) => safe(s).toLowerCase();
 
@@ -149,10 +226,6 @@ if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
     if (!item) return "";
     return safe(item.thumbnail || item.image || item.thumb || item.poster || "");
   }
-
-  // -------------------------
-  // DOM card creation (uses template if present)
-  // -------------------------
   function createCard(item) {
     if (!template || !template.content) {
       const el = document.createElement("article");
