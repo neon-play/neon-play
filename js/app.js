@@ -43,11 +43,6 @@ document.addEventListener("click", (e) => {
 });
 
 if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
-/* =======================================================
- /* =======================================================
-   ===== SIDE MENU SWIPE (OPEN = SNAP, CLOSE = DRAG) =====
-======================================================= */
-
 (() => {
   if (!sideMenu) return;
 
@@ -159,13 +154,6 @@ function end() {
   const PANEL_PADDING_PX = 36;
   const VISIBLE_COUNT = 4;
   const MAX_RENDER = 300;
-
-  // -------------------------
-  // Fetch movies.json + series.json and normalize
-  // -------------------------
-  // -------------------------
-// Fetch data/anime.json and normalize for live search
-// -------------------------
 (function loadData() {
   function normalizeArrayFromResponse(json) {
     if (!json) return [];
@@ -203,10 +191,6 @@ function end() {
       animeData = [];
     });
 })();
-
-  // -------------------------
-  // Helpers
-  // -------------------------
   const safe = (v) => (v === undefined || v === null ? "" : String(v));
   const lc = (s) => safe(s).toLowerCase();
 
@@ -242,10 +226,6 @@ function end() {
     if (!item) return "";
     return safe(item.thumbnail || item.image || item.thumb || item.poster || "");
   }
-
-  // -------------------------
-  // DOM card creation (uses template if present)
-  // -------------------------
   function createCard(item) {
     if (!template || !template.content) {
       const el = document.createElement("article");
@@ -566,7 +546,14 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.textContent = 'Movie';
     frame.appendChild(badge);
   }
-    
+
+  // subtle LARGE watermark for type (attach to frame)
+  if (item && item.type) {
+    const stamp = document.createElement('div');
+    stamp.className = 'card-type-watermark';
+    stamp.textContent = String(item.type).toUpperCase();
+    frame.appendChild(stamp);
+  }
 
   // append frame to card (frame holds the gold border + banner)
   card.appendChild(frame);
