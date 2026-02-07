@@ -544,7 +544,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   align-items: stretch;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.6);
   border: 1px solid rgba(255,255,255,0.03);
   background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(255,255,255,0.02));
 }
@@ -593,7 +592,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* Make each anime-card occupy a single grid cell (so two per column stack) */
 #moviesContainer.horizontal-scroll .anime-card,
-#seriesContainer.horizontal-scroll . anime-card,
+#seriesContainer.horizontal-scroll .anime-card,
 
 /* Responsive: slightly narrower on very small screens */
 @media (max-width: 420px) {
@@ -873,11 +872,10 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   overflow: hidden;
   box-sizing: border-box;
   position: relative;
-  margin-bottom: var(--card-footer-gap) !important; 
-  /* gold border & shadow moved here */
-  border: 2px solid rgba(212,175,55,0.95);
+  margin-bottom: var(--card-footer-gap) !important;
   box-shadow: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  background: transparent !important;
+  box-shadow: none !important;
 }
 .anime-card .card-frame .card-banner-wrap {
   position: relative;
@@ -888,7 +886,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 .anime-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 22px rgba(212,175,55,0.18);
+  box-shadow: none !important;
 }
 .anime-card .card-frame .card-banner {
   width: 100%;
