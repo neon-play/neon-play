@@ -934,10 +934,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .anime-card .card-frame .card-year { left: 8px; bottom: 8px; z-index: 31; }
 .anime-card .card-frame .card-badge { top: 8px; left: 10px; z-index: 32; }
 
-/* watermark inside frame */
-.anime-card .card-frame .card-type-watermark {
-  top: 6px; left: 8px; z-index: 6;
-}
 
 /* footer (title) sits below the frame */
 .anime-card .card-footer {
