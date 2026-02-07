@@ -333,19 +333,50 @@ body{
   box-shadow: 0 0 20px #00ff88, 0 0 40px #baff00;
 }
 /* ================= SIDE MENU (slide-out) ================= */
+/* ================= SIDE MENU (PRO FIX) ================= */
 .side-menu{
-  position:fixed;
-  left:-320px;
-  top:0;
-  bottom:0;
-  width:320px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0; /* static now */
+  width: 320px;
+  max-width: 86vw;
   background: linear-gradient(180deg, rgba(0,0,0,0.94), rgba(0,0,0,0.9));
-  z-index:80;
-  padding:18px;
-  transition: left 240ms ease;
+  z-index: 80;
+  padding: 18px;
+
+  transform: translateX(-100%);
+  transition:
+    transform 420ms cubic-bezier(.18,.89,.32,1.28); /* bounce */
+
   box-shadow: 8px 0 40px rgba(0,0,0,0.6);
+  will-change: transform;
+  touch-action: pan-y;
 }
-.side-menu.open{ left:0; }
+
+/* OPEN STATE */
+.side-menu.open{
+  transform: translateX(0);
+}
+
+/* While dragging — no animation */
+.side-menu.dragging{
+  transition: none !important;
+}
+
+/* Responsive width sync */
+@media (max-width:880px){
+  .side-menu{
+    width:260px;
+  }
+}
+body.side-open::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 70;
+}
 .side-menu .menu-header h2{ margin:0 0 12px; color:var(--text); }
 .menu-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
 .menu-list a{ color:var(--muted); text-decoration:none; padding:10px; border-radius:8px; display:block; }
@@ -399,7 +430,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 @media (max-width:880px){
   .featured-thumb{ width:124px; height:78px; flex:0 0 124px; }
   .site-title{ font-size:18px; }
-  .side-menu{ width:260px; left:-260px; }
 }
 
 @media (max-width:520px){
@@ -901,11 +931,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   position: absolute;
 }
 .anime-card .card-frame .card-audio { right: 8px; bottom: 8px; z-index: 30; }
-
-/* bottom-left year (already styled earlier) */
 .anime-card .card-frame .card-year { left: 8px; bottom: 8px; z-index: 31; }
-
-/* top-left badge sits on frame */
 .anime-card .card-frame .card-badge { top: 8px; left: 10px; z-index: 32; }
 
 /* watermark inside frame */
@@ -1095,6 +1121,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* responsive sizes */
 @media (max-width:880px) {
+   . side-menu{width:260px;} 
   .anime-card { width:150px; min-width:150px; height:260px; }
   .anime-card .card-type-watermark { font-size: 35px; }
    .anime-card .card-banner-wrap { height: 78%; flex: 0 0 78%; }
@@ -1178,7 +1205,6 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
     rgba(0,0,0,0.15)
   );
 }
-
 /* Center content */
 .genre-content {
   position: relative;
