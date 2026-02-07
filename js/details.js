@@ -5,9 +5,6 @@
 */
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  const menuBtn = document.getElementById("menuBtn");
-  const sideMenu = document.getElementById("sideMenu");
   const searchInput = document.querySelector(".search-box input");
   const sortSelect = document.getElementById("sortSelect");
   const grid = document.getElementById("movieGrid");
@@ -26,22 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadMoreBtn.textContent = "Load More Movies";
     if (grid && grid.parentNode) grid.parentNode.appendChild(loadMoreBtn);
     else document.querySelector("main")?.appendChild(loadMoreBtn);
-  }
-
-  /* MENU toggle */
-  if (menuBtn && sideMenu) {
-    menuBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      sideMenu.classList.toggle("open");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-        sideMenu.classList.remove("open");
-      }
-    });
-
-    sideMenu.addEventListener("click", e => e.stopPropagation());
   }
 
   /* FETCH data/anime.json */
