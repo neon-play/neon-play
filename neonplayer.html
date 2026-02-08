@@ -337,7 +337,7 @@ function type() {
     setTimeout(type, 6000 / text.length);} else {setTimeout(() => {
       info.textContent = "";i = 0;type();}, 1800);}}
 type();
-const TARGET_HASH = "f95679864ed3e19fe279baaf20d79b610d38b5535ab20703d5baa4f1be3bce6e"; 
+let TARGET_HASH = ""; 
 let attempts = 0;
 let isLocked = false;
 const passInput = document.getElementById('pass');
@@ -420,7 +420,9 @@ fetch("data/anime.json")
       : data;
 
     if (!anime) return;
-
+if (anime.SHA) {
+      TARGET_HASH = anime.SHA.trim();
+    }
     // Extract E1, E2, D1, D2 dynamically
     Object.keys(anime).forEach(key => {
       if (key.startsWith("E")) {
@@ -484,4 +486,4 @@ function loadStream(btn, id) {
   setTimeout(() => loader.style.display = "none", 2500);}
 </script>
 </body>
-</html>
+  </html>
