@@ -1,0 +1,75 @@
+/* PAGE */
+body {
+  margin: 0;
+  background: #0b0b0b;
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+.browse-page {
+  max-width: 1400px;
+  margin: auto;
+  padding: 16px;
+}
+
+/* HEADER */
+.browse-header {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.browse-header h1 {
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* GRID */
+.browse-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, 1fr); /* MOBILE: 2 cols */
+}
+
+/* DESKTOP */
+@media (min-width: 900px) {
+  .browse-grid {
+    grid-template-columns: repeat(6, 1fr); /* DESKTOP: 6 cols */
+    gap: 14px; /* SAME GAP as mobile */
+  }
+}
+
+/* CARD (matches your existing style) */
+.anime-card {
+  cursor: pointer;
+}
+
+.card-banner {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* LOAD MORE */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 20px;
+}
+
+.load-more-btn {
+  padding: 12px 26px;
+  font-size: 15px;
+  border-radius: 30px;
+  border: none;
+  background: #00ffcc;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.load-more-btn:hover {
+  transform: scale(1.05);
+}
