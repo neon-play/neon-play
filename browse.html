@@ -1,1 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Browse Genre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/browse.css" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="navbar">
+  <div class="menu-icon" id="menuBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+    
+    </h1>
+  </div>
+  <h1 class="site-title">
+      𝐍𝒆𝒐𝒏<span>𝑨𝐧𝐢𝐦𝐞</span> 𝑨𝐬𝐢𝑨 </h1>
+</header>
+
+<!-- ===== SIDE MENU (same as index) ===== -->
+<aside class="side-menu" id="sideMenu" aria-hidden="true">
+     <div class="menu-header">
+      <h2>--《𝗠𝗘𝗡𝗨》--</h2>
+  <ul class="menu-list">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="movies.html">🎬 Movies</a></li>
+    <li><a href="series.html">📺 Series</a></li>
+    <li><a href="genres.html" class="current">🗃️ Genres</a></li>
+  </ul>
+</aside>
+  
+<main class="browse-page">
+  <header class="browse-header">
+    <h1 id="genreTitle">Genre</h1>
+  </header>
+
+  <!-- GRID -->
+  <section id="browseGrid" class="browse-grid"></section>
+
+  <!-- LOAD MORE -->
+  <div class="load-more-wrap">
+    <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+  </div>
+</main>
+
+  <script src="js/app.js"></script>
+<script src="js/genres.js"></script>
+</body>
+</html>
 
