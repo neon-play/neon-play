@@ -558,41 +558,49 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 .password-box {
   max-width: 640px;
-  margin: 12px auto;
-  padding: 14px 18px;
-  border-radius: 12px;
+  margin: 14px auto;
+  padding: 14px 20px;
+  border-radius: 14px;
 
-  /* better contrast background */
+  /* smooth light yellow background */
   background: linear-gradient(
-    90deg,
-    rgba(180, 255, 180, 0.22),
-    rgba(120, 220, 120, 0.18)
+    180deg,
+    rgba(255, 246, 200, 0.96),
+    rgba(255, 235, 160, 0.92)
   );
 
-  border: 2px solid rgba(120, 255, 160, 0.95);
+  /* purple neon border */
+  border: 2px solid rgba(178, 76, 255, 0.95);
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
 
-  /* improved readability */
-  color: #062d14;
+  /* neon text */
+  color: #3a006f;
   font-weight: 900;
-  font-size: 18px;              /* 🔥 key fix */
-  letter-spacing: 0.6px;
+  font-size: 18px;
+  letter-spacing: 0.8px;
 
   box-shadow:
-    0 10px 28px rgba(0,0,0,0.45),
-    inset 0 0 12px rgba(255,255,255,0.15);
+    0 0 14px rgba(178, 76, 255, 0.65),
+    0 0 28px rgba(178, 76, 255, 0.35),
+    inset 0 0 10px rgba(255, 255, 255, 0.45);
 }
 .password-box .material-icons {
   font-size: 22px;
-  color: #0b3d1e;
+  color: #6a00ff;
+  text-shadow:
+    0 0 6px rgba(178, 76, 255, 0.9),
+    0 0 14px rgba(178, 76, 255, 0.6);
 }
 .password-box span:last-child {
   font-size: 19px;
-  color: #031b0d;
+  color: #2b004f;
+  text-shadow:
+    0 0 6px rgba(178, 76, 255, 0.8),
+    0 0 16px rgba(178, 76, 255, 0.45);
 }
 /* Gold premium belt for Movies */
 .section-header.strip.gold {
