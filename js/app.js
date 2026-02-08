@@ -540,20 +540,14 @@ document.addEventListener('DOMContentLoaded', () => {
   frame.appendChild(bannerWrap);
 
   // --- top-left compact badge (Movie) appended to frame so it sits on the gold box ---
-  if (item && item.type && String(item.type).toLowerCase().includes('movie')) {
-    const badge = document.createElement('div');
-    badge.className = 'card-badge';
-    badge.textContent = 'Movie';
-    frame.appendChild(badge);
-  }
-
-  // subtle LARGE watermark for type (attach to frame)
-  if (item && item.type) {
-    const stamp = document.createElement('div');
-    stamp.className = 'card-type-watermark';
-    stamp.textContent = String(item.type).toUpperCase();
-    frame.appendChild(stamp);
-  }
+  // --- top-left compact badge (Movie / Series) ---
+if (item && item.type) {
+  const badge = document.createElement('div');
+  badge.className = 'card-badge';
+  badge.textContent = String(item.type).toUpperCase();
+  frame.appendChild(badge);
+}
+    
 
   // append frame to card (frame holds the gold border + banner)
   card.appendChild(frame);
