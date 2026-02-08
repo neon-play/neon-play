@@ -423,6 +423,7 @@ fetch("data/anime.json")
 if (anime.SHA) {
       TARGET_HASH = anime.SHA.trim();
     }
+    const ANIME_TYPE = (anime.type || "series").toLowerCase();
     // Extract E1, E2, D1, D2 dynamically
     Object.keys(anime).forEach(key => {
       if (key.startsWith("E")) {
@@ -440,6 +441,13 @@ if (anime.SHA) {
   const ep = index + 1;
 
   const episodeBtn = row.querySelector(".episode-btn");
+      // Change Episode text based on type
+if (episodeBtn) {
+  episodeBtn.textContent =
+    ANIME_TYPE === "movie"
+      ? `𝗦𝙚𝙧𝙫𝙚𝙧 ${ep}`
+      : `𝙀𝘱𝘪𝘴𝘰𝘥𝘦 ${ep}`;
+}
   const downloadBtn = row.querySelector(".download-btn");
 
   const hasEpisode = !!episodeLinks[ep];
@@ -476,12 +484,13 @@ if (hasEpisode) {
     downloadBtn.onclick = null;
 
     if (hasDownload && downloadLinks[ep].trim()) {
-      downloadBtn.disabled = false;
-      downloadBtn.style.opacity = "1";
-      downloadBtn.addEventListener("click", () => {
-        window.location.href = downloadLinks[ep];
-      });
-    } else {
+  downloadBtn.disabled = false;
+  downloadBtn.style.opacity = "1";
+  downloadBtn.textContent = `𝘿𝙤𝙬𝙣𝙡𝙤𝙖𝙙 ${ep}`;
+  downloadBtn.addEventListener("click", () => {
+    window.location.href = downloadLinks[ep];
+  });
+} else {
       // ❌ Download missing → hide button
       downloadBtn.style.display = "none";
     }
