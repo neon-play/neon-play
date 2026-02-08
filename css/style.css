@@ -90,7 +90,7 @@ body{
 }
 
 /* ================= SEARCH SECTION ================= */
-/* =====================================================
+/* ==================================================
    HORIZONTAL NEON SEARCH + SLIDING RESULT PANEL
    (ADD-ON ONLY — SAFE TO APPEND)
 ===================================================== */
@@ -556,7 +556,44 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   justify-content: flex-start;
   gap: 12px;
 }
+.password-box {
+  max-width: 640px;
+  margin: 12px auto;
+  padding: 14px 18px;
+  border-radius: 12px;
 
+  /* better contrast background */
+  background: linear-gradient(
+    90deg,
+    rgba(180, 255, 180, 0.22),
+    rgba(120, 220, 120, 0.18)
+  );
+
+  border: 2px solid rgba(120, 255, 160, 0.95);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  /* improved readability */
+  color: #062d14;
+  font-weight: 900;
+  font-size: 18px;              /* 🔥 key fix */
+  letter-spacing: 0.6px;
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.45),
+    inset 0 0 12px rgba(255,255,255,0.15);
+}
+.password-box .material-icons {
+  font-size: 22px;
+  color: #0b3d1e;
+}
+.password-box span:last-child {
+  font-size: 19px;
+  color: #031b0d;
+}
 /* Gold premium belt for Movies */
 .section-header.strip.gold {
   background: linear-gradient(90deg, #4839C5, #3FDFD2);
