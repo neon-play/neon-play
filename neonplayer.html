@@ -443,10 +443,10 @@ if (anime.SHA) {
   const episodeBtn = row.querySelector(".episode-btn");
       // Change Episode text based on type
 if (episodeBtn) {
-  episodeBtn.textContent =
-    ANIME_TYPE === "movie"
-      ? `𝗦𝙚𝙧𝙫𝙚𝙧 ${ep}`
-      : `𝙀𝘱𝘪𝘴𝘰𝘥𝘦 ${ep}`;
+  const isMovie = ANIME_TYPE.includes("movie");
+episodeBtn.textContent = isMovie
+  ? `𝗦𝙚𝙧𝙫𝙚𝙧 ${ep}`
+  : `𝙀𝘱𝘪𝘴𝘰𝘥𝘦 ${ep}`;
 }
   const downloadBtn = row.querySelector(".download-btn");
 
