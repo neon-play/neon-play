@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadMoreBtn = document.createElement("button");
     loadMoreBtn.className = "load-more-btn";
     loadMoreBtn.id = "loadMoreBtn";
-    loadMoreBtn.textContent = "Load More";
+    loadMoreBtn.textContent = "Load More Movies";
     if (grid && grid.parentNode) grid.parentNode.appendChild(loadMoreBtn);
     else document.querySelector("main")?.appendChild(loadMoreBtn);
   }
@@ -104,36 +104,7 @@ if (pageTarget === "series") {
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#x60;'
     })[m]);
   }
-function getGenres(item) {
-  if (Array.isArray(item.tags))
-    return item.tags.map(t => t.toLowerCase().trim());
 
-  if (typeof item.genre === "string")
-    return item.genre.toLowerCase().split(",").map(g => g.trim());
-
-  return [];
-}
-  function renderRelated(baseItem) {
-  const section = document.getElementById("relatedSection");
-  const row = document.getElementById("relatedRow");
-  if (!section || !row || !baseItem) return;
-
-  const baseGenres = getGenres(baseItem);
-  if (!baseGenres.length) return;
-
-  const matches = allMovies.filter(item => {
-    if (item === baseItem) return false;
-    const g = getGenres(item);
-    return g.some(x => baseGenres.includes(x));
-  }).slice(0, 10); // limit for performance
-
-  if (!matches.length) return;
-
-  row.innerHTML = "";
-  matches.forEach(m => row.appendChild(createCard(m)));
-
-  section.style.display = "block";
-}
   function createCard(item) {
   const card = document.createElement("div");
   card.className = "anime-card";
@@ -197,7 +168,7 @@ function getGenres(item) {
     const fragment = document.createDocumentFragment();
     for (const m of slice) fragment.appendChild(createCard(m));
     grid.appendChild(fragment);
-    renderRelated(slice[0]);
+
     loadMoreBtn.style.display = visibleCount >= filteredMovies.length ? "none" : "block";
   }
 
@@ -215,7 +186,7 @@ function getGenres(item) {
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => {
         const q = (searchInput.value || "").trim().toLowerCase();
-        document.getElementById("relatedSection")?.style.display = "none";
+
         if (!q) {
           filteredMovies = [...allMovies];
           visibleCount = PAGE_SIZE;
