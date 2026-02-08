@@ -444,6 +444,46 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 /* ================= End of cleaned stylesheet ================= */
+/* Horizontal related anime row */
+#relatedRow.horizontal-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+#relatedRow .anime-card {
+  flex: 0 0 auto;
+}
+/* Load More Movies button (JS-created) */
+.load-more-btn {
+  display: block;
+  margin: 18px auto 28px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+
+  background: linear-gradient(90deg, #00ffd0, #a44cff);
+  color: #041218;
+
+  border: none;
+  box-shadow:
+    0 10px 26px rgba(0,0,0,0.6),
+    0 0 14px rgba(0,255,200,0.25);
+
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.load-more-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 36px rgba(0,0,0,0.7),
+    0 0 20px rgba(0,255,200,0.45);
+}
 /* --- Movies: minimum 2 columns on mobile, responsive up from there --- */
 #moviesContainer,
 .movies-grid,
