@@ -539,12 +539,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // append bannerWrap to frame
   frame.appendChild(bannerWrap);
 
-  // --- top-left compact badge (Movie) appended to frame so it sits on the gold box ---
-  // --- top-left compact badge (Movie / Series) ---
+// --- top-left compact badge (Movie / Series) ---
 if (item && item.type) {
+  const t = String(item.type).toLowerCase();
   const badge = document.createElement('div');
   badge.className = 'card-badge';
-  badge.textContent = String(item.type).toUpperCase();
+
+  if (t === 'Movie' || t === 'movies'|| t === 'movie') {
+    badge.textContent = 'MOVIE';
+  } else if (t === 'Series' || t === 'tv' || t === 'show'|| t==='series') {
+    badge.textContent = 'SERIES';
+  } else {
+    badge.textContent = String(item.type);
+  }
+
   frame.appendChild(badge);
 }
     
