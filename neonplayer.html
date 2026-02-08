@@ -437,25 +437,45 @@ if (anime.SHA) {
 
     // Update download buttons WITHOUT changing HTML
     document.querySelectorAll(".episode-row").forEach((row, index) => {
-      const ep = index + 1;
-      const downloadBtn = row.querySelector(".download-btn");
-      if (downloadBtn) {
-  // 🔥 REMOVE hardcoded inline handler
-  downloadBtn.removeAttribute("onclick");
-  downloadBtn.onclick = null;
+  const ep = index + 1;
 
-  // ✅ APPLY JSON download link
-  if (downloadLinks[ep] && downloadLinks[ep].trim()) {
-    downloadBtn.addEventListener("click", () => {
-      window.location.href = downloadLinks[ep];
-    });
-  } else {
-    // Optional: disable if no link
-    downloadBtn.disabled = true;
-    downloadBtn.style.opacity = "0.3";
+  const episodeBtn = row.querySelector(".episode-btn");
+  const downloadBtn = row.querySelector(".download-btn");
+
+  const hasEpisode = !!episodeLinks[ep];
+  const hasDownload = !!downloadLinks[ep];
+
+  /* ❌ If episode link does NOT exist → hide entire row + separator */
+  if (!hasEpisode) {
+    row.style.display = "none";
+
+    const next = row.nextElementSibling;
+    if (next && next.classList.contains("ep-line")) {
+      next.style.display = "none";
+    }
+    return;
   }
-}
-    });
+
+  /* ✅ Episode exists → ensure visible */
+  row.style.display = "";
+
+  /* DOWNLOAD BUTTON HANDLING */
+  if (downloadBtn) {
+    downloadBtn.removeAttribute("onclick");
+    downloadBtn.onclick = null;
+
+    if (hasDownload && downloadLinks[ep].trim()) {
+      downloadBtn.disabled = false;
+      downloadBtn.style.opacity = "1";
+      downloadBtn.addEventListener("click", () => {
+        window.location.href = downloadLinks[ep];
+      });
+    } else {
+      // ❌ Download missing → hide button
+      downloadBtn.style.display = "none";
+    }
+  }
+});
   })
   .catch(err => console.error("Anime JSON load failed", err));
 function activatePlayer() {
@@ -486,4 +506,4 @@ function loadStream(btn, id) {
   setTimeout(() => loader.style.display = "none", 2500);}
 </script>
 </body>
-  </html>
+</html>
