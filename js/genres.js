@@ -82,37 +82,61 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createCard(item) {
-    const card = document.createElement("div");
-    card.className = "anime-card";
+  const card = document.createElement("div");
+  card.className = "anime-card";
 
-    const img = document.createElement("img");
-    img.className = "card-banner";
-    img.src = item.image || "assets/placeholder.png";
-    img.alt = item.title || "Anime";
+  const title = item.title || item.name || "Untitled";
+  const imgSrc = item.image || item.poster || item.cover || "assets/placeholder.png";
+  const year = item.year || item.release || "—";
+  const type = item.type ? String(item.type).toUpperCase() : "";
+  const audio = typeof item.audio === "string" ? item.audio.trim() : "";
 
-    img.onerror = () => img.src = "assets/placeholder.png";
+  card.innerHTML = `
+    <div class="card-frame">
+      <div class="card-banner-wrap">
+        <img class="card-banner"
+             src="${imgSrc}"
+             alt="${title}"
+             loading="lazy">
 
-    card.appendChild(img);
+        ${type ? `<span class="card-badge">${type}</span>` : ""}
+        <span class="card-year">${year}</span>
+        ${audio ? `<span class="card-audio">${audio}</span>` : ""}
+        ${type ? `<span class="card-type-watermark">${type}</span>` : ""}
+      </div>
+    </div>
 
-    card.addEventListener("click", () => {
-      if (item.url) window.location.href = item.url;
-    });
+    <div class="card-footer">
+      <h3 class="card-title">${title}</h3>
+    </div>
+  `;
 
-    return card;
-  }
+  const img = card.querySelector("img");
+  img.onerror = () => img.src = "assets/placeholder.png";
+
+  card.addEventListener("click", () => {
+    if (item.url) {
+      window.location.href = item.url;
+    } else if (item.watch_link) {
+      window.location.href = item.watch_link;
+    }
+  });
+
+  return card;
+}
 
   /* ------------------ RENDER ------------------ */
   function render() {
-    grid.innerHTML = "";
+  grid.innerHTML = "";
 
-    const slice = allItems.slice(0, visibleCount);
-    slice.forEach(item => grid.appendChild(createCard(item)));
+  const slice = allItems.slice(0, visibleCount);
+  slice.forEach(item => {
+    grid.appendChild(createCard(item));
+  });
 
-    if (visibleCount >= allItems.length) {
-      loadMoreBtn.style.display = "none";
-    }
-  }
-
+  loadMoreBtn.style.display =
+    visibleCount >= allItems.length ? "none" : "block";
+}
   loadMoreBtn.addEventListener("click", () => {
     visibleCount += PAGE_SIZE;
     render();
