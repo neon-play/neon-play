@@ -384,7 +384,7 @@ body.side-open::before {
 
 /* ================= MAIN CONTENT (movies / series horizontal lists) ================= */
 main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
-.content-section{ padding:18px; max-width:1120px; margin:10px auto; }
+.content-section{ padding:0px; max-width:1120px; margin:10px auto; }
 .section-header h2{ margin:0 0 12px; font-size:18px; color:var(--text); }
 
 /* horizontal scroll cards */
@@ -559,8 +559,8 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* Gold premium belt for Movies */
 .section-header.strip.gold {
-  background: linear-gradient(90deg, #a67c00, #ffd86b);
-  border: 1px solid rgba(255, 215, 0, 0.12);
+  background: linear-gradient(90deg, #4839C5, #3FDFD2);
+  border: 0;
   box-shadow: 0 6px 20px rgba(170,124,0,0.18), inset 0 -4px 12px rgba(255,230,170,0.05);
 }
 .section-header.strip.gold h2 {
@@ -573,8 +573,8 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 
 /* Lime neon belt for Series */
 .section-header.strip.lime {
-  background: linear-gradient(90deg, #baff00, #00ff66);
-  border: 1px solid rgba(180,255,0,0.08);
+  background: linear-gradient(90deg, #E50914, #B246FF);
+  border: 0px;
   box-shadow: 0 8px 28px rgba(0,255,100,0.12), inset 0 -4px 10px rgba(0,255,120,0.04);
 }
 .section-header.strip.lime h2 {
@@ -653,12 +653,10 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
   -webkit-overflow-scrolling: touch;
 }
-
-/* Make each anime-card occupy a single grid cell (so two per column stack) */
-#moviesContainer.horizontal-scroll .anime-card,
-#seriesContainer.horizontal-scroll . anime-card,
 
 /* Responsive: slightly narrower on very small screens */
 @media (max-width: 420px) {
