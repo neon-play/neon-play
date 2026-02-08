@@ -185,21 +185,7 @@
   <!-- page script (external) -->
   <script src="js/details.js"></script>
 <script src="js/app.js"></script>
-  <script>
-    // simple hamburger toggle (keeps behavior consistent with movies page)
-    (function(){
-      const menuBtn = document.getElementById('menuBtn');
-      const sideMenu = document.getElementById('sideMenu');
-      if (!menuBtn || !sideMenu) return;
-      menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sideMenu.classList.toggle('open');
-      });
-      document.addEventListener('click', (e) => {
-        if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) sideMenu.classList.remove('open');
-      });
-    })();
-  </script>
+  
 
 </body>
 </html>
