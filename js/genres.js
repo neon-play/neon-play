@@ -40,3 +40,97 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+document.addEventListener("DOMContentLoaded", () => {
+
+  const grid = document.getElementById("browseGrid");
+  const loadMoreBtn = document.getElementById("loadMoreBtn");
+  const titleEl = document.getElementById("genreTitle");
+
+  const params = new URLSearchParams(window.location.search);
+  const TAG = (params.get("tag") || "").toLowerCase();
+
+  if (!TAG) {
+    titleEl.textContent = "No Genre Selected";
+    loadMoreBtn.style.display = "none";
+    return;
+  }
+
+  titleEl.textContent = TAG.toUpperCase();
+
+  const isMobile = window.matchMedia("(max-width: 899px)").matches;
+  const PAGE_SIZE = isMobile ? 24 : 36;
+
+  let allItems = [];
+  let visibleCount = PAGE_SIZE;
+
+  /* ------------------ HELPERS ------------------ */
+  function normalize(json) {
+    if (Array.isArray(json)) return json;
+    if (json && typeof json === "object") {
+      for (const v of Object.values(json)) {
+        if (Array.isArray(v)) return v;
+      }
+    }
+    return [];
+  }
+
+  function hasTag(item, tag) {
+    if (Array.isArray(item.tags)) {
+      return item.tags.some(t => t.toLowerCase() === tag);
+    }
+    return false;
+  }
+
+  function createCard(item) {
+    const card = document.createElement("div");
+    card.className = "anime-card";
+
+    const img = document.createElement("img");
+    img.className = "card-banner";
+    img.src = item.image || "assets/placeholder.png";
+    img.alt = item.title || "Anime";
+
+    img.onerror = () => img.src = "assets/placeholder.png";
+
+    card.appendChild(img);
+
+    card.addEventListener("click", () => {
+      if (item.url) window.location.href = item.url;
+    });
+
+    return card;
+  }
+
+  /* ------------------ RENDER ------------------ */
+  function render() {
+    grid.innerHTML = "";
+
+    const slice = allItems.slice(0, visibleCount);
+    slice.forEach(item => grid.appendChild(createCard(item)));
+
+    if (visibleCount >= allItems.length) {
+      loadMoreBtn.style.display = "none";
+    }
+  }
+
+  loadMoreBtn.addEventListener("click", () => {
+    visibleCount += PAGE_SIZE;
+    render();
+  });
+
+  /* ------------------ LOAD DATA ------------------ */
+  fetch("data/anime.json", { cache: "no-store" })
+    .then(r => r.json())
+    .then(json => {
+      const items = normalize(json);
+
+      allItems = items.filter(item => hasTag(item, TAG));
+
+      render();
+    })
+    .catch(err => {
+      console.error("Browse page JSON error:", err);
+      loadMoreBtn.style.display = "none";
+    });
+
+});
