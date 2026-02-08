@@ -444,7 +444,7 @@ if (pageTarget === "series") {
     // password box (lime green highlighted) — only if value truthy
     if (item.password) {
       passwordContainer.style.display = 'block';
-      passwordContainer.innerHTML = `<div class="password-box"><span class="material-icons" style="color: #0b2a17">key</span><span>${escapeHtml(item.password)}</span></div>`;
+      passwordContainer.innerHTML = `<div class="password-box"><span class="material-icons" >key</span><span>${escapeHtml(item.password)}</span></div>`;
     } else {
       passwordContainer.style.display = 'none';
       passwordContainer.innerHTML = '';
