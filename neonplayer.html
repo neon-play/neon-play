@@ -446,15 +446,26 @@ if (anime.SHA) {
   const hasDownload = !!downloadLinks[ep];
 
   /* ❌ If episode link does NOT exist → hide entire row + separator */
-  if (!hasEpisode) {
-    row.style.display = "none";
-
-    const next = row.nextElementSibling;
-    if (next && next.classList.contains("ep-line")) {
-      next.style.display = "none";
-    }
-    return;
+  /* CASE 1: neither Episode nor Download exists → hide row */
+if (!hasEpisode && !hasDownload) {
+  row.style.display = "none";
+  const next = row.nextElementSibling;
+  if (next && next.classList.contains("ep-line")) {
+    next.style.display = "none";
   }
+  return;
+}
+
+/* CASE 2: Download exists but Episode does NOT */
+if (!hasEpisode && hasDownload) {
+  episodeBtn.style.display = "none";   // keep blank place
+  downloadBtn.style.display = "";
+}
+
+/* CASE 3: Episode exists */
+if (hasEpisode) {
+  episodeBtn.style.display = "";
+}
 
   /* ✅ Episode exists → ensure visible */
   row.style.display = "";
