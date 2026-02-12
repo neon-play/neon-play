@@ -170,7 +170,7 @@ function end() {
     return [];
   }
 
-  fetch("data/anime.json", { cache: "no-store" })
+  fetch("/api/anime?page=1", { cache: "no-store" })
     .then(async (resp) => {
       if (!resp.ok) throw new Error("anime.json not ok: " + resp.status);
       try {
@@ -182,12 +182,12 @@ function end() {
         animeData = (all || []).slice(0, MAX_RENDER);
         console.debug("Search: loaded anime items:", animeData.length);
       } catch (err) {
-        console.warn("Search: failed to parse data/anime.json", err);
+        console.warn("Search: failed to parse /api/anime?page=1", err);
         animeData = [];
       }
     })
     .catch((err) => {
-      console.warn("Search: could not fetch data/anime.json", err);
+      console.warn("Search: could not fetch /api/anime?page=1", err);
       animeData = [];
     });
 })();
@@ -298,7 +298,7 @@ function end() {
 
   function getItemUrl(item) {
     if (!item) return "";
-    if (safe(item.url)) return safe(item.url);
+    if (item.id) return `details.html?id=${encodeURIComponent(item.id)}`;
     const t = lc(item.type);
     const q = encodeURIComponent(safe(item.title));
     if (t.includes("movie")) return `movies.html?q=${q}`;
@@ -624,7 +624,7 @@ if (item && item.type) {
     try {
       // Fetch single unified file for content
       const [animeResp, adsResp] = await Promise.allSettled([
-        fetch('data/anime.json', { cache: 'no-cache' }),
+        fetch('/api/anime?page=1', { cache: 'no-cache' }),
         fetch('data/ads.json',   { cache: 'no-cache' }) // optional
       ]);
 
@@ -642,17 +642,23 @@ if (item && item.type) {
       }
 
       // Load anime items
-      let allAnime = [];
-      if (animeResp && animeResp.status === 'fulfilled' && animeResp.value && animeResp.value.ok) {
-        try {
-          const json = await animeResp.value.json();
-          allAnime = normalizeArrayFromResponse(json);
-        } catch (err) {
-          console.warn('Failed to parse data/anime.json', err);
-          allAnime = [];
-        }
-      } else {
-        console.warn('Failed to fetch data/anime.json', animeResp && animeResp.reason);
+   let allAnime = [];
+let page = 1;
+let keepLoading = true;
+
+while (keepLoading) {
+  const resp = await fetch(`/api/anime?page=${page}`, { cache: "no-store" });
+  if (!resp.ok) break;
+
+  const data = await resp.json();
+  if (!Array.isArray(data) || data.length === 0) {
+    keepLoading = false;
+  } else {
+    allAnime = allAnime.concat(data);
+    page++;
+  }
+} else {
+        console.warn('Failed to fetch /api/anime?page=1', animeResp && animeResp.reason);
         allAnime = [];
       }
 
@@ -699,7 +705,7 @@ if (item && item.type) {
       const errMsg = document.createElement('div');
       errMsg.style.color = '#fff';
       errMsg.style.padding = '12px';
-      errMsg.textContent = 'Unable to load content (check data/anime.json).';
+      errMsg.textContent = 'Unable to load content (check /api/anime?page=1,).';
       if (moviesContainer) moviesContainer.appendChild(errMsg.cloneNode(true));
       if (seriesContainer) seriesContainer.appendChild(errMsg);
     }
