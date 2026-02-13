@@ -1,142 +1,150 @@
-// ===== SIDE MENU LOGIC =====
-const menuBtn = document.getElementById("menuBtn");
-const sideMenu = document.getElementById("sideMenu");
-const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];
 
-function openMenu() {
-  if (!sideMenu) return;
-  sideMenu.classList.add("open");
-  sideMenu.setAttribute("aria-hidden", "false");
-  document.body.classList.add('side-open'); // NEW: tell CSS the menu is open
-}
-function closeMenu() {
-  if (!sideMenu) return;
-  sideMenu.classList.remove("open");
-  sideMenu.setAttribute("aria-hidden", "true");
-  document.body.classList.remove('side-open'); 
-}
-
-if (menuBtn) {
-  menuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());
-  });
-  menuBtn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());
-    }
-  });
-} else {
-  console.warn('#menuBtn not found');
-}
-
-if (menuLinks.length) {
-  menuLinks.forEach(link => {
-    link.addEventListener("click", () => { closeMenu(); });
-  });
-}
-
-document.addEventListener("click", (e) => {
-  if (!sideMenu || !menuBtn) return;
-  if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
-});
-
-if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());
-(() => {
-  if (!sideMenu) return;
-
-  const EDGE_ZONE = 28;
-  let startX = 0;
-  let currentX = 0;
-  let isDragging = false;
-  let isOpenAtStart = false;
-  let menuWidth = sideMenu.getBoundingClientRect().width;
-
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-
-  function syncWidth() {
-    menuWidth = sideMenu.getBoundingClientRect().width;
-  }
-  window.addEventListener("resize", syncWidth);
-
-  function start(e) {
-  if (e.touches && e.touches.length > 1) return; // ignore pinch
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const isOpen = sideMenu.classList.contains("open");
-
-    // OPEN gesture → only from edge
-    if (!isOpen && x > EDGE_ZONE) return;
-
-    startX = x;
-    currentX = x;
-    isOpenAtStart = isOpen;
-    isDragging = true; // ⬅️ only drag when menu is open
-
-    if (isOpen) {
-      sideMenu.classList.add("dragging");
-    }
-  }
-
-function move(e) {
-  if (!isDragging) return;
-
-  const x = e.touches ? e.touches[0].clientX : e.clientX;
-  currentX = x; // ⬅️ ALWAYS update
-
-  if (!isOpenAtStart) return; // ⬅️ no visual drag when closed
-
-  const delta = currentX - startX;
-
-  if (delta >= 0) return;
-
-  const translateX = clamp(delta, -menuWidth, 0);
-  sideMenu.style.transform = `translateX(${translateX}px)`;
-}
-
+// =====SIDE MENU LOGIC =====  
+const menuBtn = document.getElementById("menuBtn");  
+const sideMenu = document.getElementById("sideMenu");  
+const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];  
+  
+function openMenu() {  
+  if (!sideMenu) return;  
+  sideMenu.classList.add("open");  
+  sideMenu.setAttribute("aria-hidden", "false");  
+  document.body.classList.add('side-open');
+  menuBtn.setAttribute("aria-expanded", "true");
+}  
+function closeMenu() {  
+  if (!sideMenu) return;  
+  sideMenu.classList.remove("open");  
+  sideMenu.setAttribute("aria-hidden", "true");  
+  document.body.classList.remove('side-open');   
+  menuBtn.setAttribute("aria-expanded", "false");
+}  
+  
+if (menuBtn) {  
+  menuBtn.addEventListener("click", (e) => {  
+    e.stopPropagation();  
+    sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());  
+  });  
+  menuBtn.addEventListener("keydown", (e) => {  
+    if (e.key === "Enter" || e.key === " ") {  
+      e.preventDefault();  
+      sideMenu && (sideMenu.classList.contains("open") ? closeMenu() : openMenu());  
+    }  
+  });  
+} else {  
+  console.warn('#menuBtn not found');  
+}  
+  
+if (menuLinks.length) {  
+  menuLinks.forEach(link => {  
+    link.addEventListener("click", () => { closeMenu(); });  
+  });  
+}  
+  
+document.addEventListener("click", (e) => {  
+  if (!sideMenu || !menuBtn) return;  
+  if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();  
+});  
+  
+if (sideMenu) sideMenu.addEventListener("click", (e) => e.stopPropagation());  
+(() => {  
+  if (!sideMenu) return;  
+  
+  const EDGE_ZONE = 28;  
+  let startX = 0;  
+  let currentX = 0;  
+  let isDragging = false;  
+  let isOpenAtStart = false;  
+  let menuWidth = sideMenu.getBoundingClientRect().width;  
+  
+  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);  
+  
+  function syncWidth() {  
+    menuWidth = sideMenu.getBoundingClientRect().width;  
+  }  
+  let resizeTimeout;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(syncWidth, 150);
+});  
+  
+  function start(e) {  
+  if (e.touches && e.touches.length > 1) return; // ignore pinch  
+    const x = e.touches ? e.touches[0].clientX : e.clientX;  
+    const isOpen = sideMenu.classList.contains("open");  
+  
+    // OPEN gesture → only from edge  
+    if (!isOpen && x > EDGE_ZONE) return;  
+  
+    startX = x;  
+    currentX = x;  
+    isOpenAtStart = isOpen;  
+    isDragging = true; // ⬅️ only drag when menu is open  
+  
+    if (isOpen) {  
+      sideMenu.classList.add("dragging");  
+    }  
+  }  
+  
+function move(e) {  
+  if (!isDragging) return;  
+  if (e.cancelable) e.preventDefault();
+  const x = e.touches ? e.touches[0].clientX : e.clientX;  
+  currentX = x; // ⬅️ ALWAYS update  
+  
+  if (!isOpenAtStart) return; // ⬅️ no visual drag when closed  
+  
+  const delta = currentX - startX;  
+  
+  if (delta >= 0) return;  
+  
+  const translateX = clamp(delta, -menuWidth, 0);  
+  sideMenu.style.transform = `translateX(${translateX}px)`;  
+}  
+  
 function end() {
-  const delta = currentX - startX;
-
-  // CLOSED → swipe RIGHT from left edge → SNAP OPEN
-  if (!isOpenAtStart && startX <= EDGE_ZONE && delta > 60) {
-    openMenu(); // uses existing CSS animation
-    reset();
-    return;
-  }
-
-  // OPEN → swipe LEFT → DRAG CLOSE
-  if (isOpenAtStart) {
-    sideMenu.classList.remove("dragging");
-
-    if (delta < -menuWidth * 0.25) {
-      closeMenu();
-    } else {
-      openMenu(); // snap back
-    }
-    sideMenu.style.transform = "";
-  }
-
-  reset();
-}
-
-  function reset() {
-    isDragging = false;
-    isOpenAtStart = false;
-  }
-
-  document.addEventListener("touchstart", start, { passive: true });
-  document.addEventListener("touchmove", move, { passive: true });
-  document.addEventListener("touchend", end);
-
-  document.addEventListener("mousedown", start);
-  document.addEventListener("mousemove", move);
-  document.addEventListener("mouseup", end);
-})();
-/* ======================================================= */
-  /* ===== LIVE SEARCH: REPLACE EXISTING LIVE-SEARCH IIFE WITH THIS BLOCK =====
-   (This loads data/movies.json + data/series.json for search, and preserves
-    the template node by removing only result nodes when re-rendering.)
-*/
+  if (!sideMenu) return;
+  sideMenu.style.transform = "";
+  const delta = currentX - startX;  
+  
+  // CLOSED → swipe RIGHT from left edge → SNAP OPEN  
+  if (!isOpenAtStart && startX <= EDGE_ZONE && delta > menuWidth * 0.2) {  
+    openMenu(); // uses existing CSS animation  
+    reset();  
+    return;  
+  }  
+  
+  // OPEN → swipe LEFT → DRAG CLOSE  
+  if (isOpenAtStart) {  
+    sideMenu.classList.remove("dragging");  
+  
+    if (delta < -menuWidth * 0.25) {  
+      closeMenu();  
+    } else {  
+      openMenu(); // snap back  
+    }  
+    sideMenu.style.transform = "";  
+  }  
+  
+  reset();  
+}  
+  
+  function reset() {  
+    isDragging = false;  
+    isOpenAtStart = false;  
+  }  
+  
+  document.addEventListener("touchstart", start, { passive: true });  
+  document.addEventListener("touchmove", move, { passive: false });  
+  document.addEventListener("touchend", end);  
+  
+  document.addEventListener("mousedown", start);  
+  document.addEventListener("mousemove", move);  
+  document.addEventListener("mouseup", end);  
+})();  
+/* ======================================================= */  
+  /* ===== LIVE SEARCH: REPLACE EXISTING LIVE-SEARCH IIFE WITH THIS BLOCK =====  
+   (This loads data/movies.json + data/series.json for search, and preserves  
+    the template node by removing only result nodes when re-rendering.)*/
 (() => {
   const INPUT_ID = "searchInput";
   const PANEL_ID = "searchResultPanel";
@@ -146,585 +154,547 @@ function end() {
   const searchPanel = document.getElementById(PANEL_ID);
   const template = document.getElementById(TEMPLATE_ID);
   const resultsInner = document.querySelector(".results-inner");
-  const noResultsNode = document.querySelector(".no-results");
+  if (resultsInner) {
+  resultsInner.addEventListener("click", (e) => {
+    const card = e.target.closest(".result-card");
+    if (!card) return;
 
-  let animeData = [];
-  let lastQuery = "";
+    const url = card.dataset.url;
+    if (url) window.location.href = url;
+  });
+
+  resultsInner.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+
+    const card = e.target.closest(".result-card");
+    if (!card) return;
+
+    e.preventDefault();
+    const url = card.dataset.url;
+    if (url) window.location.href = url;
+  });
+}
+  const noResultsNode = document.querySelector(".no-results");
   const CARD_ESTIMATE_PX = 132;
   const PANEL_PADDING_PX = 36;
   const VISIBLE_COUNT = 4;
-  const MAX_RENDER = 300;
-(function loadData() {
-  function normalizeArrayFromResponse(json) {
-    if (!json) return [];
-    // If it's an array already, assume it's the list
-    if (Array.isArray(json)) return json;
-    // Common envelope keys
-    if (typeof json === "object") {
-      if (Array.isArray(json.items)) return json.items;
-      if (Array.isArray(json.results)) return json.results;
-      if (Array.isArray(json.anime)) return json.anime;
-      // If object looks like a single item, wrap it
-      if (json.id || json.title) return [json];
-    }
-    return [];
-  }
 
-  fetch("/api/anime?page=1", { cache: "no-store" })
-    .then(async (resp) => {
-      if (!resp.ok) throw new Error("anime.json not ok: " + resp.status);
-      try {
-        const raw = await resp.json();
-        const all = normalizeArrayFromResponse(raw);
+  
+    const safe = (v) => (v === undefined || v === null ? "" : String(v));  
+  const lc = (s) => safe(s).toLowerCase();  
+  
+  function openPanel() {  
+    if (!searchPanel || !searchInput) return;  
+    searchPanel.classList.add("active");  
+    searchPanel.setAttribute("aria-hidden", "false");  
+    searchInput.setAttribute("aria-expanded", "true");  
+  }  
+  
+  function closePanel() {  
+    if (!searchPanel || !searchInput) return;  
+    searchPanel.classList.remove("active");  
+    searchPanel.setAttribute("aria-hidden", "true");  
+    searchInput.setAttribute("aria-expanded", "false");  
+  }  
+  
+  function adjustPanelHeight(resultCount) {  
+    if (!searchPanel) return;  
+    if (resultCount === 0) {  
+      searchPanel.style.height = Math.max(140, CARD_ESTIMATE_PX) + "px";  
+      return;  
+    }  
+    if (resultCount >= VISIBLE_COUNT) {  
+      searchPanel.style.height = ""; // allow CSS 50vh  
+      return;  
+    }  
+    const computed = resultCount * CARD_ESTIMATE_PX + PANEL_PADDING_PX;  
+    searchPanel.style.height = computed + "px";  
+  }  
+  
+  function resolveThumb(item) {  
+    if (!item) return "";  
+    return safe(item.thumbnail || item.image || item.thumb || item.poster || "");  
+  }  
+  function createCard(item) {  
+    if (!template || !template.content) {  
+      const el = document.createElement("article");  
+      el.className = "result-card";  
+      el.tabIndex = 0;  
+      el.innerHTML = `  
+        <img class="result-thumb" src="${resolveThumb(item) || "assets/placeholder.png"}" alt="${safe(item.title)} thumbnail" />  
+        <div class="result-info">  
+          <h3 class="result-title">${safe(item.title) || "Untitled"}</h3>  
+          <p class="result-meta">${safe(item.year) ? safe(item.year) + " • " : ""}${safe(item.type) || ""}</p>  
+          <p class="result-banner">${(safe(item.banner) || safe(item.studio) || "").slice(0, 120)}</p>  
+        </div>  
+      `;  
+        el.dataset.url = getItemUrl(item); 
+      return el;  
+    }  
+  
+    const templateRoot = template.content.firstElementChild;  
+    const node = templateRoot ? templateRoot.cloneNode(true) : template.content.cloneNode(true);  
+  
+    let rootEl = node.nodeType === Node.ELEMENT_NODE ? node : node.querySelector(".result-card");  
+    if (!rootEl) {  
+      rootEl = node.firstElementChild || document.createElement("article");  
+      if (!rootEl.classList.contains("result-card")) rootEl.classList.add("result-card");  
+    }  
+  
+    const thumbEl = rootEl.querySelector(".result-thumb");  
+    const titleEl = rootEl.querySelector(".result-title");  
+    const metaEl = rootEl.querySelector(".result-meta");  
+    const bannerEl = rootEl.querySelector(".result-banner");  
+  
+    const thumbUrl = resolveThumb(item);  
+    if (thumbEl) {  
+      if (thumbUrl) {  
+        thumbEl.src = thumbUrl;  
+        thumbEl.alt = `${safe(item.title)} thumbnail`;  
+      } else {  
+        thumbEl.remove();  
+      }  
+    }  
+    if (titleEl) titleEl.textContent = safe(item.title) || "Untitled";  
+    if (metaEl) {  
+      const year = safe(item.year);  
+      const type = safe(item.type);  
+      metaEl.textContent = [year, type].filter(Boolean).join(" • ");  
+    }  
+    if (bannerEl) bannerEl.textContent = (safe(item.banner) || safe(item.studio) || "").slice(0, 120);  
+  
+    rootEl.dataset.url = getItemUrl(item);  
+    return rootEl;  
+  }  
+  
+function getItemUrl(item) {
+  if (!item || !item.id) return "";
 
-        // Ensure safe structure and limit to MAX_RENDER
-        // Keep 'animeData' as a flat array used by the search feature
-        animeData = (all || []).slice(0, MAX_RENDER);
-        console.debug("Search: loaded anime items:", animeData.length);
-      } catch (err) {
-        console.warn("Search: failed to parse /api/anime?page=1", err);
-        animeData = [];
-      }
-    })
-    .catch((err) => {
-      console.warn("Search: could not fetch /api/anime?page=1", err);
-      animeData = [];
-    });
-})();
-  const safe = (v) => (v === undefined || v === null ? "" : String(v));
-  const lc = (s) => safe(s).toLowerCase();
-
-  function openPanel() {
-    if (!searchPanel || !searchInput) return;
-    searchPanel.classList.add("active");
-    searchPanel.setAttribute("aria-hidden", "false");
-    searchInput.setAttribute("aria-expanded", "true");
-  }
-
-  function closePanel() {
-    if (!searchPanel || !searchInput) return;
-    searchPanel.classList.remove("active");
-    searchPanel.setAttribute("aria-hidden", "true");
-    searchInput.setAttribute("aria-expanded", "false");
-  }
-
-  function adjustPanelHeight(resultCount) {
-    if (!searchPanel) return;
-    if (resultCount === 0) {
-      searchPanel.style.height = Math.max(140, CARD_ESTIMATE_PX) + "px";
-      return;
-    }
-    if (resultCount >= VISIBLE_COUNT) {
-      searchPanel.style.height = ""; // allow CSS 50vh
-      return;
-    }
-    const computed = resultCount * CARD_ESTIMATE_PX + PANEL_PADDING_PX;
-    searchPanel.style.height = computed + "px";
-  }
-
-  function resolveThumb(item) {
-    if (!item) return "";
-    return safe(item.thumbnail || item.image || item.thumb || item.poster || "");
-  }
-  function createCard(item) {
-    if (!template || !template.content) {
-      const el = document.createElement("article");
-      el.className = "result-card";
-      el.tabIndex = 0;
-      el.innerHTML = `
-        <img class="result-thumb" src="${resolveThumb(item) || "assets/placeholder.png"}" alt="${safe(item.title)} thumbnail" />
-        <div class="result-info">
-          <h3 class="result-title">${safe(item.title) || "Untitled"}</h3>
-          <p class="result-meta">${safe(item.year) ? safe(item.year) + " • " : ""}${safe(item.type) || ""}</p>
-          <p class="result-banner">${(safe(item.banner) || safe(item.studio) || "").slice(0, 120)}</p>
-        </div>
-      `;
-      attachCardBehavior(el, item);
-      return el;
-    }
-
-    const templateRoot = template.content.firstElementChild;
-    const node = templateRoot ? templateRoot.cloneNode(true) : template.content.cloneNode(true);
-
-    let rootEl = node.nodeType === Node.ELEMENT_NODE ? node : node.querySelector(".result-card");
-    if (!rootEl) {
-      rootEl = node.firstElementChild || document.createElement("article");
-      if (!rootEl.classList.contains("result-card")) rootEl.classList.add("result-card");
-    }
-
-    const thumbEl = rootEl.querySelector(".result-thumb");
-    const titleEl = rootEl.querySelector(".result-title");
-    const metaEl = rootEl.querySelector(".result-meta");
-    const bannerEl = rootEl.querySelector(".result-banner");
-
-    const thumbUrl = resolveThumb(item);
-    if (thumbEl) {
-      if (thumbUrl) {
-        thumbEl.src = thumbUrl;
-        thumbEl.alt = `${safe(item.title)} thumbnail`;
-      } else {
-        thumbEl.remove();
-      }
-    }
-    if (titleEl) titleEl.textContent = safe(item.title) || "Untitled";
-    if (metaEl) {
-      const year = safe(item.year);
-      const type = safe(item.type);
-      metaEl.textContent = [year, type].filter(Boolean).join(" • ");
-    }
-    if (bannerEl) bannerEl.textContent = (safe(item.banner) || safe(item.studio) || "").slice(0, 120);
-
-    attachCardBehavior(rootEl, item);
-    return rootEl;
-  }
-
-  function attachCardBehavior(node, item) {
-    if (!node) return;
-    node.tabIndex = node.tabIndex >= 0 ? node.tabIndex : 0;
-
-    node.addEventListener("click", () => {
-      const target = getItemUrl(item);
-      if (target) window.location.href = target;
-    });
-
-    node.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const target = getItemUrl(item);
-        if (target) window.location.href = target;
-      }
-    });
-  }
-
-  function getItemUrl(item) {
-    if (!item) return "";
-    if (item.id) return `details.html?id=${encodeURIComponent(item.id)}`;
-    const t = lc(item.type);
-    const q = encodeURIComponent(safe(item.title));
-    if (t.includes("movie")) return `movies.html?q=${q}`;
-    if (t.includes("series")) return `series.html?q=${q}`;
-    return `?q=${q}`;
-  }
-
+  return `details.html?id=${encodeURIComponent(item.id)}`;
+}
+  
+  // -------------------------  
+  // Filter & render  
   // -------------------------
-  // Filter & render
-  // -------------------------
-  // Replace the existing findMatches(...) with this implementation
-function findMatches(query) {
-  if (!query || !query.trim()) return [];
-  const termRaw = query.trim();
-  const term = termRaw.toLowerCase();
-  const tlen = term.length;
+function showLoading() {
+  if (!resultsInner) return;
 
-  // helpers
-  const safeField = (v) => (v === undefined || v === null ? "" : String(v));
-  const normalizeField = (v) => safeField(v).toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
-  const initials = (str) => {
-    if (!str) return "";
-    const m = (str.match(/\b\w/g) || []);
-    return m.join("").toLowerCase();
-  };
+  // Remove old results
+  const existing = resultsInner.querySelectorAll('.result-card, .visible-no-results');
+  existing.forEach(n => n.remove());
 
-  function fieldMatches(fieldValue) {
-    if (!fieldValue) return false;
-    const norm = normalizeField(fieldValue);
-    if (!norm) return false;
+  const loading = document.createElement('div');
+  loading.className = 'visible-no-results search-loading';
 
-    if (tlen < 3) {
-      // short queries -> require stronger matches
-      // 1) any word starts with the term
-      const words = norm.split(/\s+/).filter(Boolean);
-      for (let w of words) {
-        if (w.startsWith(term)) return true;
+  loading.innerHTML = `
+    <div class="spinner"></div>
+  `;
+
+  resultsInner.appendChild(loading);
+if (resultsInner) {
+  resultsInner.scrollTop = 0;
+}
+  adjustPanelHeight(1);
+}
+  
+  function renderResults(results, query) {  
+    if (!resultsInner) return;  
+  
+    // Clear only result nodes — preserve <template> and other helper nodes  
+    const existingCards = resultsInner.querySelectorAll('.result-card, .visible-no-results');  
+    existingCards.forEach(n => n.remove());  
+  
+    if (!results || results.length === 0) {
+  if (!query) return; 
+      if (noResultsNode) {  
+        const nr = noResultsNode.cloneNode(true);  
+        nr.hidden = false;  
+        nr.classList.add("visible-no-results");  
+        resultsInner.appendChild(nr);  
+      }  
+      adjustPanelHeight(0);  
+      openPanel();  
+      return;  
+    }  
+  
+    const fragment = document.createDocumentFragment();  
+    for (let i = 0; i < results.length; i++) {  
+      const card = createCard(results[i]);  
+      fragment.appendChild(card);  
+    }  
+  
+    resultsInner.appendChild(fragment);  
+    adjustPanelHeight(results.length);  
+    openPanel();  
+    resultsInner.scrollTop = 0;  
+  }
+  
+  // close when clicking outside  
+  document.addEventListener("click", (ev) => {  
+    const target = ev.target;  
+    const isInsidePanel = searchPanel && searchPanel.contains(target);  
+    const isInsideSearch = searchInput && searchInput.closest(".search-bar")  
+      ? searchInput.closest(".search-bar").contains(target)  
+      : false;  
+    if (!isInsidePanel && !isInsideSearch) {  
+      closePanel();  
+    }  
+  });  
+  
+  if (searchInput) {  
+    searchInput.addEventListener("keydown", (e) => {  
+      if (e.key === "Escape") {  
+        closePanel();  
+        searchInput.blur();  
+      } else if (e.key === "ArrowDown") {  
+        const first = resultsInner ? resultsInner.querySelector(".result-card") : null;  
+        if (first) {  
+          e.preventDefault();  
+          first.focus();  
+        }  
+      }  
+    });  
+    
+    searchInput.addEventListener("focus", () => {  
+      if (searchInput.value && searchInput.value.trim()) {
+      }  
+    });  
+  } else {  
+    console.warn("Live search: search input not found (#searchInput).");  
+  }  
+  
+  document.addEventListener("keydown", (e) => {  
+    if (e.key === "Escape") closePanel();  
+  });  
+  
+  if (searchPanel) {  
+    searchPanel.addEventListener("click", (e) => e.stopPropagation());  
+  }  
+  let debounceTimer = null;
+const DEBOUNCE = 300;
+let activeQuery = "";
+let controller = null; // 🔥 ADD THIS LINE
+async function searchServer(query) {
+  activeQuery = query;
+
+  // 🔥 Cancel previous request
+  if (controller) {
+    controller.abort();
+  }
+
+  controller = new AbortController();
+
+  try {
+    const resp = await fetch(
+      `https://neon-anime-api.lupinarashi.workers.dev/api/search?q=${encodeURIComponent(query)}`,
+      {
+        cache: "no-store",
+        signal: controller.signal
       }
-      // 2) initials / acronym starts with term (e.g. 'SN' -> 'Spirited Night')
-      const ac = initials(fieldValue);
-      if (ac && ac.startsWith(term)) return true;
+    );
 
-      // otherwise don't match for short queries
-      return false;
-    } else {
-      // longer queries: allow substring match (preserve existing behavior)
-      return norm.includes(term);
-    }
-  }
-
-  const matches = [];
-  for (let i = 0; i < animeData.length; i++) {
-    const it = animeData[i];
-    if (!it) continue;
-
-    // fields to check (avoid matching sensitive fields like passwords)
-    const title = safeField(it.title);
-    const alt = safeField(it.alt || it.title_jp || "");
-    const tags = Array.isArray(it.tags) ? it.tags.join(" ") : safeField(it.tags || "");
-    const year = safeField(it.year);
-    const type = safeField(it.type || "");
-    const studio = safeField(it.studio || it.banner || "");
-    const id = safeField(it.id || it.slug || "");
-
-    if (
-      fieldMatches(title) ||
-      fieldMatches(alt) ||
-      fieldMatches(tags) ||
-      fieldMatches(year) ||
-      fieldMatches(type) ||
-      fieldMatches(studio) ||
-      fieldMatches(id)
-    ) {
-      matches.push(it);
-      if (matches.length >= MAX_RENDER) break;
-    }
-  }
-
-  return matches;
+    if (!resp.ok) {
+  controller = null;
+  return;
 }
 
-  function renderResults(results, query) {
-    if (!resultsInner) return;
+    const data = await resp.json();
+    const results = Array.isArray(data)
+      ? data
+      : (Array.isArray(data.results) ? data.results : []);
 
-    // Clear only result nodes — preserve <template> and other helper nodes
-    const existingCards = resultsInner.querySelectorAll('.result-card, .visible-no-results');
-    existingCards.forEach(n => n.remove());
+    if (query !== activeQuery) {
+  controller = null;
+  return;
+}
 
-    if (!results || results.length === 0) {
-      if (noResultsNode) {
-        const nr = noResultsNode.cloneNode(true);
-        nr.hidden = false;
-        nr.classList.add("visible-no-results");
-        resultsInner.appendChild(nr);
-      }
-      adjustPanelHeight(0);
-      openPanel();
+    renderResults(results, query);
+controller = null;
+  } catch (err) {
+
+    // Ignore aborted requests
+    if (err.name === "AbortError") {
       return;
     }
 
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < results.length; i++) {
-      const card = createCard(results[i]);
-      fragment.appendChild(card);
-    }
-
-    resultsInner.appendChild(fragment);
-    adjustPanelHeight(results.length);
-    openPanel();
-    resultsInner.scrollTop = 0;
+    console.error("Search error:", err);
+    renderResults([], query);
+    controller = null;
   }
-
-  // -------------------------
-  // Debounce + input handlers
-  // -------------------------
-  let shortTimer = null;
-  const SHORT_DEBOUNCE = 40;
-
-  function handleInputEvent(e) {
-    const q = searchInput.value;
-    lastQuery = q;
-
-    clearTimeout(shortTimer);
-    shortTimer = setTimeout(() => {
-      if (!q || !q.trim()) {
-        closePanel();
-        return;
-      }
-      const results = findMatches(q);
-      renderResults(results, q);
-    }, SHORT_DEBOUNCE);
-  }
-
-  // close when clicking outside
-  document.addEventListener("click", (ev) => {
-    const target = ev.target;
-    const isInsidePanel = searchPanel && searchPanel.contains(target);
-    const isInsideSearch = searchInput && searchInput.closest(".search-bar")
-      ? searchInput.closest(".search-bar").contains(target)
-      : false;
-    if (!isInsidePanel && !isInsideSearch) {
-      closePanel();
-    }
-  });
-
+}
+  
   if (searchInput) {
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closePanel();
-        searchInput.blur();
-      } else if (e.key === "ArrowDown") {
-        const first = resultsInner ? resultsInner.querySelector(".result-card") : null;
-        if (first) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    });
+  searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim();
+  clearTimeout(debounceTimer);
 
-    searchInput.addEventListener("input", handleInputEvent);
-    searchInput.addEventListener("focus", () => {
-      if (searchInput.value && searchInput.value.trim()) {
-        const results = findMatches(searchInput.value);
-        renderResults(results, searchInput.value);
-      }
-    });
-  } else {
-    console.warn("Live search: search input not found (#searchInput).");
+  if (!q || q.length < 1) {
+  activeQuery = "";
+  clearTimeout(debounceTimer);
+
+  // 🔥 remove old result cards
+  if (resultsInner) {
+    const existing = resultsInner.querySelectorAll('.result-card, .visible-no-results');
+    existing.forEach(n => n.remove());
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closePanel();
-  });
+  closePanel();
+  return;
+}
 
-  if (searchPanel) {
-    searchPanel.addEventListener("click", (e) => e.stopPropagation());
-  }
-})();
- 
-/*======================================LOAD FROM JSON============================================*/
-document.addEventListener('DOMContentLoaded', () => {
-  const moviesContainer = document.getElementById('moviesContainer');
-  const seriesContainer = document.getElementById('seriesContainer');
-  const loadMoreMoviesBtn = document.getElementById('loadMoreMovies');
-  const loadMoreSeriesBtn = document.getElementById('loadMoreSeries');
-  const adStrip = document.getElementById('adStrip');
+  openPanel(); // open immediately
+showLoading(); // 👈 ADD THIS LINE
 
-  const PAGE_SIZE = 5; // changed from 3 → 5
-
-  let movies = [];
-  let series = [];
-  let ads = [];
-  let moviesShown = 0;
-  let seriesShown = 0;
+debounceTimer = setTimeout(() => {
+  searchServer(q);
+}, DEBOUNCE);
+});
+    } else {
+  console.warn("Live search: search input not found (#searchInput).");
+}
+  })();
+   
+/*======================================LOAD FROM JSON============================================*/  
+document.addEventListener('DOMContentLoaded', () => {  
+  const moviesContainer = document.getElementById('moviesContainer');  
+  const seriesContainer = document.getElementById('seriesContainer');  
+  const loadMoreMoviesBtn = document.getElementById('loadMoreMovies');  
+  const loadMoreSeriesBtn = document.getElementById('loadMoreSeries');  
+  const adStrip = document.getElementById('adStrip');  
   
-  // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------
+  const PAGE_SIZE = 5; // changed from 3 → 5  
   
-  function createAnimeCard(item) {
-  const card = document.createElement('div');
-  card.className = 'anime-card';
-  card.setAttribute('role', 'article');
-  card.tabIndex = 0;
-  card.setAttribute('aria-label', item.title || 'Anime card');
-
-  // --- Frame: contains banner + overlays (gold rounded box) ---
-  const frame = document.createElement('div');
-  frame.className = 'card-frame';
-
-  // --- Banner wrapper (positioned) inside frame ---
-  const bannerWrap = document.createElement('div');
-  bannerWrap.className = 'card-banner-wrap';
-
-  const img = document.createElement('img');
-  img.className = 'card-banner';
-  img.src = item.image || 'assets/placeholder.png';
-  img.alt = item.title ? `${item.title} poster` : 'Anime poster';
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  bannerWrap.appendChild(img);
-
-  // audio pill: place INSIDE the banner wrapper (bottom-right of banner)
-  if (item && item.audio) {
-    const audio = document.createElement('div');
-    audio.className = 'card-audio';
-    audio.textContent = String(item.audio);
-    bannerWrap.appendChild(audio);
-  }
-
-  // YEAR overlay (bottom-left) also inside bannerWrap
-  if (item && (item.year || item.release)) {
-    const y = item.year ? String(item.year) : String(item.release);
-    const yearOverlay = document.createElement('div');
-    yearOverlay.className = 'card-year';
-    yearOverlay.textContent = y;
-    bannerWrap.appendChild(yearOverlay);
-  }
-
-  // append bannerWrap to frame
-  frame.appendChild(bannerWrap);
-
-// --- top-left compact badge (Movie / Series) ---
+  let movies = [];  
+  let series = [];  
+  let ads = [];  
+  let moviesShown = 0;  
+  let seriesShown = 0;  
+    
+  // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------  
+    
+  function createAnimeCard(item) {  
+  const card = document.createElement('div');  
+  card.className = 'anime-card';  
+  card.setAttribute('role', 'article');  
+  card.tabIndex = 0;  
+  card.setAttribute('aria-label', item.title || 'Anime card');  
+  
+  // --- Frame: contains banner + overlays (gold rounded box) ---  
+  const frame = document.createElement('div');  
+  frame.className = 'card-frame';  
+  
+  // --- Banner wrapper (positioned) inside frame ---  
+  const bannerWrap = document.createElement('div');  
+  bannerWrap.className = 'card-banner-wrap';  
+  
+  const img = document.createElement('img');  
+  img.className = 'card-banner';  
+  img.src = item.image || 'assets/placeholder.png';  
+  img.alt = item.title ? `${item.title} poster` : 'Anime poster';  
+  img.loading = 'lazy';  
+  img.decoding = 'async';  
+  bannerWrap.appendChild(img);  
+  
+  // audio pill: place INSIDE the banner wrapper (bottom-right of banner)  
+  if (item && item.audio) {  
+    const audio = document.createElement('div');  
+    audio.className = 'card-audio';  
+    audio.textContent = String(item.audio);  
+    bannerWrap.appendChild(audio);  
+  }  
+  
+  // YEAR overlay (bottom-left) also inside bannerWrap  
+  if (item && (item.year || item.release)) {  
+    const y = item.year ? String(item.year) : String(item.release);  
+    const yearOverlay = document.createElement('div');  
+    yearOverlay.className = 'card-year';  
+    yearOverlay.textContent = y;  
+    bannerWrap.appendChild(yearOverlay);  
+  }  
+  
+  // append bannerWrap to frame  
+  frame.appendChild(bannerWrap);  
+  
+// --- top-left compact badge (Movie / Series) ---  
 if (item && item.type) {
-  const t = String(item.type).toLowerCase();
+  const t = String(item.type).toLowerCase().trim();
   const badge = document.createElement('div');
   badge.className = 'card-badge';
 
-  if (t === 'Movie' || t === 'movies'|| t === 'movie') {
+  if (t === 'movie' || t === 'movies') {
     badge.textContent = 'MOVIE';
-  } else if (t === 'Series' || t === 'tv' || t === 'show'|| t==='series') {
+  } else if (t === 'series' || t === 'tv' || t === 'show') {
     badge.textContent = 'SERIES';
   } else {
-    badge.textContent = String(item.type);
+    badge.textContent = item.type;
   }
 
   frame.appendChild(badge);
-}
+}   
+  
+  // append frame to card (frame holds the gold border + banner)  
+  card.appendChild(frame);  
+  
+  // --- Footer: title (one line) only; sits outside the gold frame ---  
+  const footer = document.createElement('div');  
+  footer.className = 'card-footer';  
+  
+  const titleEl = document.createElement('h3');  
+  titleEl.className = 'card-title';  
+  titleEl.textContent = item.title || 'Untitled';  
+  footer.appendChild(titleEl);  
+  
+  card.appendChild(footer);  
+  
+if (item.id) {
+  card.style.cursor = 'pointer';
+
+  const go = () => {
+    window.location.href = `details.html?id=${encodeURIComponent(item.id)}`;
+  };
+
+  card.addEventListener('click', go);
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') go();
+  });
+} return card; }
     
-
-  // append frame to card (frame holds the gold border + banner)
-  card.appendChild(frame);
-
-  // --- Footer: title (one line) only; sits outside the gold frame ---
-  const footer = document.createElement('div');
-  footer.className = 'card-footer';
-
-  const titleEl = document.createElement('h3');
-  titleEl.className = 'card-title';
-  titleEl.textContent = item.title || 'Untitled';
-  footer.appendChild(titleEl);
-
-  card.appendChild(footer);
-
-  // click / keyboard behaviour
-  if (item.url) {
-    card.style.cursor = 'pointer';
-    const go = () => { window.location.href = item.url; };
-    card.addEventListener('click', go);
-    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-  }
-
-  return card;
-}
-  
   function renderList(items, container, startIndex, count) {
-    if (!container) return 0;
-    const slice = items.slice(startIndex, startIndex + count);
-    slice.forEach(item => {
-      const card = createAnimeCard(item);
-      container.appendChild(card);
-    });
-    return slice.length;
-  }
+  if (!container) return 0;
 
-  function renderAds(items, container) {
-    if (!container || !items || !items.length) return;
-    items.forEach(item => {
-      const ad = createAdCard(item);
-      container.appendChild(ad);
-    });
-  }
+  const slice = items.slice(startIndex, startIndex + count);
+  const fragment = document.createDocumentFragment();
 
-  function updateLoadMoreButton(button, itemsArray, shownCount) {
-    if (!button) return;
-    if (shownCount >= itemsArray.length) {
-      button.style.display = 'none';
-    } else {
-      button.style.display = '';
-    }
-  }
+  slice.forEach(item => {
+    fragment.appendChild(createAnimeCard(item));
+  });
 
-  function normalizeArrayFromResponse(json, preferredKey) {
-    if (Array.isArray(json)) return json;
-    if (json && typeof json === 'object') {
-      if (Array.isArray(json[preferredKey])) return json[preferredKey];
-      if (Array.isArray(json.results)) return json.results;
-      if (Array.isArray(json.items)) return json.items;
-      if (json.id || json.title) return [json];
-    }
-    return [];
-  }
+  container.appendChild(fragment);
+  return slice.length;
+}
+  function createAdCard(item) {
+  const ad = document.createElement("div");
+  ad.className = "ad-card";
+  ad.textContent = item.title || "Advertisement";
+  return ad;
+}
+  function renderAds(items, container) {  
+    if (!container || !items || !items.length) return;  
+    items.forEach(item => {  
+      const ad = createAdCard(item);  
+      container.appendChild(ad);  
+    });  
+  }  
   
-(async function loadBoth() {
-    try {
-      // Fetch single unified file for content
-      const [animeResp, adsResp] = await Promise.allSettled([
-        fetch('/api/anime?page=1', { cache: 'no-cache' }),
-        fetch('data/ads.json',   { cache: 'no-cache' }) // optional
-      ]);
-
-      // Generic normalizer (handles arrays or common envelope shapes)
-      function normalizeArrayFromResponse(json) {
-        if (!json) return [];
-        if (Array.isArray(json)) return json;
-        if (typeof json === 'object') {
-          if (Array.isArray(json.items)) return json.items;
-          if (Array.isArray(json.results)) return json.results;
-          if (Array.isArray(json.anime)) return json.anime;
-          if (json.id || json.title) return [json];
-        }
-        return [];
-      }
-
-      // Load anime items
-   let allAnime = [];
-let page = 1;
-let keepLoading = true;
-
-while (keepLoading) {
-  const resp = await fetch(`/api/anime?page=${page}`, { cache: "no-store" });
-  if (!resp.ok) break;
-
-  const data = await resp.json();
-  if (!Array.isArray(data) || data.length === 0) {
-    keepLoading = false;
-  } else {
-    allAnime = allAnime.concat(data);
-    page++;
-  }
-} else {
-        console.warn('Failed to fetch /api/anime?page=1', animeResp && animeResp.reason);
-        allAnime = [];
-      }
-
-      // Split into movies & series (case-insensitive)
-      movies = (allAnime || []).filter(it => {
-  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";
-  return t === "movie" || t === "movies";
-});
-
-      series = (allAnime || []).filter(it => {
-  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";
-  return t === "series" || t === "tv" || t === "show";
-});
-
-      // Load ads if present (optional)
-      ads = [];
-      if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {
-        try {
-          const json = await adsResp.value.json();
-          ads = normalizeArrayFromResponse(json);
-        } catch (err) {
-          console.warn('Failed to parse data/ads.json', err);
-          ads = [];
-        }
-      } else {
-        // Not required — keep ads empty if fetch fails
-        ads = [];
-      }
-
-      // initial render (PAGE_SIZE items shown initially)
-      moviesShown += renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);
-      seriesShown += renderList(series, seriesContainer, seriesShown, PAGE_SIZE);
-
-      // render ads
-      if (ads.length && adStrip) renderAds(ads, adStrip);
-
-      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);
-      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);
-
-      if (!moviesContainer && movies.length) console.warn('moviesContainer not found but movies loaded.');
-      if (!seriesContainer && series.length) console.warn('seriesContainer not found but series loaded.');
-    } catch (err) {
-      console.error('Unexpected loader error:', err);
-      const errMsg = document.createElement('div');
-      errMsg.style.color = '#fff';
-      errMsg.style.padding = '12px';
-      errMsg.textContent = 'Unable to load content (check /api/anime?page=1,).';
-      if (moviesContainer) moviesContainer.appendChild(errMsg.cloneNode(true));
-      if (seriesContainer) seriesContainer.appendChild(errMsg);
-    }
-  })();
+  function updateLoadMoreButton(button, itemsArray, shownCount) {  
+    if (!button) return;  
+    if (shownCount >= itemsArray.length) {  
+      button.style.display = 'none';  
+    } else {  
+      button.style.display = '';  
+    }  
+  }  
   
-
-  if (loadMoreMoviesBtn) {
-    loadMoreMoviesBtn.addEventListener('click', () => {
-      const added = renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);
-      moviesShown += added;
-      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);
-    });
-  }
-
-  if (loadMoreSeriesBtn) {
-    loadMoreSeriesBtn.addEventListener('click', () => {
-      const added = renderList(series, seriesContainer, seriesShown, PAGE_SIZE);
-      seriesShown += added;
-      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);
-    });
-  }
-});
+(async function loadBoth() {  
+    try {  
+      // Fetch single unified file for content  
+      const [animeResp, adsResp] = await Promise.allSettled([  
+        fetch('https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=1', { cache: 'no-cache' }),  
+        fetch('data/ads.json',   { cache: 'no-cache' }) // optional  
+      ]);  
+  
+      // Generic normalizer (handles arrays or common envelope shapes)  
+      function normalizeArrayFromResponse(json) {  
+        if (!json) return [];  
+        if (Array.isArray(json)) return json;  
+        if (typeof json === 'object') {  
+          if (Array.isArray(json.items)) return json.items;  
+          if (Array.isArray(json.results)) return json.results;  
+          if (Array.isArray(json.anime)) return json.anime;  
+          if (json.id || json.title) return [json];  
+        }  
+        return [];  
+      }  
+  
+      // Load anime items  
+      let allAnime = [];  
+      if (animeResp && animeResp.status === 'fulfilled' && animeResp.value && animeResp.value.ok) {  
+        try {  
+          const json = await animeResp.value.json();  
+          allAnime = normalizeArrayFromResponse(json);  
+        } catch (err) {  
+          console.warn('Failed to parse /api/anime?page=1', err);  
+          allAnime = [];  
+        }  
+      } else {  
+        console.warn('Failed to fetch /api/anime?page=1', animeResp && animeResp.reason);  
+        allAnime = [];  
+      }  
+  
+      // Split into movies & series (case-insensitive)  
+      movies = (allAnime || []).filter(it => {  
+  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";  
+  return t === "movie" || t === "movies";  
+});  
+  
+      series = (allAnime || []).filter(it => {  
+  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";  
+  return t === "series" || t === "tv" || t === "show";  
+});  
+  
+      // Load ads if present (optional)  
+      ads = [];  
+      if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {  
+        try {  
+          const json = await adsResp.value.json();  
+          ads = normalizeArrayFromResponse(json);  
+        } catch (err) {  
+          console.warn('Failed to parse data/ads.json', err);  
+          ads = [];  
+        }  
+      } else {  
+        // Not required — keep ads empty if fetch fails  
+        ads = [];  
+      }  
+  
+      // initial render (PAGE_SIZE items shown initially)  
+      moviesShown += renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);  
+      seriesShown += renderList(series, seriesContainer, seriesShown, PAGE_SIZE);  
+  
+      // render ads  
+      if (ads.length && adStrip) renderAds(ads, adStrip);  
+  
+      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);  
+      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);  
+  
+      if (!moviesContainer && movies.length) console.warn('moviesContainer not found but movies loaded.');  
+      if (!seriesContainer && series.length) console.warn('seriesContainer not found but series loaded.');  
+    } catch (err) {  
+      console.error('Unexpected loader error:', err);  
+      const errMsg = document.createElement('div');  
+      errMsg.style.color = '#fff';  
+      errMsg.style.padding = '12px';  
+      errMsg.textContent = 'Unable to load content (check /api/anime?page=1,).';  
+      if (moviesContainer) moviesContainer.appendChild(errMsg.cloneNode(true));  
+      if (seriesContainer) seriesContainer.appendChild(errMsg);  
+    }  
+  })();  
+    
+  
+  if (loadMoreMoviesBtn) {  
+    loadMoreMoviesBtn.addEventListener('click', () => {  
+      const added = renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);  
+      moviesShown += added;  
+      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);  
+    });  
+  }  
+  
+  if (loadMoreSeriesBtn) {  
+    loadMoreSeriesBtn.addEventListener('click', () => {  
+      const added = renderList(series, seriesContainer, seriesShown, PAGE_SIZE);  
+      seriesShown += added;  
+      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);  
+    });  
+  }  
+});  
+  
