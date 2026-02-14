@@ -1,4 +1,3 @@
-
 // =====SIDE MENU LOGIC =====  
 const menuBtn = document.getElementById("menuBtn");  
 const sideMenu = document.getElementById("sideMenu");  
@@ -262,16 +261,16 @@ function end() {
       metaEl.textContent = [year, type].filter(Boolean).join(" • ");  
     }  
     if (bannerEl) bannerEl.textContent = (safe(item.banner) || safe(item.studio) || "").slice(0, 120);  
-  
-    rootEl.dataset.url = getItemUrl(item);  
+    rootEl.dataset.url = getItemUrl(item);
+rootEl.tabIndex = 0;
     return rootEl;  
   }  
   
-function getItemUrl(item) {
+  function getItemUrl(item) {
   if (!item || !item.id) return "";
-
   return `details.html?id=${encodeURIComponent(item.id)}`;
 }
+    
   
   // -------------------------  
   // Filter & render  
@@ -460,16 +459,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const seriesContainer = document.getElementById('seriesContainer');  
   const loadMoreMoviesBtn = document.getElementById('loadMoreMovies');  
   const loadMoreSeriesBtn = document.getElementById('loadMoreSeries');  
-  const adStrip = document.getElementById('adStrip');  
-  
-  const PAGE_SIZE = 5; // changed from 3 → 5  
-  
-  let movies = [];  
-  let series = [];  
-  let ads = [];  
-  let moviesShown = 0;  
-  let seriesShown = 0;  
+  const adStrip = document.getElementById('adStrip');
     
+  let currentPage = 1;
+let isLoading = false;
+let hasMore = true;
   // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------  
     
   function createAnimeCard(item) {  
@@ -546,7 +540,7 @@ if (item && item.type) {
   
   card.appendChild(footer);  
   
-if (item.id) {
+if (item && item.id) {
   card.style.cursor = 'pointer';
 
   const go = () => {
@@ -559,18 +553,16 @@ if (item.id) {
   });
 } return card; }
     
-  function renderList(items, container, startIndex, count) {
-  if (!container) return 0;
+  function renderList(items, container) {
+  if (!container || !items || !items.length) return;
 
-  const slice = items.slice(startIndex, startIndex + count);
   const fragment = document.createDocumentFragment();
 
-  slice.forEach(item => {
+  items.forEach(item => {
     fragment.appendChild(createAnimeCard(item));
   });
 
   container.appendChild(fragment);
-  return slice.length;
 }
   function createAdCard(item) {
   const ad = document.createElement("div");
@@ -584,117 +576,51 @@ if (item.id) {
       const ad = createAdCard(item);  
       container.appendChild(ad);  
     });  
-  }  
-  
-  function updateLoadMoreButton(button, itemsArray, shownCount) {  
-    if (!button) return;  
-    if (shownCount >= itemsArray.length) {  
-      button.style.display = 'none';  
-    } else {  
-      button.style.display = '';  
-    }  
-  }  
-  
-(async function loadBoth() {  
-    try {  
-      // Fetch single unified file for content  
-      const [animeResp, adsResp] = await Promise.allSettled([  
-        fetch('https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=1', { cache: 'no-cache' }),  
-        fetch('data/ads.json',   { cache: 'no-cache' }) // optional  
-      ]);  
-  
-      // Generic normalizer (handles arrays or common envelope shapes)  
-      function normalizeArrayFromResponse(json) {  
-        if (!json) return [];  
-        if (Array.isArray(json)) return json;  
-        if (typeof json === 'object') {  
-          if (Array.isArray(json.items)) return json.items;  
-          if (Array.isArray(json.results)) return json.results;  
-          if (Array.isArray(json.anime)) return json.anime;  
-          if (json.id || json.title) return [json];  
-        }  
-        return [];  
-      }  
-  
-      // Load anime items  
-      let allAnime = [];  
-      if (animeResp && animeResp.status === 'fulfilled' && animeResp.value && animeResp.value.ok) {  
-        try {  
-          const json = await animeResp.value.json();  
-          allAnime = normalizeArrayFromResponse(json);  
-        } catch (err) {  
-          console.warn('Failed to parse /api/anime?page=1', err);  
-          allAnime = [];  
-        }  
-      } else {  
-        console.warn('Failed to fetch /api/anime?page=1', animeResp && animeResp.reason);  
-        allAnime = [];  
-      }  
-  
-      // Split into movies & series (case-insensitive)  
-      movies = (allAnime || []).filter(it => {  
-  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";  
-  return t === "movie" || t === "movies";  
-});  
-  
-      series = (allAnime || []).filter(it => {  
-  const t = it && it.type ? String(it.type).trim().toLowerCase() : "";  
-  return t === "series" || t === "tv" || t === "show";  
-});  
-  
-      // Load ads if present (optional)  
-      ads = [];  
-      if (adsResp && adsResp.status === 'fulfilled' && adsResp.value && adsResp.value.ok) {  
-        try {  
-          const json = await adsResp.value.json();  
-          ads = normalizeArrayFromResponse(json);  
-        } catch (err) {  
-          console.warn('Failed to parse data/ads.json', err);  
-          ads = [];  
-        }  
-      } else {  
-        // Not required — keep ads empty if fetch fails  
-        ads = [];  
-      }  
-  
-      // initial render (PAGE_SIZE items shown initially)  
-      moviesShown += renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);  
-      seriesShown += renderList(series, seriesContainer, seriesShown, PAGE_SIZE);  
-  
-      // render ads  
-      if (ads.length && adStrip) renderAds(ads, adStrip);  
-  
-      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);  
-      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);  
-  
-      if (!moviesContainer && movies.length) console.warn('moviesContainer not found but movies loaded.');  
-      if (!seriesContainer && series.length) console.warn('seriesContainer not found but series loaded.');  
-    } catch (err) {  
-      console.error('Unexpected loader error:', err);  
-      const errMsg = document.createElement('div');  
-      errMsg.style.color = '#fff';  
-      errMsg.style.padding = '12px';  
-      errMsg.textContent = 'Unable to load content (check /api/anime?page=1,).';  
-      if (moviesContainer) moviesContainer.appendChild(errMsg.cloneNode(true));  
-      if (seriesContainer) seriesContainer.appendChild(errMsg);  
-    }  
-  })();  
-    
-  
-  if (loadMoreMoviesBtn) {  
-    loadMoreMoviesBtn.addEventListener('click', () => {  
-      const added = renderList(movies, moviesContainer, moviesShown, PAGE_SIZE);  
-      moviesShown += added;  
-      updateLoadMoreButton(loadMoreMoviesBtn, movies, moviesShown);  
-    });  
-  }  
-  
-  if (loadMoreSeriesBtn) {  
-    loadMoreSeriesBtn.addEventListener('click', () => {  
-      const added = renderList(series, seriesContainer, seriesShown, PAGE_SIZE);  
-      seriesShown += added;  
-      updateLoadMoreButton(loadMoreSeriesBtn, series, seriesShown);  
-    });  
-  }  
-});  
-  
+  }
+async function loadPage(page) {
+  if (isLoading || !hasMore) return;
+  isLoading = true;
+  try {
+    const resp = await fetch(
+      `https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=${page}`,
+      { cache: "no-store" }
+    );
+    if (!resp.ok) throw new Error("Failed to fetch");
+    const data = await resp.json();
+    const items = Array.isArray(data) ? data : [];
+    if (items.length === 0) {
+      hasMore = false;
+      if (loadMoreMoviesBtn) loadMoreMoviesBtn.style.display = "none";
+      if (loadMoreSeriesBtn) loadMoreSeriesBtn.style.display = "none";
+      return;
+    }
+    const movies = items.filter(it => {
+      const t = it?.type?.toLowerCase();
+      return t === "movie" || t === "movies";
+    });
+    const series = items.filter(it => {
+      const t = it?.type?.toLowerCase();
+      return t === "series" || t === "tv" || t === "show";
+    });
+    renderList(movies, moviesContainer);
+    renderList(series, seriesContainer);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    isLoading = false;
+  }
+} 
+if (loadMoreMoviesBtn) {
+  loadMoreMoviesBtn.addEventListener("click", () => {
+    currentPage++;
+    loadPage(currentPage);
+  });
+}
+if (loadMoreSeriesBtn) {
+  loadMoreSeriesBtn.addEventListener("click", () => {
+    currentPage++;
+    loadPage(currentPage);
+  });
+}
+loadPage(currentPage);
+}); 
