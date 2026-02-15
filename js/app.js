@@ -385,7 +385,7 @@ async function searchServer(query) {
 
   try {
     const resp = await fetch(
-      `https://neon-anime-api.lupinarashi.workers.dev/api/search?q=${encodeURIComponent(query)}`,
+      `/api/search?q=${encodeURIComponent(query)}`,
       {
         cache: "no-store",
         signal: controller.signal
@@ -582,7 +582,7 @@ async function loadPage(page) {
   isLoading = true;
   try {
     const resp = await fetch(
-      `https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=${page}`,
+      `/api/anime?page=${page}`,
       { cache: "no-store" }
     );
     if (!resp.ok) throw new Error("Failed to fetch");
