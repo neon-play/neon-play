@@ -1,3 +1,10 @@
+
+async function sha256(message) {
+  const msgUint8 = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
 // =====SIDE MENU LOGIC =====  
 const menuBtn = document.getElementById("menuBtn");  
 const sideMenu = document.getElementById("sideMenu");  
@@ -314,8 +321,7 @@ if (resultsInner) {
       adjustPanelHeight(0);  
       openPanel();  
       return;  
-    }  
-  
+    }
     const fragment = document.createDocumentFragment();  
     for (let i = 0; i < results.length; i++) {  
       const card = createCard(results[i]);  
@@ -384,13 +390,17 @@ async function searchServer(query) {
   controller = new AbortController();
 
   try {
-    const resp = await fetch(
-      `/api/search?q=${encodeURIComponent(query)}`,
-      {
-        cache: "no-store",
-        signal: controller.signal
-      }
-    );
+    const ts = Math.floor(Date.now() / 1000);
+const resourceId = "";
+const token = await sha256(resourceId + ts + API_TOKEN_SECRET);
+
+const resp = await fetch(
+  `/api/search?q=${encodeURIComponent(query)}&ts=${ts}&token=${token}`,
+  {
+    cache: "no-store",
+    signal: controller.signal
+  }
+);
 
     if (!resp.ok) {
   controller = null;
@@ -452,7 +462,7 @@ debounceTimer = setTimeout(() => {
   console.warn("Live search: search input not found (#searchInput).");
 }
   })();
-   
+const API_TOKEN_SECRET = "Qc!}1MnJ:jv.Hk}N!8qw*:2YA#2kVc;g";
 /*======================================LOAD FROM JSON============================================*/  
 document.addEventListener('DOMContentLoaded', () => {  
   const moviesContainer = document.getElementById('moviesContainer');  
@@ -464,8 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPage = 1;
 let isLoading = false;
 let hasMore = true;
-  // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------  
-    
+  // ---------------------- SINGLE CORRECT CARD CREATOR ----------------------
   function createAnimeCard(item) {  
   const card = document.createElement('div');  
   card.className = 'anime-card';  
@@ -581,10 +590,14 @@ async function loadPage(page) {
   if (isLoading || !hasMore) return;
   isLoading = true;
   try {
-    const resp = await fetch(
-      `/api/anime?page=${page}`,
-      { cache: "no-store" }
-    );
+    const ts = Math.floor(Date.now() / 1000);
+const resourceId = ""; // list endpoint has no id
+const token = await sha256(resourceId + ts + API_TOKEN_SECRET);
+
+const resp = await fetch(
+  `/api/anime?page=${page}&ts=${ts}&token=${token}`,
+  { cache: "no-store" }
+);
     if (!resp.ok) throw new Error("Failed to fetch");
     const data = await resp.json();
     const items = Array.isArray(data) ? data : [];
