@@ -1,8 +1,4 @@
-/* updated details.js
-   - renders search results directly into the main grid (movieGrid)
-   - removed separate search-result-panel usage
-   - preserves pagination, sorting, load-more, image fallback
-*/
+const API_TOKEN_SECRET = "Qc!}1MnJ:jv.Hk}N!8qw*:2YA#2kVc;g";
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.querySelector(".search-box input");
@@ -143,7 +139,7 @@ if (pageTarget === "series") {
 
   card.addEventListener("click", () => {
     const id = item.id || item.slug || title;
-    window.location.href = `details.html?id=${encodeURIComponent(id)}`;
+    window.location.href =`details.html?id=${encodeURIComponent(id)}`;
   });
 
   return card;
@@ -432,15 +428,6 @@ if (pageTarget === "series") {
 
     badges.forEach(b => badgeRow.appendChild(createBadge(b)));
 
-    // watch button
-    if (item.watch_link) {
-      watchBtn.href = item.watch_link;
-      watchBtn.style.display = 'inline-flex';
-    } else {
-      watchBtn.removeAttribute('href');
-      watchBtn.style.display = 'none';
-    }
-
     // password box (lime green highlighted) — only if value truthy
     if (item.password) {
       passwordContainer.style.display = 'block';
@@ -490,34 +477,48 @@ if (pageTarget === "series") {
   }
 
   // load JSON and render by id param
-  (function loadData() {
-    const id = PARAM('id') || PARAM('slug') || PARAM('q');
-    if (!id) { showNotFound(); return; }
+// load from API and render by id param
+(function loadData() {
+  const rawId = PARAM('id') || PARAM('slug') || PARAM('q');
+const id = rawId ? rawId.trim() : null;
 
-    fetch('data/anime.json').then(r => r.json()).then(data => {
-      const items = findItemsFromJson(data);
-      const match = findMatch(items, id);
-      render(match);
-    }).catch(err => {
-      console.error('details page — json load error', err);
-      // try to handle if JSON is actually text (some broken files)
-      try {
-        // attempt to parse text (fallback)
-        fetch('data/anime.json').then(r => r.text()).then(text => {
-          try {
-            const parsed = JSON.parse(text.replace(/^\s*export\s+default\s+/, ''));
-            const items = findItemsFromJson(parsed);
-            const match = findMatch(items, id);
-            render(match);
-          } catch (e) {
-            console.error('fallback parse failed', e);
-            showNotFound();
-          }
-        });
-      } catch (e) {
-        showNotFound();
-      }
-    });
-  })();
+  if (!id) {
+    showNotFound();
+    return;
+  }
+  loadDetails(id);
+async function loadDetails(id) {
+  try {
+    const ts = Math.floor(Date.now() / 1000);
+    const resourceId = id; // IMPORTANT for single anime
+    const token = await sha256(resourceId + ts + API_TOKEN_SECRET);
+
+    const resp = await fetch(
+      `https://neon-anime-api.lupinarashi.workers.dev/api/anime/${encodeURIComponent(id)}?ts=${ts}&token=${token}`,
+      { cache: "no-store" }
+    );
+
+    if (!resp.ok) throw new Error("API request failed");
+
+    const data = await resp.json();
+
+    if (!data || !data.id) {
+      showNotFound();
+      return;
+    }
+
+    if (watchBtn) {
+      watchBtn.href = `neonplayer.html?id=${encodeURIComponent(data.id)}`;
+      watchBtn.style.display = "inline-flex";
+    }
+
+    render(data);
+
+  } catch (err) {
+    console.error("Details API error:", err);
+    showNotFound();
+  }
+}
+})();
 
 })();
