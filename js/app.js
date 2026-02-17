@@ -1,3 +1,8 @@
+async function sha256(message) {
+  const msgUint8 = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");}
 const menuBtn = document.getElementById("menuBtn");  
 const sideMenu = document.getElementById("sideMenu");  
 const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];
@@ -316,46 +321,47 @@ const DEBOUNCE = 300;
 let activeQuery = "";
 let controller = null; // 🔥 ADD THIS LINE
 async function searchServer(query) {
-  activeQuery = query;
-  if (controller) {
-    controller.abort();
+
+  const cacheKey = "search_" + query.toLowerCase();
+
+  // 1️⃣ Check browser cache first
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    renderResults(JSON.parse(cached), query);
+    return;
   }
 
+  activeQuery = query;
+
+  if (controller) controller.abort();
   controller = new AbortController();
+
   try {
-    const ts = Math.floor(Date.now() / 1000);
-const resourceId = "";
-const token = await sha256(resourceId + ts + API_TOKEN_SECRET);
-const resp = await fetch(
-  `https://neon-anime-api.lupinarashi.workers.dev/api/search?q=${encodeURIComponent(query)}&ts=${ts}&token=${token}`,
-  {
-    cache: "no-store",
-    signal: controller.signal
-  }
-);
-    if (!resp.ok) {
-  controller = null;
-  return;
-}
+    const resourceId = "";
+    const token = await sha256(resourceId + API_TOKEN_SECRET);
+
+    const resp = await fetch(
+      `https://neon-anime-api.lupinarashi.workers.dev/api/search?q=${encodeURIComponent(query)}&token=${token}`,
+      { signal: controller.signal }
+    );
+
+    if (!resp.ok) return;
+
     const data = await resp.json();
-    const results = Array.isArray(data)
-      ? data
-      : (Array.isArray(data.results) ? data.results : []);
-    if (query !== activeQuery) {
-  controller = null;
-  return;
-}
+    const results = Array.isArray(data) ? data : [];
+
+    // 2️⃣ Save in browser cache
+    localStorage.setItem(cacheKey, JSON.stringify(results));
+
     renderResults(results, query);
-controller = null;
+
   } catch (err) {
-    if (err.name === "AbortError") {
-      return;
+    if (err.name !== "AbortError") {
+      console.error(err);
     }
-    console.error("Search error:", err);
-    renderResults([], query);
-    controller = null;
   }
 }
+
   if (searchInput) {
   searchInput.addEventListener("input", () => {
   const q = searchInput.value.trim();
@@ -476,19 +482,39 @@ if (item && item.id) {
     });  
   }
 async function loadPage(page) {
+  const cacheKey = "anime_page_" + page;
+  const cached = localStorage.getItem(cacheKey);
+
+  if (cached) {
+    const items = JSON.parse(cached);
+
+    const movies = items.filter(it => {
+      const t = it?.type?.toLowerCase();
+      return t === "movie" || t === "movies";
+    });
+
+    const series = items.filter(it => {
+      const t = it?.type?.toLowerCase();
+      return t === "series" || t === "tv" || t === "show";
+    });
+
+    renderList(movies, moviesContainer);
+    renderList(series, seriesContainer);
+    return; // 🔥 STOPS WORKER CALL
+  }
   if (isLoading || !hasMore) return;
   isLoading = true;
   try {
-    const ts = Math.floor(Date.now() / 1000);
-const resourceId = ""; // list endpoint has no id
-const token = await sha256(resourceId + ts + API_TOKEN_SECRET);
+    const resourceId = "";
+const token = await sha256(resourceId + API_TOKEN_SECRET);
+
 const resp = await fetch(
-  `https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=${page}&ts=${ts}&token=${token}`,
-  { cache: "no-store" }
+  `https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=${page}&token=${token}`
 );
     if (!resp.ok) throw new Error("Failed to fetch");
     const data = await resp.json();
     const items = Array.isArray(data) ? data : [];
+    localStorage.setItem(cacheKey, JSON.stringify(items));
     if (items.length === 0) {
       hasMore = false;
       if (loadMoreMoviesBtn) loadMoreMoviesBtn.style.display = "none";
@@ -524,13 +550,7 @@ if (loadMoreSeriesBtn) {
   });
 }
 loadPage(currentPage);
-}); 
-async function sha256(message) {
-  const msgUint8 = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-}
+});
 document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("movieGrid");
   if (!grid) return;
