@@ -1,10 +1,9 @@
 /* ----- Card appearance variables (edit these values) ----- */
 :root{
-    --card-banner-percent: 85%; 
-   --card-footer-gap: 1px;
+   --card-footer-gap: 10px;
    
    
-   --namebox-font-size: 10px;
+   --namebox-font-size: 15px;
   --namebox-offset: 14px; 
   --banner-bottom-space: 52px; 
   
@@ -200,7 +199,6 @@ body{
   background: linear-gradient(90deg, #baff00, #00ff66, #baff00);
   border-radius: 4px;
   box-shadow: 0 0 15px #00ff88, 0 0 30px #baff00;
-    z-index: 2;
 }
 
 .search-result-panel::after {
@@ -274,7 +272,7 @@ body{
 }
 
 .result-title {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #ffffff;
   margin-bottom: 4px;
 }
@@ -314,38 +312,24 @@ body{
   box-shadow: 0 0 10px rgba(0, 255, 100, 0.6), 0 0 25px rgba(0, 255, 120, 0.3);
 }
 
+/* Neon glow accent strip (slim belt effect) */
+.search-result-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(90deg, #baff00, #00ff66, #baff00);
+  border-radius: 4px;
+  box-shadow: 0 0 15px #00ff88, 0 0 30px #baff00;
+  z-index: 2;
+}
+
 /* Optional: stronger glow when active */
 .search-result-panel.active::before {
   box-shadow: 0 0 20px #00ff88, 0 0 40px #baff00;
-}
-.search-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  position: relative;
-
-  /* Red center */
-  background: radial-gradient(circle at center, #e60026 0%, #e60026 45%, transparent 46%);
-
-  /* White spinning ring */
-  border: 4px solid rgba(255, 255, 255, 0.2);
-  border-top: 4px solid #ffffff;
-  border-radius: 50%;
-
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 /* ================= SIDE MENU (slide-out) ================= */
 /* ================= SIDE MENU (PRO FIX) ================= */
@@ -411,7 +395,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 
 .card-info{ padding:10px; color:var(--muted); flex:1; display:flex; flex-direction:column; justify-content:center; gap:6px; }
-.card-info h3{ margin:0; font-size:12px; color:var(--text); }
+.card-info h3{ margin:0; font-size:15px; color:var(--text); }
 .card-info p{ margin:0; font-size:12px; color:var(--neon-green); font-weight:600; }
 
 /* load more buttons */
@@ -944,10 +928,10 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 #sideMenu::after {
   content: "";
   position: absolute;
-  top: 12px;            
-  bottom: 12px;      
-  right: 0;            
-  width: 1px;          
+  top: 12px;            /* adjust to match menu vertical padding */
+  bottom: 12px;         /* adjust to match menu vertical padding */
+  right: 0;             /* flush to the right edge of the menu */
+  width: 1px;           /* slim; change to 2px–5px if you prefer */
   border-radius: 2px;
   background: linear-gradient(180deg, #fff17a, #ffd300); /* warm yellow */
   box-shadow: 0 0 12px rgba(255,215,0,0.12);
@@ -968,7 +952,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   justify-content: flex-start;
   width: 180px;
   min-width: 180px;
-  height: 260px;
+  height: auto;
    border: none !important; 
   border-radius: 14px;
   overflow: hidden;
@@ -981,8 +965,10 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 }
 .anime-card .card-frame {
   width: 100%;
-  height: var(--card-banner-percent) !important; /* banner ratio */
-  flex: 0 0 var(--card-banner-percent) !important;
+ aspect-ratio: 2 / 3;
+  height: auto !important;
+  flex: 0 0 auto !important;
+    aspect-ratio: 2 / 3;
   min-height: 0;
   border-radius: 14px;
   overflow: hidden;
@@ -1012,6 +998,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+    image-rendering: -webkit-optimize-contrast;
   display: block;
 }
 .anime-card .card-frame .card-audio,
@@ -1079,7 +1066,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   bottom: 8px;
   z-index: 31;                           /* just above the banner */
   padding: 6px 8px;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 800;
   border-radius: 8px;
   background: rgba(0,0,0,0.66);
@@ -1127,7 +1114,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
 .anime-card .card-title {
   margin: 0;
   font-size: var(--namebox-font-size) !important;
-  line-height: 1.07;
+  line-height: 1.05;
   color: var(--text);
   font-weight: 800;
   white-space: nowrap;
@@ -1162,7 +1149,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   left: 10px;
   z-index: 32;
   font-weight: 700;
-  font-size: 10px;
+  font-size: 11px;
   padding: 4px 8px;
   border-radius: 6px;
   color: #fff;
@@ -1178,7 +1165,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   left: 8px;
   z-index: 6;
   font-weight: 900;
-  font-size: 1px;
+  font-size: 48px;
   line-height: 1;
   transform: rotate(-12deg);
   color: rgba(255,215,0,0.06);
@@ -1226,7 +1213,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
   .anime-card .card-audio { font-size: 10px; padding:5px 7px; }
    .anime-card .card-footer { min-height: 36px; padding: 6px 8px; }
   .anime-card .card-title  { font-size: 13px; }
-  .anime-card .card-year   { font-size: 10px; }
+  .anime-card .card-year   { font-size: 11px; }
   .anime-card .card-banner-wrap .card-audio { font-size: 10px; padding:5px 7px; }
    :root{--card-banner-percent: 85%;
       --namebox-font-size: 16px; 
@@ -1237,7 +1224,7 @@ main { max-width:1120px; margin: 10px auto; padding: 0 18px; }
     left: 6px;
     bottom: 6px;
     padding: 5px 6px;
-    font-size: 11px;
+    font-size: 14px;
   }
   .anime-card .card-banner-wrap .card-audio {
     right: 6px;
