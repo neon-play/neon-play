@@ -6,6 +6,45 @@ async function sha256(message) {
 const menuBtn = document.getElementById("menuBtn");  
 const sideMenu = document.getElementById("sideMenu");  
 const menuLinks = sideMenu ? sideMenu.querySelectorAll(".menu-list li a") : [];
+function timeoutFetch(url, options = {}, timeout = 5000) {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), timeout)
+    )
+  ]);
+}
+async function fetchWithFallback(endpoint) {
+
+  const resourceId = "";
+
+  // ---------- WORKER 1 ----------
+  const token1 = await sha256(resourceId + API_TOKEN_SECRET);
+  const separator1 = endpoint.includes("?") ? "&" : "?";
+const url1 = `${WORKER_1_BASE}${endpoint}${separator1}token=${token1}`;
+
+  try {
+    const resp1 = await timeoutFetch(url1, {}, 5000);
+    if (resp1.ok) return await resp1.json();
+    throw new Error("Worker 1 failed");
+  } catch (err) {
+    console.warn("⚠ Worker 1 failed, switching to Worker 2...");
+  }
+
+  // ---------- WORKER 2 ----------
+  const token2 = await sha256(resourceId + API_TOKEN_SECRET_2);
+  const separator2 = endpoint.includes("?") ? "&" : "?";
+const url2 = `${WORKER_2_BASE}${endpoint}${separator2}token=${token2}`;
+
+  try {
+    const resp2 = await fetch(url2);
+    if (!resp2.ok) throw new Error("Worker 2 failed");
+    return await resp2.json();
+  } catch (err) {
+    console.error("❌ Both workers failed");
+    throw err;
+  }
+}
 function openMenu() {  
   if (!sideMenu) return;  
   sideMenu.classList.add("open");  
@@ -320,6 +359,7 @@ if (resultsInner) {
 const DEBOUNCE = 300;
 let activeQuery = "";
 let controller = null; // 🔥 ADD THIS LINE
+  
 async function searchServer(query) {
 
   const cacheKey = "search_" + query.toLowerCase();
@@ -337,17 +377,9 @@ async function searchServer(query) {
   controller = new AbortController();
 
   try {
-    const resourceId = "";
-    const token = await sha256(resourceId + API_TOKEN_SECRET);
+    const endpoint = `/api/search?q=${encodeURIComponent(query)}`;
 
-    const resp = await fetch(
-      `https://neon-anime-api.lupinarashi.workers.dev/api/search?q=${encodeURIComponent(query)}&token=${token}`,
-      { signal: controller.signal }
-    );
-
-    if (!resp.ok) return;
-
-    const data = await resp.json();
+const data = await fetchWithFallback(endpoint);
     const results = Array.isArray(data) ? data : [];
 
     // 2️⃣ Save in browser cache
@@ -387,6 +419,10 @@ debounceTimer = setTimeout(() => {
 }
   })();
 const API_TOKEN_SECRET = "Qc!}1MnJ:jv.Hk}N!8qw*:2YA#2kVc;g";
+const API_TOKEN_SECRET_2 = "YOUR_SECOND_SECRET_HERE";
+
+const WORKER_1_BASE = "https://neon-anime-api.lupinarashi.workers.dev";
+const WORKER_2_BASE = "https://second-worker-domain.workers.dev";
 document.addEventListener('DOMContentLoaded', () => {  
   
   
@@ -505,14 +541,9 @@ async function loadPage(page) {
   if (isLoading || !hasMore) return;
   isLoading = true;
   try {
-    const resourceId = "";
-const token = await sha256(resourceId + API_TOKEN_SECRET);
+    const endpoint = `/api/anime?page=${page}`;
 
-const resp = await fetch(
-  `https://neon-anime-api.lupinarashi.workers.dev/api/anime?page=${page}&token=${token}`
-);
-    if (!resp.ok) throw new Error("Failed to fetch");
-    const data = await resp.json();
+const data = await fetchWithFallback(endpoint);
     const items = Array.isArray(data) ? data : [];
     localStorage.setItem(cacheKey, JSON.stringify(items));
     if (items.length === 0) {
@@ -573,78 +604,17 @@ document.addEventListener("DOMContentLoaded", () => {
     else document.querySelector("main")?.appendChild(loadMoreBtn);
   }
 
-  /* FETCH data/anime.json */
-  fetch("data/anime.json")
-    .then(res => res.json())
-    .then(data => {
-      let items = [];
-
-      if (Array.isArray(data)) {
-        items = data.slice();
-      } else if (data && typeof data === "object") {
-        if (Array.isArray(data.movies)) items = items.concat(data.movies);
-        if (Array.isArray(data.anime)) items = items.concat(data.anime);
-        for (const k of Object.keys(data)) {
-          if (Array.isArray(data[k]) && !["movies","anime"].includes(k)) items = items.concat(data[k]);
-        }
-      }
-
-      if (items.length === 0 && data && typeof data === "object") {
-        const maybe = Object.values(data).filter(v =>
-          v && typeof v === "object" && (v.title || v.name) && (v.image || v.poster || v.cover)
-        );
-        if (maybe.length) items = maybe;
-      }
-
-   // Detect which page we are on
-const pageTarget = document.body?.getAttribute("data-target");
-
-// STRICT filtering based ONLY on JSON type
-if (pageTarget === "series") {
-  allMovies = items.filter(item =>
-    item &&
-    typeof item.type === "string" &&
-    item.type.trim().toLowerCase() === "series"
-  );
-} else {
-  // default = movies page
-  allMovies = items.filter(item =>
-    item &&
-    typeof item.type === "string" &&
-    item.type.trim().toLowerCase() === "movie"
-  );
-}
-
-      if (!allMovies.length) {
-        const nestedArrays = Object.values(data).filter(v => Array.isArray(v));
-        for (const arr of nestedArrays) {
-          for (const it of arr) {
-            if (it && (it.title || it.name) && (it.image || it.poster || it.cover)) {
-              allMovies.push(it);
-            }
-          }
-        }
-      }
-
-      // dedupe
-      const seen = new Set();
-      allMovies = allMovies.filter(it => {
-        const key = (it.id || it.slug || it.title || it.name || JSON.stringify(it)).toString();
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-
+/* FETCH FROM WORKER API */
+fetchWithFallback(`/api/anime?page=1`)
+  .then(data => {
+      allMovies = Array.isArray(data) ? data : [];
       filteredMovies = [...allMovies];
       visibleCount = PAGE_SIZE;
       renderChunk();
-    })
-    .catch(err => {
-      console.error("❌ anime.json load error:", err);
-      allMovies = [];
-      filteredMovies = [];
-      renderChunk();
-    });
+  })
+  .catch(err => {
+      console.error("API load error:", err);
+  });
 
   /* RENDER helpers */
   function escapeHtml(s) {
@@ -780,4 +750,3 @@ if (pageTarget === "series") {
   }
 
 });
-
