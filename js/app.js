@@ -1,6 +1,6 @@
 async function fetchLocalJSON() {
   try {
-    const resp = await fetch("anime.json", { cache: "no-store" });
+    const resp = await fetch("https://neon-play.github.io/neonanimeasia-official-cdn/primealphaneonanimeasiapublic.json", { cache: "no-store" });
     if (!resp.ok) return null;
     const data = await resp.json();
     if (!Array.isArray(data) || data.length === 0) return null;
@@ -647,6 +647,7 @@ loadPage(currentPage);
 document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("movieGrid");
   if (!grid) return;
+const pageTarget = document.body.dataset.target || "movies";
   const searchInput = document.querySelector(".search-box input");
   const sortSelect = document.getElementById("sortSelect");
   let loadMoreBtn = document.getElementById("loadMoreBtn");
@@ -673,12 +674,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const staticData = await fetchLocalJSON();
 
   if (staticData) {
-    allMovies = staticData;
-    filteredMovies = [...allMovies];
-    visibleCount = PAGE_SIZE;
-    renderChunk();
-    return;
-  }
+  allMovies = staticData.filter(item => {
+    const t = (item.type || "").toLowerCase();
+    if (pageTarget === "series") {
+      return t === "series" || t === "tv" || t === "show";
+    }
+    return t === "movie" || t === "movies";
+  });
+  filteredMovies = [...allMovies];
+  visibleCount = PAGE_SIZE;
+  renderChunk();
+  return;
+}
 
   // 🔹 Fallback to API
   const cacheKey = "grid_page_1";
@@ -777,8 +784,6 @@ if (cached) {
 
     loadMoreBtn.style.display = visibleCount >= filteredMovies.length ? "none" : "block";
   }
-
-  /* LOAD MORE */
   loadMoreBtn.addEventListener("click", () => {
     visibleCount = Math.min(filteredMovies.length, visibleCount + PAGE_SIZE);
     renderChunk();
