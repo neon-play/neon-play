@@ -1,3 +1,46 @@
+async function fetchLocalJSON() {
+  try {
+    const resp = await fetch("anime.json", { cache: "no-store" });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    return data;
+  } catch (err) {
+    return null;
+  }
+}
+const SEARCH_CACHE_TTL = 24 * 60 * 60 * 1000;      // 5 minutes
+const PAGE_CACHE_TTL   = 24 * 60 * 60 * 1000;     // 15 minutes
+function setCache(key, data, ttl) {
+  try {
+    const payload = {
+      data,
+      expiry: Date.now() + ttl
+    };
+    localStorage.setItem(key, JSON.stringify(payload));
+  } catch (e) {
+    console.warn("Cache write failed:", e);
+  }
+}
+
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+
+    if (!parsed.expiry || Date.now() > parsed.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+
+    return parsed.data;
+  } catch (e) {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
 async function sha256(message) {
   const msgUint8 = new TextEncoder().encode(message);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
@@ -14,7 +57,7 @@ function timeoutFetch(url, options = {}, timeout = 5000) {
     )
   ]);
 }
-async function fetchWithFallback(endpoint) {
+async function fetchWithFallback(endpoint, signal) {
 
   const resourceId = "";
 
@@ -24,7 +67,7 @@ async function fetchWithFallback(endpoint) {
 const url1 = `${WORKER_1_BASE}${endpoint}${separator1}token=${token1}`;
 
   try {
-    const resp1 = await timeoutFetch(url1, {}, 5000);
+    const resp1 = await timeoutFetch(url1, { signal }, 5000);
     if (resp1.ok) return await resp1.json();
     throw new Error("Worker 1 failed");
   } catch (err) {
@@ -37,7 +80,7 @@ const url1 = `${WORKER_1_BASE}${endpoint}${separator1}token=${token1}`;
 const url2 = `${WORKER_2_BASE}${endpoint}${separator2}token=${token2}`;
 
   try {
-    const resp2 = await fetch(url2);
+    const resp2 = await fetch(url2, { signal });
     if (!resp2.ok) throw new Error("Worker 2 failed");
     return await resp2.json();
   } catch (err) {
@@ -365,11 +408,11 @@ async function searchServer(query) {
   const cacheKey = "search_" + query.toLowerCase();
 
   // 1️⃣ Check browser cache first
-  const cached = localStorage.getItem(cacheKey);
-  if (cached) {
-    renderResults(JSON.parse(cached), query);
-    return;
-  }
+  const cached = getCache(cacheKey);
+if (cached) {
+  renderResults(cached, query);
+  return;
+}
 
   activeQuery = query;
 
@@ -379,11 +422,11 @@ async function searchServer(query) {
   try {
     const endpoint = `/api/search?q=${encodeURIComponent(query)}`;
 
-const data = await fetchWithFallback(endpoint);
+const data = await fetchWithFallback(endpoint, controller.signal);
     const results = Array.isArray(data) ? data : [];
 
     // 2️⃣ Save in browser cache
-    localStorage.setItem(cacheKey, JSON.stringify(results));
+    setCache(cacheKey, results, SEARCH_CACHE_TTL);
 
     renderResults(results, query);
 
@@ -418,11 +461,6 @@ debounceTimer = setTimeout(() => {
   console.warn("Live search: search input not found (#searchInput).");
 }
   })();
-const API_TOKEN_SECRET = "Qc!}1MnJ:jv.Hk}N!8qw*:2YA#2kVc;g";
-const API_TOKEN_SECRET_2 = "YOUR_SECOND_SECRET_HERE";
-
-const WORKER_1_BASE = "https://neon-anime-api.lupinarashi.workers.dev";
-const WORKER_2_BASE = "https://second-worker-domain.workers.dev";
 document.addEventListener('DOMContentLoaded', () => {  
   
   
@@ -518,34 +556,58 @@ if (item && item.id) {
     });  
   }
 async function loadPage(page) {
-  const cacheKey = "anime_page_" + page;
-  const cached = localStorage.getItem(cacheKey);
 
-  if (cached) {
-    const items = JSON.parse(cached);
+  // 🔹 1️⃣ Try static JSON first
+  const staticData = await fetchLocalJSON();
+  if (staticData) {
 
-    const movies = items.filter(it => {
+    const movies = staticData.filter(it => {
       const t = it?.type?.toLowerCase();
       return t === "movie" || t === "movies";
     });
 
-    const series = items.filter(it => {
+    const series = staticData.filter(it => {
       const t = it?.type?.toLowerCase();
       return t === "series" || t === "tv" || t === "show";
     });
 
     renderList(movies, moviesContainer);
     renderList(series, seriesContainer);
-    return; // 🔥 STOPS WORKER CALL
+
+    return; // 🔥 STOP — DO NOT CALL WORKER
   }
+
+  // 🔹 2️⃣ If JSON not available → continue normal logic
+  const cacheKey = "anime_page_" + page;
+  
+
+const cached = getCache(cacheKey);
+
+if (cached) {
+  const items = cached;
+
+  const movies = items.filter(it => {
+    const t = it?.type?.toLowerCase();
+    return t === "movie" || t === "movies";
+  });
+
+  const series = items.filter(it => {
+    const t = it?.type?.toLowerCase();
+    return t === "series" || t === "tv" || t === "show";
+  });
+
+  renderList(movies, moviesContainer);
+  renderList(series, seriesContainer);
+  return;
+}
   if (isLoading || !hasMore) return;
   isLoading = true;
   try {
     const endpoint = `/api/anime?page=${page}`;
 
-const data = await fetchWithFallback(endpoint);
+const data = await fetchWithFallback(endpoint, undefined);
     const items = Array.isArray(data) ? data : [];
-    localStorage.setItem(cacheKey, JSON.stringify(items));
+    setCache(cacheKey, items, PAGE_CACHE_TTL);
     if (items.length === 0) {
       hasMore = false;
       if (loadMoreMoviesBtn) loadMoreMoviesBtn.style.display = "none";
@@ -605,16 +667,42 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 /* FETCH FROM WORKER API */
-fetchWithFallback(`/api/anime?page=1`)
-  .then(data => {
+(async () => {
+
+  // 🔹 Try static JSON first
+  const staticData = await fetchLocalJSON();
+
+  if (staticData) {
+    allMovies = staticData;
+    filteredMovies = [...allMovies];
+    visibleCount = PAGE_SIZE;
+    renderChunk();
+    return;
+  }
+
+  // 🔹 Fallback to API
+  const cacheKey = "grid_page_1";
+const cached = getCache(cacheKey);
+
+if (cached) {
+  allMovies = cached;
+  filteredMovies = [...allMovies];
+  visibleCount = PAGE_SIZE;
+  renderChunk();
+} else {
+  fetchWithFallback(`/api/anime?page=1`, undefined)
+    .then(data => {
       allMovies = Array.isArray(data) ? data : [];
+      setCache(cacheKey, allMovies, PAGE_CACHE_TTL);
       filteredMovies = [...allMovies];
       visibleCount = PAGE_SIZE;
       renderChunk();
-  })
-  .catch(err => {
+    })
+    .catch(err => {
       console.error("API load error:", err);
-  });
+    });
+}})();
+  
 
   /* RENDER helpers */
   function escapeHtml(s) {
